@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Microsoft.Extensions.Hosting;
 
 using CO2Monitor.Core.Entities;
 
@@ -8,12 +9,16 @@ namespace CO2Monitor.Core.Interfaces
 {
     public enum CO2Levels
     {
+        Invalid = -1,
+        Low,
         Normal,
         Mid,
         High
     };
 
-    public interface ICO2ControllerService
+    public delegate void CO2LevelChangedHandler(ICO2ControllerService sender, CO2Levels level, CO2Measurement value);
+
+    public interface ICO2ControllerService : IHostedService
     {
         string CO2DriverAddress { get; set; }
 
@@ -26,6 +31,8 @@ namespace CO2Monitor.Core.Interfaces
         /// </summary>
         float PollingRate { get; set; }
 
-        CO2Measurement GetMeasurement();
+        CO2Measurement GetLatestMeasurement();
+
+        event CO2LevelChangedHandler CO2LevelChanged;
     }
 }

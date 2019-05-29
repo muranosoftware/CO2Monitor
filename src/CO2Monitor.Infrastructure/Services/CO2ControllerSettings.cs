@@ -27,6 +27,7 @@ namespace CO2Monitor.Infrastructure.Services
         {
             Levels = new Dictionary<CO2Levels, int>()
             {
+                { CO2Levels.Low, defaultNormalLevel },
                 { CO2Levels.Normal, defaultNormalLevel },
                 { CO2Levels.Mid, defaultMidLevel },
                 { CO2Levels.High, defaultHighLevel },

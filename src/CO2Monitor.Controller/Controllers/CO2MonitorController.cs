@@ -6,19 +6,21 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
+using CO2Monitor.Core.Entities;
 using CO2Monitor.Core.Interfaces;
+using Microsoft.Extensions.Hosting;
 
 namespace CO2Monitor.Controller.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CO2DriverController : ControllerBase
+    public class CO2MonitorController : ControllerBase
     {
         private readonly ICO2ControllerService _controllerService;
 
-        public CO2DriverController(ICO2ControllerService controllerService)
+        public CO2MonitorController(IEnumerable<IHostedService> hostedServicies)
         {
-            _controllerService = controllerService;
+            _controllerService = hostedServicies.OfType<ICO2ControllerService>().First(); 
         }
 
         [HttpGet("address")]
@@ -27,11 +29,23 @@ namespace CO2Monitor.Controller.Controllers
             return _controllerService.CO2DriverAddress;
         }
 
-        [HttpPut("address")]
-        public IActionResult SetAddress([FromQuery, Required] string adress)
+        [HttpPut("address/{address}")]
+        public IActionResult SetAddress([FromRoute, Required] string address)
         {
-            _controllerService.CO2DriverAddress = adress;
-            return Ok(adress);
+            _controllerService.CO2DriverAddress = address;
+            return Ok(address);
+        }
+
+        [HttpGet("pollingRate")]
+        public float GetPollingRate()
+        {
+            return _controllerService.PollingRate;
+        }
+
+        [HttpPut("pollingRate/{rate}")]
+        public float SetPollingRate([FromRoute, Required] float address)
+        {
+            return _controllerService.PollingRate;
         }
 
         [HttpGet("level/{level}")]
@@ -49,5 +63,11 @@ namespace CO2Monitor.Controller.Controllers
             return Ok();
         }
 
+
+        [HttpGet("latestMeasurement")]
+        public CO2Measurement GetLatestMeasurement()
+        {
+            return _controllerService.GetLatestMeasurement();
+        }
     }
 }

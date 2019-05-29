@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using CO2Monitor.Core.Entities;
 using CO2Monitor.Core.Interfaces;
-using Microsoft.Extensions.Configuration;
 
 namespace CO2Monitor.Infrastructure.RemoteServices
 {

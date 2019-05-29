@@ -13,19 +13,22 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
-
+using Microsoft.Extensions.Hosting;
+using Serilog.Extensions.Logging.File;
 using Swashbuckle.AspNetCore.Swagger;
+
 
 using CO2Monitor.Core.Interfaces;
 using CO2Monitor.Infrastructure.RemoteServices;
 using CO2Monitor.Infrastructure.Services;
+using CO2Monitor.Infrastructure.Data;
 
 namespace CO2Monitor.Controller
 {
     public class Startup
     {
         private readonly ILogger _logger;
-
+        
         public Startup(IConfiguration configuration, ILogger<Startup> logger)
         {
             _logger = logger;
@@ -39,10 +42,11 @@ namespace CO2Monitor.Controller
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
+            services.AddScoped<IMeasurementRepository, SQLiteMeasurmentRepository>();
+
             services.AddTransient<IRemoteCO2Driver, FakeRemoteCO2Driver>();
 
-            services.AddSingleton<ICO2ControllerService, CO2ControllerService>();
-
+            services.AddHostedService<CO2ControllerService>();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new Info { Title = "CO2Monitor API", Version = "v1" });
@@ -54,8 +58,12 @@ namespace CO2Monitor.Controller
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, Microsoft.AspNetCore.Hosting.IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
+            loggerFactory.AddFile("Logs/C02Monitor.Controller.log");
+
+            SQLiteMeasurmentRepository.Configure(Configuration);
+
             if (env.IsDevelopment())
             {
                 _logger.LogInformation("In Development environment");
