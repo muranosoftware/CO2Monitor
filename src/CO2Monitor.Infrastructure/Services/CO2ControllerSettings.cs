@@ -14,12 +14,12 @@ namespace CO2Monitor.Infrastructure.Services
         public const int defaultMidLevel = 1000;
         public const int defaultHighLevel = 1200;
         public const float defaultPollingRate = 60f;
-        public const float defaultSwitchingDeltaPeriod = 60f * 5;
-
-
+        
         public float PollingRate { get; set; }
-        public float SwitchingDeltaPeriod { get; set; }
+
         public string CO2DriverAddress { get; set; }
+
+        public string CO2FanDriverAddress { get; set; }
 
         public Dictionary<CO2Levels, int> Levels { get; set; }
 
@@ -27,14 +27,13 @@ namespace CO2Monitor.Infrastructure.Services
         {
             Levels = new Dictionary<CO2Levels, int>()
             {
-                { CO2Levels.Low, defaultNormalLevel },
+                { CO2Levels.Low, 0 },
                 { CO2Levels.Normal, defaultNormalLevel },
                 { CO2Levels.Mid, defaultMidLevel },
                 { CO2Levels.High, defaultHighLevel },
             };
 
             PollingRate = defaultPollingRate;
-            SwitchingDeltaPeriod = defaultSwitchingDeltaPeriod;
         }
 
         public void Save(string path)

@@ -23,16 +23,29 @@ namespace CO2Monitor.Controller.Controllers
             _controllerService = hostedServicies.OfType<ICO2ControllerService>().First(); 
         }
 
-        [HttpGet("address")]
-        public string GetAddress()
+        [HttpGet("sensorAddress")]
+        public string GetSensorAddress()
         {
             return _controllerService.CO2DriverAddress;
         }
 
-        [HttpPut("address/{address}")]
-        public IActionResult SetAddress([FromRoute, Required] string address)
+        [HttpPut("sensorAddress/{address}")]
+        public IActionResult SetSensorAddress([FromRoute, Required] string address)
         {
             _controllerService.CO2DriverAddress = address;
+            return Ok(address);
+        }
+
+        [HttpGet("fanAddress")]
+        public string GetFanAddress()
+        {
+            return _controllerService.CO2FanDriverAddress;
+        }
+
+        [HttpPut("fanAddress/{address}")]
+        public IActionResult SetFanAddress([FromRoute, Required] string address)
+        {
+            _controllerService.CO2FanDriverAddress = address;
             return Ok(address);
         }
 

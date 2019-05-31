@@ -19,8 +19,10 @@ namespace CO2Monitor.Infrastructure.Services
         private const string configurationSectionKey = "CO2Controller";
         private const string configurationSettingsFileKey = "SettingsFile";
         private const string configurationCO2DriverAddressKey = "CO2DriverAddress";
+        private const string configurationCO2FanControllerAddressKey = "CO2FanControllerAddress";
 
         private readonly IRemoteCO2Driver _remoteCO2Driver;
+        private readonly IRemoteCO2FanController _remoteCO2FanController;
         private readonly IMeasurementRepository _repository;
         private readonly ILogger _logger;
         private CO2Measurement _latestMeasurement;
@@ -31,21 +33,41 @@ namespace CO2Monitor.Infrastructure.Services
         public CO2ControllerService(IConfiguration configuration,
                                     IServiceScopeFactory serviceScopeFactory, 
                                     IRemoteCO2Driver remoteCO2Driver, 
+                                    IRemoteCO2FanController remoteCO2FanController,
                                     ILogger<CO2ControllerService> logger)
         {
             _logger = logger;
 
             _remoteCO2Driver = remoteCO2Driver;
 
+            _remoteCO2FanController = remoteCO2FanController;
+
+            CO2LevelChanged += SwitchFanOnCO2LevelChanged;
+
             using (var scope = serviceScopeFactory.CreateScope())
             {
                 _repository = scope.ServiceProvider.GetService<IMeasurementRepository>();
             }
 
-            SettingsFilePath  = configuration.GetSection(configurationSectionKey)[configurationSettingsFileKey];
+            SettingsFilePath = configuration.GetSection(configurationSectionKey)[configurationSettingsFileKey];
 
             Settings = CO2ControllerSettings.LoadOrUseDefault(SettingsFilePath);
+            ConfigurateRemoteAdresses(configuration);
+        }
 
+        private void SwitchFanOnCO2LevelChanged(ICO2ControllerService sender, CO2Levels level, CO2Measurement value)
+        {
+            var command = level == CO2Levels.High ? FanCommand.TurnOn : FanCommand.TurnOff;
+
+            if (_remoteCO2FanController.GetCommand(CO2FanDriverAddress) != command)
+            {
+                _logger.LogInformation($"Fan [{CO2FanDriverAddress}] set command {command}");
+                _remoteCO2FanController.SetCommamd(CO2FanDriverAddress, command);
+            }
+        }
+
+        private void ConfigurateRemoteAdresses(IConfiguration configuration)
+        {
             if (string.IsNullOrEmpty(Settings.CO2DriverAddress))
             {
                 _logger.LogInformation($"Can not find CO2DriverAddress in saved settings. Try find CO2DriverAddress in configuration.");
@@ -58,6 +80,20 @@ namespace CO2Monitor.Infrastructure.Services
             }
 
             _logger.LogInformation($"CO2DriverAddress: " + Settings.CO2DriverAddress);
+
+
+            if (string.IsNullOrEmpty(Settings.CO2FanDriverAddress))
+            {
+                _logger.LogInformation($"Can not find CO2FanDriverAddress in saved settings. Try find CO2FanDriverAddress in configuration.");
+                Settings.CO2FanDriverAddress = configuration.GetSection(configurationSectionKey)[configurationCO2FanControllerAddressKey];
+                Settings.Save(SettingsFilePath);
+            }
+            else
+            {
+                _logger.LogInformation($"Using CO2FanDriverAddress from saved settings.");
+            }
+
+            _logger.LogInformation($"CO2FanDriverAddress: " + Settings.CO2FanDriverAddress);
         }
 
         public float PollingRate
@@ -79,7 +115,17 @@ namespace CO2Monitor.Infrastructure.Services
                 Settings.Save(SettingsFilePath);
             }
         }
-        
+
+        public string CO2FanDriverAddress
+        {
+            get => Settings.CO2FanDriverAddress;
+            set
+            {
+                Settings.CO2FanDriverAddress = value;
+                Settings.Save(SettingsFilePath);
+            }
+        }
+
         private string SettingsFilePath { get; }
 
         private CO2ControllerSettings Settings { get; }

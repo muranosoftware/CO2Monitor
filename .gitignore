@@ -266,3 +266,6 @@ __pycache__/
 *.pyc
 *.dll
 *.netmodule
+Logs
+CO2ControllerSettings.json
+*.sqlite

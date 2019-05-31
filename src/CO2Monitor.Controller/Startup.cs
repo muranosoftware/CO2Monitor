@@ -46,13 +46,15 @@ namespace CO2Monitor.Controller
 
             services.AddTransient<IRemoteCO2Driver, FakeRemoteCO2Driver>();
 
+            services.AddTransient<IRemoteCO2FanController, FakeRemoteCO2FanController>();
+
             services.AddHostedService<CO2ControllerService>();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new Info { Title = "CO2Monitor API", Version = "v1" });
                 //var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 //var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-                //c.IncludeXmlComments(xmlPath);
+                //c.IncludeXmlComments(xmlPath); TODO: make documentation
             });
 
         }

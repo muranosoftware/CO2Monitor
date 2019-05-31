@@ -22,6 +22,8 @@ namespace CO2Monitor.Core.Interfaces
     {
         string CO2DriverAddress { get; set; }
 
+        string CO2FanDriverAddress { get; set; }
+
         void SetLevel(CO2Levels level, int value);
 
         int GetLevel(CO2Levels level);

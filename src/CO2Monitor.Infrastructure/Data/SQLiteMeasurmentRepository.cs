@@ -33,6 +33,7 @@ namespace CO2Monitor.Infrastructure.Data
         {
             using (var conn = new SQLiteConnection(ConnectionString))
             {
+                _logger.LogInformation($"New Measurement: Time {measurement.Time} CO2 {measurement.CO2} Temperature {measurement.Temperature}");
                 var sql = "INSERT INTO  Measurments (CO2, Temperature, Time) VALUES (@CO2, @Temperature, @Time)";
                 conn.Execute(sql, measurement);
             }
