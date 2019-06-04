@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using Microsoft.Extensions.Hosting;
+using System.Threading.Tasks;
 
 using CO2Monitor.Core.Entities;
 
@@ -33,7 +34,7 @@ namespace CO2Monitor.Core.Interfaces
         /// </summary>
         float PollingRate { get; set; }
 
-        CO2Measurement GetLatestMeasurement();
+        Task<CO2Measurement> GetLatestMeasurement();
 
         event CO2LevelChangedHandler CO2LevelChanged;
     }

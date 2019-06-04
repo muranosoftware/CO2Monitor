@@ -51,7 +51,7 @@ namespace CO2Monitor.Infrastructure.Services
 
             SettingsFilePath = configuration.GetSection(configurationSectionKey)[configurationSettingsFileKey];
 
-            Settings = CO2ControllerSettings.LoadOrUseDefault(SettingsFilePath);
+            Settings = CO2ControllerSettings.GetInstance(SettingsFilePath);
             ConfigurateRemoteAdresses(configuration);
         }
 
@@ -101,6 +101,11 @@ namespace CO2Monitor.Infrastructure.Services
             get => Settings.PollingRate;
             set
             {
+                if (value <= float.Epsilon)
+                {
+                    throw new CO2MonitorArgumentException("PollingRate", "PollingRate must be greater than zero");
+                }
+
                 Settings.PollingRate = value;
                 Settings.Save(SettingsFilePath);
             }
@@ -111,6 +116,11 @@ namespace CO2Monitor.Infrastructure.Services
             get => Settings.CO2DriverAddress;
             set
             {
+                if (!Uri.TryCreate(value, UriKind.RelativeOrAbsolute, out _))
+                {
+                    throw new CO2MonitorArgumentException("CO2DriverAddress", $"Invalid address format: {value}");
+                }
+
                 Settings.CO2DriverAddress = value;
                 Settings.Save(SettingsFilePath);
             }
@@ -121,6 +131,11 @@ namespace CO2Monitor.Infrastructure.Services
             get => Settings.CO2FanDriverAddress;
             set
             {
+                if (!Uri.TryCreate(value, UriKind.RelativeOrAbsolute, out _))
+                {
+                    throw new CO2MonitorArgumentException("CO2DriverAddress", $"Invalid address format: {value}");
+                }
+
                 Settings.CO2FanDriverAddress = value;
                 Settings.Save(SettingsFilePath);
             }
@@ -151,11 +166,11 @@ namespace CO2Monitor.Infrastructure.Services
             Settings.Save(SettingsFilePath);
         }
 
-        public CO2Measurement GetLatestMeasurement()
+        public async Task<CO2Measurement> GetLatestMeasurement()
         {
             if (_latestMeasurement != null)
                 return _latestMeasurement;
-            return _remoteCO2Driver.GetMeasurement(CO2DriverAddress);
+            return await _remoteCO2Driver.GetMeasurement(CO2DriverAddress);
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
@@ -188,20 +203,28 @@ namespace CO2Monitor.Infrastructure.Services
                 CO2LevelChanged(this, level, value);
         }
 
-        private void MakeMeasurement(object state)
+        private async void MakeMeasurement(object state)
         {
-            var measurement = _remoteCO2Driver.GetMeasurement(Settings.CO2DriverAddress);
-
-            _repository.Add(measurement);
-
-            CO2Levels prevLevel = _latestMeasurement == null ? CO2Levels.Invalid : GetMeasurementLevel(_latestMeasurement);
-            CO2Levels curLevel = GetMeasurementLevel(measurement);
-            _latestMeasurement = measurement;
-
-            if (prevLevel != curLevel)
+            try
             {
-                _logger.LogInformation("CO2 Level changed to : " + curLevel);
-                OnCO2LevelChanged(curLevel, _latestMeasurement);
+                var measurement = await _remoteCO2Driver.GetMeasurement(Settings.CO2DriverAddress);
+
+                _repository.Add(measurement);
+
+                CO2Levels prevLevel = _latestMeasurement == null ? CO2Levels.Invalid : GetMeasurementLevel(_latestMeasurement);
+                CO2Levels curLevel = GetMeasurementLevel(measurement);
+                _latestMeasurement = measurement;
+
+                if (prevLevel != curLevel)
+                {
+                    _logger.LogInformation("CO2 Level changed to : " + curLevel);
+                    OnCO2LevelChanged(curLevel, _latestMeasurement);
+                }
+
+            }
+            catch (CO2MonitorRemoteServiceException ex)
+            {
+                _logger.LogError(ex, $"Can not get measurment!");
             }
         }
 

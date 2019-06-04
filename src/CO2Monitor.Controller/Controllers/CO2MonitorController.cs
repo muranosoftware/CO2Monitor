@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 using CO2Monitor.Core.Entities;
+using CO2Monitor.Core.Shared;
 using CO2Monitor.Core.Interfaces;
 using Microsoft.Extensions.Hosting;
 
@@ -29,11 +30,18 @@ namespace CO2Monitor.Controller.Controllers
             return _controllerService.CO2DriverAddress;
         }
 
-        [HttpPut("sensorAddress/{address}")]
-        public IActionResult SetSensorAddress([FromRoute, Required] string address)
+        [HttpPut("sensorAddress")]
+        public IActionResult SetSensorAddress([FromQuery, Required] string address)
         {
-            _controllerService.CO2DriverAddress = address;
-            return Ok(address);
+            try
+            {
+                _controllerService.CO2DriverAddress = address;
+                return Ok(address);
+            }
+            catch (CO2MonitorArgumentException ex)
+            {
+                return UnprocessableEntity(ex.Message);
+            }
         }
 
         [HttpGet("fanAddress")]
@@ -42,11 +50,18 @@ namespace CO2Monitor.Controller.Controllers
             return _controllerService.CO2FanDriverAddress;
         }
 
-        [HttpPut("fanAddress/{address}")]
-        public IActionResult SetFanAddress([FromRoute, Required] string address)
+        [HttpPut("fanAddress")]
+        public IActionResult SetFanAddress([FromQuery, Required] string address)
         {
-            _controllerService.CO2FanDriverAddress = address;
-            return Ok(address);
+            try
+            {
+                _controllerService.CO2FanDriverAddress = address;
+                return Ok(address);
+            }
+            catch (CO2MonitorArgumentException ex)
+            {
+                return UnprocessableEntity(ex.Message);
+            }
         }
 
         [HttpGet("pollingRate")]
@@ -56,9 +71,17 @@ namespace CO2Monitor.Controller.Controllers
         }
 
         [HttpPut("pollingRate/{rate}")]
-        public float SetPollingRate([FromRoute, Required] float address)
+        public IActionResult SetPollingRate([FromRoute, Required] float rate)
         {
-            return _controllerService.PollingRate;
+            try
+            {
+                _controllerService.PollingRate = rate;
+                return Ok(rate);
+            }
+            catch (CO2MonitorArgumentException ex)
+            {
+                return UnprocessableEntity(ex.Message);
+            }
         }
 
         [HttpGet("level/{level}")]
@@ -78,9 +101,16 @@ namespace CO2Monitor.Controller.Controllers
 
 
         [HttpGet("latestMeasurement")]
-        public CO2Measurement GetLatestMeasurement()
+        public async Task<IActionResult> GetLatestMeasurement()
         {
-            return _controllerService.GetLatestMeasurement();
+            try
+            {
+                return Ok(await _controllerService.GetLatestMeasurement());
+            }
+            catch (CO2MonitorRemoteServiceException)
+            {
+                return NotFound();
+            }
         }
     }
 }

@@ -14,16 +14,10 @@ namespace CO2Monitor.Infrastructure.Services
         public const int defaultMidLevel = 1000;
         public const int defaultHighLevel = 1200;
         public const float defaultPollingRate = 60f;
-        
-        public float PollingRate { get; set; }
 
-        public string CO2DriverAddress { get; set; }
+        private static CO2ControllerSettings _instance;
 
-        public string CO2FanDriverAddress { get; set; }
-
-        public Dictionary<CO2Levels, int> Levels { get; set; }
-
-        public CO2ControllerSettings()
+        private CO2ControllerSettings()
         {
             Levels = new Dictionary<CO2Levels, int>()
             {
@@ -36,6 +30,14 @@ namespace CO2Monitor.Infrastructure.Services
             PollingRate = defaultPollingRate;
         }
 
+        public float PollingRate { get; set; }
+
+        public string CO2DriverAddress { get; set; }
+
+        public string CO2FanDriverAddress { get; set; }
+
+        public Dictionary<CO2Levels, int> Levels { get; set; }
+
         public void Save(string path)
         {
             var json = JsonConvert.SerializeObject(this);
@@ -43,14 +45,23 @@ namespace CO2Monitor.Infrastructure.Services
             File.WriteAllText(path, json);
         }
 
-        public static CO2ControllerSettings LoadOrUseDefault(string path)
+        public static CO2ControllerSettings GetInstance(string path)
         {
-            if(!File.Exists(path))
-                return new CO2ControllerSettings();
+            if (_instance != null)
+                return _instance;
 
-            var json = File.ReadAllText(path);
+            if (!File.Exists(path))
+            {
+                _instance = new CO2ControllerSettings();
+            }
+            else
+            {
+                var json = File.ReadAllText(path);
+                _instance = JsonConvert.DeserializeObject<CO2ControllerSettings>(json);
 
-            return JsonConvert.DeserializeObject<CO2ControllerSettings>(json);
+            }
+
+            return _instance;
         }
     }
 }
