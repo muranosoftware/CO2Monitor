@@ -22,6 +22,7 @@ using CO2Monitor.Core.Interfaces;
 using CO2Monitor.Infrastructure.RemoteServices;
 using CO2Monitor.Infrastructure.Services;
 using CO2Monitor.Infrastructure.Data;
+using CO2Monitor.Controller.Helpers;
 
 namespace CO2Monitor.Controller
 {
@@ -48,7 +49,10 @@ namespace CO2Monitor.Controller
 
             services.AddTransient<IRemoteCO2FanController, FakeRemoteCO2FanController>();
 
-            services.AddHostedService<CO2ControllerService>();
+            services.AddSingleton<ICO2ControllerService, CO2ControllerService>();
+
+            services.AddHostedService<BackgroundServiceStarter<ICO2ControllerService>>();
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new Info { Title = "CO2Monitor API", Version = "v1" });

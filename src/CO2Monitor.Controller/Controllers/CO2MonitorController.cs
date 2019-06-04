@@ -19,9 +19,9 @@ namespace CO2Monitor.Controller.Controllers
     {
         private readonly ICO2ControllerService _controllerService;
 
-        public CO2MonitorController(IEnumerable<IHostedService> hostedServicies)
+        public CO2MonitorController(ICO2ControllerService controllerService)
         {
-            _controllerService = hostedServicies.OfType<ICO2ControllerService>().First(); 
+            _controllerService = controllerService; 
         }
 
         [HttpGet("sensorAddress")]

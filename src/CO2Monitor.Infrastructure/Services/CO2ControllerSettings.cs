@@ -15,8 +15,6 @@ namespace CO2Monitor.Infrastructure.Services
         public const int defaultHighLevel = 1200;
         public const float defaultPollingRate = 60f;
 
-        private static CO2ControllerSettings _instance;
-
         private CO2ControllerSettings()
         {
             Levels = new Dictionary<CO2Levels, int>()
@@ -45,23 +43,17 @@ namespace CO2Monitor.Infrastructure.Services
             File.WriteAllText(path, json);
         }
 
-        public static CO2ControllerSettings GetInstance(string path)
-        {
-            if (_instance != null)
-                return _instance;
-
+        public static CO2ControllerSettings LoadOrDefault(string path)
+        {    
             if (!File.Exists(path))
             {
-                _instance = new CO2ControllerSettings();
+                return new CO2ControllerSettings();
             }
             else
             {
                 var json = File.ReadAllText(path);
-                _instance = JsonConvert.DeserializeObject<CO2ControllerSettings>(json);
-
+                return JsonConvert.DeserializeObject<CO2ControllerSettings>(json);
             }
-
-            return _instance;
         }
     }
 }

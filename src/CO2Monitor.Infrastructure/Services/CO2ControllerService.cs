@@ -51,7 +51,7 @@ namespace CO2Monitor.Infrastructure.Services
 
             SettingsFilePath = configuration.GetSection(configurationSectionKey)[configurationSettingsFileKey];
 
-            Settings = CO2ControllerSettings.GetInstance(SettingsFilePath);
+            Settings = CO2ControllerSettings.LoadOrDefault(SettingsFilePath);
             ConfigurateRemoteAdresses(configuration);
         }
 
@@ -106,10 +106,12 @@ namespace CO2Monitor.Infrastructure.Services
                     throw new CO2MonitorArgumentException("PollingRate", "PollingRate must be greater than zero");
                 }
 
+                _logger.LogInformation("New PollingRate: " + value);
+
                 Settings.PollingRate = value;
                 Settings.Save(SettingsFilePath);
 
-                _timer.Change(0, Settings.PollingRate);
+                _timer.Change(TimeSpan.Zero, TimeSpan.FromSeconds(Settings.PollingRate));
             }
         }
 
@@ -122,6 +124,8 @@ namespace CO2Monitor.Infrastructure.Services
                 {
                     throw new CO2MonitorArgumentException("CO2DriverAddress", $"Invalid address format: {value}");
                 }
+
+                _logger.LogInformation("New CO2DriverAddress: " + value);
 
                 Settings.CO2DriverAddress = value;
                 Settings.Save(SettingsFilePath);
@@ -137,6 +141,8 @@ namespace CO2Monitor.Infrastructure.Services
                 {
                     throw new CO2MonitorArgumentException("CO2DriverAddress", $"Invalid address format: {value}");
                 }
+
+                _logger.LogInformation("New CO2FanDriverAddress: " + value);
 
                 Settings.CO2FanDriverAddress = value;
                 Settings.Save(SettingsFilePath);
