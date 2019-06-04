@@ -108,6 +108,8 @@ namespace CO2Monitor.Infrastructure.Services
 
                 Settings.PollingRate = value;
                 Settings.Save(SettingsFilePath);
+
+                _timer.Change(0, Settings.PollingRate);
             }
         }
 
