@@ -45,9 +45,9 @@ namespace CO2Monitor.Controller
 
             services.AddScoped<IMeasurementRepository, SQLiteMeasurmentRepository>();
 
-            services.AddTransient<IRemoteCO2Driver, RemoteCO2Driver>();
+            services.AddTransient<IRemoteCO2Driver, FakeRemoteCO2Driver>();
 
-            services.AddTransient<IRemoteCO2FanController, FakeRemoteCO2FanController>();
+            services.AddTransient<IRemoteCO2FanController, RemoteCO2FanController>();
 
             services.AddSingleton<ICO2ControllerService, CO2ControllerService>();
 

@@ -31,12 +31,12 @@ namespace CO2Monitor.Controller.Controllers
         }
 
         [HttpPut("sensorAddress")]
-        public IActionResult SetSensorAddress([FromQuery, Required] string address)
+        public IActionResult SetSensorAddress([FromQuery, Required] string value)
         {
             try
             {
-                _controllerService.CO2DriverAddress = address;
-                return Ok(address);
+                _controllerService.CO2DriverAddress = value;
+                return Ok(value);
             }
             catch (CO2MonitorArgumentException ex)
             {
@@ -51,12 +51,12 @@ namespace CO2Monitor.Controller.Controllers
         }
 
         [HttpPut("fanAddress")]
-        public IActionResult SetFanAddress([FromQuery, Required] string address)
+        public IActionResult SetFanAddress([FromQuery, Required] string value)
         {
             try
             {
-                _controllerService.CO2FanDriverAddress = address;
-                return Ok(address);
+                _controllerService.CO2FanDriverAddress = value;
+                return Ok(value);
             }
             catch (CO2MonitorArgumentException ex)
             {
@@ -70,13 +70,13 @@ namespace CO2Monitor.Controller.Controllers
             return _controllerService.PollingRate;
         }
 
-        [HttpPut("pollingRate/{rate}")]
-        public IActionResult SetPollingRate([FromRoute, Required] float rate)
+        [HttpPut("pollingRate")]
+        public IActionResult SetPollingRate([FromQuery, Required] float value)
         {
             try
             {
-                _controllerService.PollingRate = rate;
-                return Ok(rate);
+                _controllerService.PollingRate = value;
+                return Ok(value);
             }
             catch (CO2MonitorArgumentException ex)
             {
@@ -91,12 +91,19 @@ namespace CO2Monitor.Controller.Controllers
             return _controllerService.GetLevel(Enum.Parse<CO2Levels>(level));
         }
 
-        [HttpPut("level/{level}/{value}")]
-        public IActionResult SetLevel([Required, RegularExpression("^(normal|mid|high)$")] string level, [Required] int value)
+        [HttpPut("level/{level}")]
+        public IActionResult SetLevel([Required, RegularExpression("^(normal|mid|high)$")] string level, [FromQuery, Required] int value)
         {
-            level = char.ToUpper(level[0]) + level.Substring(1);
-            _controllerService.SetLevel(Enum.Parse<CO2Levels>(level), value);
-            return Ok();
+            try
+            {
+                level = char.ToUpper(level[0]) + level.Substring(1);
+                _controllerService.SetLevel(Enum.Parse<CO2Levels>(level), value);
+                return Ok(level);
+            }
+            catch (CO2MonitorArgumentException ex)
+            {
+                return UnprocessableEntity(ex.Message);
+            };
         }
 
 

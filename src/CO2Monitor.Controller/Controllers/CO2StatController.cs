@@ -21,17 +21,11 @@ namespace CO2Monitor.Controller.Controllers
             _repository = repository;
         }
 
-        [HttpGet()]
-        public IEnumerable<CO2Measurement> GetAll()
-        {
-            return _repository.List();
-        }
-
-        [HttpGet("from/{from}/to/{to}")]
-        public IEnumerable<CO2Measurement> GetInRange([FromRoute, Required] DateTime from, [FromRoute, Required] DateTime to)
+       
+        [HttpGet("")]
+        public IEnumerable<CO2Measurement> Get([FromQuery, Required] DateTime from, [FromQuery, Required] DateTime to)
         {
             return _repository.List(from, to);
         }
-
     }
 }

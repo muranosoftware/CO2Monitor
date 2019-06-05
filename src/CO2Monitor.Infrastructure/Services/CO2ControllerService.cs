@@ -57,12 +57,37 @@ namespace CO2Monitor.Infrastructure.Services
 
         private void SwitchFanOnCO2LevelChanged(ICO2ControllerService sender, CO2Levels level, CO2Measurement value)
         {
-            var command = level == CO2Levels.High ? FanCommand.TurnOn : FanCommand.TurnOff;
+            var command = level == CO2Levels.High ? FanCommand.On : FanCommand.Off;
 
-            if (_remoteCO2FanController.GetCommand(CO2FanDriverAddress) != command)
+            var led = FanLed.Green;
+            if (level == CO2Levels.Mid)
+                led = FanLed.Yellow;
+            if (level == CO2Levels.High)
+                led = FanLed.Red;
+
+
+
+            //if (_remoteCO2FanController.GetCommand(CO2FanDriverAddress) != command)
+            //{
+            try
             {
                 _logger.LogInformation($"Fan [{CO2FanDriverAddress}] set command {command}");
                 _remoteCO2FanController.SetCommamd(CO2FanDriverAddress, command);
+            }
+            catch (CO2MonitorRemoteServiceException)
+            {
+
+            }
+            //}
+
+            try
+            {
+                _logger.LogInformation($"Led [{CO2FanDriverAddress}] set {led}");
+                _remoteCO2FanController.SetLed(CO2FanDriverAddress, led);
+            }
+            catch (CO2MonitorRemoteServiceException)
+            {
+
             }
         }
 
@@ -129,6 +154,8 @@ namespace CO2Monitor.Infrastructure.Services
 
                 Settings.CO2DriverAddress = value;
                 Settings.Save(SettingsFilePath);
+
+                MakeMeasurement(null);
             }
         }
 
@@ -146,6 +173,8 @@ namespace CO2Monitor.Infrastructure.Services
 
                 Settings.CO2FanDriverAddress = value;
                 Settings.Save(SettingsFilePath);
+
+                MakeMeasurement(null);
             }
         }
 
@@ -163,12 +192,14 @@ namespace CO2Monitor.Infrastructure.Services
             if (level == CO2Levels.Low && Settings.Levels[CO2Levels.Low + 1] <= value)
                 throw new CO2MonitorArgumentException("value", $"Normal level must be less {CO2Levels.Low + 1} level");
 
-            if (level == CO2Levels.High && Settings.Levels[CO2Levels.Low - 1] >= value)
+            if (level == CO2Levels.High && Settings.Levels[CO2Levels.High - 1] >= value)
                 throw new CO2MonitorArgumentException("value", $"High level must be greater {CO2Levels.High - 1} level");
 
             if (CO2Levels.Low < level && level < CO2Levels.High &&
                 !(Settings.Levels[level - 1] < value && value < Settings.Levels[level + 1]))
                 throw new CO2MonitorArgumentException("value", $"{level} level must be between {level - 1} and {level + 1} levels.");
+
+            _logger.LogInformation($"New {level} level value: " + value);
 
             Settings.Levels[level] = value;
             Settings.Save(SettingsFilePath);
@@ -229,6 +260,10 @@ namespace CO2Monitor.Infrastructure.Services
                     OnCO2LevelChanged(curLevel, _latestMeasurement);
                 }
 
+            }
+            catch (OperationCanceledException ex)
+            {
+                _logger.LogError(ex, $"Cancelation operation!");
             }
             catch (CO2MonitorRemoteServiceException ex)
             {

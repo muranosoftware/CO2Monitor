@@ -15,7 +15,7 @@ namespace CO2Monitor.Infrastructure.RemoteServices
             {
                 CO2 = 600 + rand.Next(800),
                 Temperature = 10f + 20f * (float)rand.NextDouble(),
-                Time = DateTime.UtcNow
+                Time = DateTime.Now
             });
         }
     }

@@ -1,21 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace CO2Monitor.Core.Interfaces
 {
     public enum FanCommand
     {
-        TurnOff,
-        TurnOn
+        Off,
+        On
+    }
+
+    public enum FanLed
+    {
+        Green,
+        Yellow,
+        Red,
     }
 
     public interface IRemoteCO2FanController
     {
-        void SetCommamd(string address, FanCommand command);
+        Task SetCommamd(string address, FanCommand command);
 
-        FanCommand GetState(string address);
+        Task SetLed(string address, FanLed led);
 
-        FanCommand GetCommand(string address);
+        //FanCommand GetState(string address);
+
+        //Task<FanCommand> GetCommand(string address);
     }
 }

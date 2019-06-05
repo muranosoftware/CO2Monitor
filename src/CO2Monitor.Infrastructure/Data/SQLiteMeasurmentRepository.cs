@@ -43,8 +43,8 @@ namespace CO2Monitor.Infrastructure.Data
         {
             using (var conn = new SQLiteConnection(ConnectionString))
             {
-                var sql = "SELECT * FROM Measurments";
-                return conn.Query<CO2Measurement>(sql).ToList();
+                var sql = "SELECT * FROM Measurments ORDER BY time";
+                return conn.Query<CO2Measurement>(sql).OrderBy(x => x.Time).ToList();
             }
         }
 
@@ -52,8 +52,8 @@ namespace CO2Monitor.Infrastructure.Data
         {
             using (var conn = new SQLiteConnection(ConnectionString))
             {
-                var sql = "SELECT * FROM Measurments WHERE @from <= time AND time <= @to";
-                return conn.Query<CO2Measurement>(sql, new { from, to }).ToList();
+                var sql = "SELECT * FROM Measurments WHERE @from <= time AND time <= @to ORDER BY time";
+                return conn.Query<CO2Measurement>(sql, new { from, to }).OrderBy( x=> x.Time).ToList();
             }
         }
 
