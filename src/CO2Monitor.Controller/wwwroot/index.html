@@ -1,196 +1,855 @@
 ﻿<!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-    <meta charset="utf-8" />
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <meta http-equiv="refresh" content="60">
     <title>CO2 Monitor</title>
-    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js"></script>
-    <style>
-        form {
-            border: 1px solid black;
-            padding: 10px;
-        }
-    </style>
+
+    <!-- Custom fonts for this template-->
+    <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+
+    <!-- Page level plugin CSS-->
+    <link href="vendor/datatables/dataTables.bootstrap4.css" rel="stylesheet">
+
+    <!-- Custom styles for this template-->
+    <link href="css/sb-admin.css" rel="stylesheet">
+    <script src="js/axios.min.js"></script>
 </head>
-<body>
-    <h1>CO2 Monitor</h1>
 
-    <form>
-        <h4>CO2 Sensor </h4>
-        <table>
-            <tr>
-                <td>Address:</td>
-                <td>
-                    <input type="text" id="driverInput" />
-                </td>
-                <td>
-                    <input type="button" id="driverButton" value="Set" />
-                </td>
-            </tr>
-            <tr>
-                <td>Polling Rate (s):</td>
-                <td>
-                    <input type="text" id="rateInput" />
-                </td>
-                <td>
-                    <input type="button" id="rateButton" value="Set" />
-                </td>
-            </tr>
-            <tr>
-                <td>Normal CO2 Level:</td>
-                <td>
-                    <input type="text" id="normalInput" />
-                </td>
-                <td>
-                    <input type="button" id="normalButton" value="Set" />
-                </td>
-            </tr>
-            <tr>
-                <td>Mid CO2 Level:</td>
-                <td>
-                    <input type="text" id="midInput" />
-                </td>
-                <td>
-                    <input type="button" id="midButton" value="Set" />
-                </td>
-            </tr>
-            <tr>
-                <td>High CO2 Level:</td>
-                <td>
-                    <input type="text" id="highInput" />
-                </td>
-                <td>
-                    <input type="button" id="highButton" value="Set" />
-                </td>
-            </tr>
-        </table>
-    </form>
-    <form>
-        <h4>Fan (Led)</h4>
-        <table>
-            <tr>
-                <td>Address:</td>
-                <td>
-                    <input type="text" id="fanInput" />
-                </td>
-                <td>
-                    <input type="button" id="fanButton" value="Set" />
-                </td>
-            </tr>
-        </table>
-    </form>
+<body id="page-top">
 
-    <canvas id="plot"></canvas>
+    <nav class="navbar navbar-expand navbar-dark bg-dark static-top">
 
+        <a class="navbar-brand mr-1" href="index.html">CO2 Monitor</a>
+
+        <button class="btn btn-link btn-sm text-white order-1 order-sm-0" id="sidebarToggle" href="#">
+            <i class="fas fa-bars"></i>
+        </button>
+
+        <!-- Navbar -->
+        <ul class="navbar-nav ml-auto ml-md-0">
+            <li class="nav-item dropdown no-arrow mx-1">
+                <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="fas fa-bell fa-fw"></i>
+                    <span class="badge badge-danger">9+</span>
+                </a>
+                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="alertsDropdown">
+                    <a class="dropdown-item" href="#">Action</a>
+                    <a class="dropdown-item" href="#">Another action</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="#">Something else here</a>
+                </div>
+            </li>
+            <li class="nav-item dropdown no-arrow mx-1">
+                <a class="nav-link dropdown-toggle" href="#" id="messagesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="fas fa-envelope fa-fw"></i>
+                    <span class="badge badge-danger">7</span>
+                </a>
+                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="messagesDropdown">
+                    <a class="dropdown-item" href="#">Action</a>
+                    <a class="dropdown-item" href="#">Another action</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="#">Something else here</a>
+                </div>
+            </li>
+            <li class="nav-item dropdown no-arrow">
+                <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="fas fa-user-circle fa-fw"></i>
+                </a>
+                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
+                    <a class="dropdown-item" href="#">Settings</a>
+                    <a class="dropdown-item" href="#">Activity Log</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">Logout</a>
+                </div>
+            </li>
+        </ul>
+
+
+    </nav>
+
+    <div id="wrapper">
+
+        <!-- Sidebar -->
+        <ul class="sidebar navbar-nav">
+            <li class="nav-item active">
+                <a class="nav-link" href="index.html">
+                    <i class="fas fa-fw fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="pagesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="fas fa-fw fa-folder"></i>
+                    <span>Pages</span>
+                </a>
+                <div class="dropdown-menu" aria-labelledby="pagesDropdown">
+                    <h6 class="dropdown-header">Login Screens:</h6>
+                    <a class="dropdown-item" href="login.html">Login</a>
+                    <a class="dropdown-item" href="register.html">Register</a>
+                    <a class="dropdown-item" href="forgot-password.html">Forgot Password</a>
+                    <div class="dropdown-divider"></div>
+                    <h6 class="dropdown-header">Other Pages:</h6>
+                    <a class="dropdown-item" href="404.html">404 Page</a>
+                    <a class="dropdown-item" href="blank.html">Blank Page</a>
+                </div>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="charts.html">
+                    <i class="fas fa-fw fa-chart-area"></i>
+                    <span>Charts</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="tables.html">
+                    <i class="fas fa-fw fa-table"></i>
+                    <span>Tables</span>
+                </a>
+            </li>
+        </ul>
+
+        <div id="content-wrapper">
+
+            <div class="container-fluid">
+                <!-- Breadcrumbs-->
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a href="#">Dashboard</a>
+                    </li>
+                    <li class="breadcrumb-item active">Overview</li>
+                </ol>
+
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <i class="fas fa-table"></i>
+                        Remote Sensors
+                        <span>
+                            <a class="btn btn-primary" href="#" data-toggle="modal" data-target="#newRemoteModal">New</a>
+                        </span>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered" id="remoteTable" width="100%" cellspacing="0">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Id</th>
+                                        <th>Status</th>
+                                        <th>State</th>
+                                        <th>Address</th>
+                                    </tr>
+                                </thead>
+                                <tfoot>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Id</th>
+                                        <th>Status</th>
+                                        <th>State</th>
+                                        <th>Address</th>
+                                    </tr>
+                                </tfoot>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <i class="fas fa-chart-area"></i>
+                        Timers
+                        <span>
+                            <a class="btn btn-primary" href="#" data-toggle="modal" data-target="#newTimerModal">New</a>
+                        </span>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered" id="timerTable" width="100%" cellspacing="0">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Id</th>
+                                        <th>Time</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tfoot>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Id</th>
+                                        <th>Time</th>
+                                        <th></th>
+                                    </tr>
+                                </tfoot>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <i class="fas fa-table"></i>
+                        Rules
+                        <span>
+                            <a class="btn btn-primary" href="#" data-toggle="modal" data-target="#newRuleModal">New</a>
+                        </span>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered" id="ruleTable" width="100%" cellspacing="0">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Id</th>
+                                        <th>Descr</th>
+                                    </tr>
+                                </thead>
+                                <tfoot>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Id</th>
+                                        <th>Descr</th>
+                                    </tr>
+                                </tfoot>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- Area Chart Example-->
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <i class="fas fa-chart-area"></i>
+                        Area Chart Example
+                    </div>
+                    <div class="card-body">
+                        <canvas id="myAreaChart" width="100%" height="30"></canvas>
+                    </div>
+                </div>
+
+
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <i class="fas fa-table"></i>
+                        System Log
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered" id="logTable" width="100%" cellspacing="0">
+                                <thead>
+                                    <tr>
+                                        <th>Time</th>
+                                        <th>Level</th>
+                                        <th>Message</th>
+                                    </tr>
+                                </thead>
+                                <tfoot>
+                                    <tr>
+                                        <th>Time</th>
+                                        <th>Level</th>
+                                        <th>Message</th>
+                                    </tr>
+                                </tfoot>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /.container-fluid -->
+            <!-- Sticky Footer -->
+            <footer class="sticky-footer">
+                <div class="container my-auto">
+                    <div class="copyright text-center my-auto">
+                        <span>© 2019 Murano Software</span>
+                    </div>
+                </div>
+            </footer>
+
+        </div>
+        <!-- /.content-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+    <!-- Scroll to Top Button-->
+    <a class="scroll-to-top rounded" href="#page-top">
+        <i class="fas fa-angle-up"></i>
+    </a>
+
+
+    <!--New Remote Modal-->
+    <div class="modal fade" id="newRemoteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">New Remote Sensor</h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="container">
+                    <div class="card-body">
+                        <form id="newRemoteForm">
+                            <div class="form-group">
+                                <div class="form-label-group">
+                                    <input type="text" name="name" id="inputRemoteName" class="form-control" placeholder="Name" required="required" autofocus="autofocus">
+                                    <label for="inputRemoteName">Name</label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="form-label-group">
+                                    <input type="text" name="address" id="inputRemoteAddress" class="form-control" placeholder="Address" required="required">
+                                    <label for="inputRemoteAddress">Address</label>
+                                </div>
+                            </div>
+                            <div class="modal-header">
+                                <h5 class="modal-title">Fields</h5>
+                                <span>
+                                    <a id="addFieldNewRemoteButton" class="btn btn-primary">Add</a>
+                                </span>
+                                <!--<span>
+                                        <a id="delActionNewRemoteButton" class="btn btn-primary">Del</a>
+                                    </span> -->
+                            </div>
+                            <div>
+                                <table class="table table-bordered" id="newRemoteFieldTable" width="100%" cellspacing="0">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Argument Type</th>
+                                            <th>Argument Enum Values</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="newRemoteFieldTableBody"></tbody>
+                                </table>
+                            </div>
+                            <div class="modal-header">
+                                <h5 class="modal-title">Actions</h5>
+                                <span>
+                                    <a id="addActionNewRemoteButton" class="btn btn-primary">Add</a>
+                                </span>
+                                <!--<span>
+                                        <a id="delActionNewRemoteButton" class="btn btn-primary">Del</a>
+                                    </span> -->
+                            </div>
+                            <div>
+                                <table class="table table-bordered" id="newRemoteActionTable" width="100%" cellspacing="0">
+                                    <thead>
+                                        <tr>
+                                            <th>Path</th>
+                                            <th>Argument Type</th>
+                                            <th>Argument Enum Values</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="newRemoteActionTableBody"></tbody>
+                                </table>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                    <a id="createNewRemoteButton" class="btn btn-primary">Create</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!--New Timer Modal-->
+    <div class="modal fade" id="newTimerModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">New Timer</h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="container">
+                    <div class="card-body">
+                        <form id="newTimerForm">
+                            <div class="form-group">
+                                <div class="form-label-group">
+                                    <input type="text" name="name" id="inputTimerName" class="form-control" placeholder="Name" required="required" autofocus="autofocus">
+                                    <label for="inputTimerName">Name</label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="form-label-group">
+                                    <input type="text" name="time" id="inputTimerTime" class="form-control" placeholder="Time" required="required">
+                                    <label for="inputTimerTime">Alarm time (hh:mm:ss)</label>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                    <a id="createNewTimerButton" class="btn btn-primary">Create</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="newRuleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">New Rule</h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="container">
+                    <div class="card-body">
+                        <form id="newRuleForm">
+                            <div class="form-group">
+                                <label for="selectSourceDeviceId">Event Source Device</label>
+                                <select name="SourceDeviceId" id="selectSourceDeviceId" class="form-control"></select>
+                            </div>
+                            <div class="form-group">
+                                <label for="selectEvent">Event</label>
+                                <select name="Event" id="selectEvent" class="form-control"></select>
+                            </div>
+                            <div class="form-group">
+                                <label for="selectTargetDeviceId">Target Device</label>
+                                <select name="targetDeviceId" id="selectTargetDeviceId" class="form-control"></select>
+                            </div>
+                            <div class="form-group">
+                                <label for="selectAction">Action</label>
+                                <select name="Action" id="selectAction" class="form-control"></select>
+                            </div>
+                            <div class="form-group">
+                                <label for="selectAction">Value</label>
+                                <input name="Value" id="inputValue" class="form-control" input/>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                    <a id="createNewRuleButton" class="btn btn-primary">Create</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- Bootstrap core JavaScript-->
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Core plugin JavaScript-->
+    <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+
+    <!-- Page level plugin JavaScript-->
+    <script src="vendor/chart.js/Chart.min.js"></script>
+    <script src="vendor/datatables/jquery.dataTables.js"></script>
+    <script src="vendor/datatables/dataTables.bootstrap4.js"></script>
+
+    <!-- Custom scripts for all pages-->
+    <script src="js/sb-admin.min.js"></script>
+
+    <!-- Demo scripts for this page-->
+    <script src="js/demo/datatables-demo.js"></script>
+    <script src="js/demo/chart-area-demo.js"></script>
     <script>
-        var api = {
-            "driver": "/api/CO2Monitor/sensorAddress",
-            "rate": "/api/CO2Monitor/pollingRate",
-            "normal": "api/CO2Monitor/level/normal",
-            "mid": "api/CO2Monitor/level/mid",
-            "high": "api/CO2Monitor/level/high",
-            "fan" : "api/CO2Monitor/fanAddress"
-        };
-
-        for (let key in api) {
-            let url = api[key];
-            let = inputId = key + "Input";
-            let input = document.getElementById(inputId);
-            axios.get(url)
-                .then(function (response) {
-                    input.value = response.data;
-                })
-                .catch(function (error) {
-                    console.error(error);
-                });
-            let butId = key + "Button";
-            but = document.getElementById(butId);
-            but.onclick = function () {
-                axios.put(url, null, {
-                    params: { value: input.value }
-                })
-                    .then(function (response) {
-                    })
-                    .catch(function (error) {
-                        window.alert(error.response.data);
-
-                        axios.get(url)
-                            .then(function (response) {
-                                input.value = response.data;
-                            })
-                            .catch(function (error) {
-                                console.error(error);
-                            });
-                    });
-            };
+        function isEmptyOrSpaces(str) {
+            return str === null || str.match(/^ *$/) !== null;
         }
-        /*------------------ plot ----------------------*/
 
-        function create_plot(data) {
-
-            var ctx = document.getElementById('plot').getContext('2d');
-            var chart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    datasets: [{
-                        label: 'CO2 ',
-                        //backgroundColor: 'rgb(255, 99, 132)',
-                        borderColor: 'rgb(255, 99, 132)',
-                        data: data
-                    }]
-                },
-                options: {
-                    title: {
-                        display: false,
-                        text: 'Chart'
-                    },
-                    scales: {
-                        xAxes: [{
-                            type: 'time',
-                            distribution: 'series',
-                            ticks: {
-                                source: 'data',
-                                autoSkip: true
-                            }
-                        }],
-                        yAxes: [{
-                            position: 'left',
-                            gridLines: {
-                                zeroLineColor: "rgba(0,255,0,1)"
-                            },
-                            scaleLabel: {
-                                display: true,
-                                labelString: 'y axis'
-                            }
-                        }]
-                    }
-                }
+        function serializedArrToObj(arr) {
+            var obj = {};
+            $.map(arr, function (n, i) {
+                obj[n['name']] = n['value'];
             });
+            return obj;
         }
 
-        today = new Date();
-        today.setHours(0, 0, 0, 0);
+        function createTableRow(data, columns) {
+            tr = document.createElement('tr');
+            for (let i in columns) {
+                c = columns[i];
+                td = document.createElement('td');
+                td.innerHTML = data[c];
+                tr.appendChild(td);
+            }
+            return tr;
+        }
 
-        axios.get("/api/CO2Stat", {
-            params: { from: today, to: new Date() }
-        })
+        function checkTimeFormat(time) {
+            reg = /^\d\d[:]\d\d[:]\d\d$/i;
+            if (!reg.test(time)) {
+                window.alert("Invalid time format [" + time + "] Must be hh:mm:ss");
+                return false;
+            }
+
+            reg = /\d\d/g;
+            hms = [...time.match(reg)];
+            if (hms[0] > "23") {
+                window.alert("Hours must be less 24");
+                return false;
+            }
+
+            if (hms[1] > "59") {
+                window.alert("Minutes must be less 60");
+                return false;
+            }
+
+            if (hms[2] > "59") {
+                window.alert("Seconds must be less 60");
+                return false;
+            }
+
+            return true;
+        }
+
+        function fillTable(tableId, data, columns) {
+
+            tbody = document.createElement('tbody');
+            for (let i in data) {
+                tbody.appendChild(createTableRow(data[i], columns));
+            }
+            table = document.getElementById(tableId);
+            table.replaceChild(tbody, table.getElementsByTagName("tbody")[0]);
+        }
+
+
+        function fillRemoteTable() {
+            axios.get("/api/Devices/remote", {
+                params: null
+            })
             .then(function (response) {
-
-                data = response.data.map(m => {
-                    var p = {};
-                    p.x = m.time;
-                    p.y = m.cO2;
-                    return p;
-                });
-                create_plot(data);
+                fillTable("remoteTable", response.data, ["name", "id", "status", "state", "address"]);
             })
             .catch(function (error) {
-                window.alert(error.response.data);
+                window.alert(error.message);
+            });
+        }
 
+        function fillTimerTable() {
+            axios.get("/api/Devices/timers", {
+                params: null
+            })
+            .then(function (response) {
+                timers = response.data;
+                for (let i in timers) {
+                    t = timers[i];
+                    t.edit = `<button class="btn btn-primary">Edit</button>`; 
+                }
+                
+                fillTable("timerTable", timers, ["name", "id", "alarmTime", "edit"]);
+            })
+            .catch(function (error) {
+                window.alert(error.message);
+            });
+        }
+
+        function fillRuleTable() {
+            axios.get("/api/Devices/Rule", {
+                params: null
+            })
+            .then(function (response) {
+                rules = response.data;
+                for (let i in rules) {
+                    r = rules[i];
+                    r.desc =  `Src: { Id = ${r.sourceDeviceId}, Event = "${r.event.name}}", Target: { Id = ${r.targetDeviceId}, Action="${r.action.path}", Argument="${r.actionArgument}"}`; 
+                }
+                fillTable("ruleTable", response.data, ["name", "id", "desc"]);
+            })
+            .catch(function (error) {
+                window.alert(error.message);
+            });
+        }
+
+        
+        function fillLogTable() {
+            axios.get("/api/Log", {
+                params: null
+            })
+            .then(function (response) {
+                records = response.data;    
+                for (let i in records) {
+                    r = records[i];
+                    t = new Date(r.time);
+                    r.formatTime = t.toISOString().split('.')[0].replace('T', ' ');
+                }
+                fillTable("logTable", records, ["formatTime", "logLevel" ,"message"]);
+            })
+            .catch(function (error) {
+                window.alert(error.message);
+            });
+        }
+
+
+        function createTimer(name, time) {
+            axios.post("/api/Devices/timers", null, {
+                params: {
+                    type: "ScheduleTimer",
+                    name: name,
+                    time: time 
+                }
+            })
+            .then(function (response) {
+                $('#newTimerModal').modal('hide');
+                fillTimerTable();
+            })
+            .catch(function (error) {
+                window.alert(error.message);
+            });
+        }
+
+        function createRemote(name, address, fields, actions) {
+            axios.post("/api/Devices/remote", {
+                actions: actions,
+                fields: fields,
+                events: []
+            }, {
+                    params: {
+                        name: name,
+                        address: address
+                    }
+                })
+                .then(function (response) {
+                    $('#newRemoteModal').modal('hide');
+                    fillRemoteTable();
+                })
+                .catch(function (error) {
+                    window.alert(error.message);
+                });
+        }
+
+        newTimerBtn = document.getElementById("createNewTimerButton");
+        newTimerBtn.onclick = function () {
+            mdl = document.getElementById("newTimerModal");
+            form = mdl.getElementsByTagName("form")[0];
+            timerData = serializedArrToObj($("#newTimerForm").serializeArray());
+            if (!checkTimeFormat(timerData.time))
+                return;
+
+            if (isEmptyOrSpaces(timerData.name)) {
+                window.alert("Timer Name must be not empty!");
+                return;
+            }
+
+            createTimer(timerData.name, timerData.time);
+        };
+
+
+        addActionBtn = document.getElementById("addActionNewRemoteButton");
+        addActionBtn.onclick = function () {
+            table = document.getElementById("newRemoteActionTable");
+            tbody = table.getElementsByTagName("tbody")[0];
+
+            tr = document.createElement("tr");
+
+            td = document.createElement("td");
+            input = document.createElement("input");
+            input.setAttribute("class", "form-control");
+            td.appendChild(input);
+            tr.appendChild(td);
+
+
+            td = document.createElement("td");
+            select = document.createElement("select");
+            select.setAttribute("class", "form-control");
+            select.innerHTML = "<option>Void</option><option>Float</option><option>String</option><option>Enum</option>";
+            td.appendChild(select);
+            tr.appendChild(td);
+
+            td = document.createElement("td");
+            input = document.createElement("input");
+            input.setAttribute("class", "form-control");
+            td.appendChild(input);
+            tr.appendChild(td);
+
+            tbody.appendChild(tr);
+        };
+
+        addFieldBtn = document.getElementById("addFieldNewRemoteButton");
+        addFieldBtn.onclick = function () {
+            table = document.getElementById("newRemoteFieldTable");
+            tbody = table.getElementsByTagName("tbody")[0];
+
+            tr = document.createElement("tr");
+
+            td = document.createElement("td");
+            input = document.createElement("input");
+            input.setAttribute("class", "form-control");
+            td.appendChild(input);
+            tr.appendChild(td);
+
+
+            td = document.createElement("td");
+            select = document.createElement("select");
+            select.setAttribute("class", "form-control");
+            select.innerHTML = "<option>Float</option><option>String</option><option>Enum</option>";
+            td.appendChild(select);
+            tr.appendChild(td);
+
+            td = document.createElement("td");
+            input = document.createElement("input");
+            input.setAttribute("class", "form-control");
+            td.appendChild(input);
+            tr.appendChild(td);
+
+            tbody.appendChild(tr);
+        };
+
+
+        createRemoteBtn = document.getElementById("createNewRemoteButton");
+        createRemoteBtn.onclick = function () {
+            info = serializedArrToObj($("#newRemoteForm").serializeArray());
+            console.debug(info);
+            actions = [];
+            fields = [];
+
+            $("#newRemoteActionTableBody").find("tr").each(function () {
+                tds = table.getElementsByTagName("td");
+
+                type = tds[1].getElementsByTagName("select")[0].value;
+                vals = null;
+                if (type == "Enum") {
+                    vals = tds[2].getElementsByTagName("input")[0].value.split(",").map(x => x.trim());
+                }
+
+                actions.push({
+                    path: tds[0].getElementsByTagName("input")[0].value,
+                    argument: {
+                        type: type,
+                        enumValues: vals
+                    }
+                });
             });
 
+            $("#newRemoteFieldTableBody").find("tr").each(function () {
+                tds = table.getElementsByTagName("td");
 
+                type = tds[1].getElementsByTagName("select")[0].value;
+                vals = null;
+                if (type == "Enum") {
+                    vals = tds[2].getElementsByTagName("input")[0].value.split(",").map(x => x.trim());
+                }
+
+                fields.push({
+                    name: tds[0].getElementsByTagName("input")[0].value,
+                    argument: {
+                        type: type,
+                        enumValues: vals
+                    }
+                });
+            });
+
+            createRemote(info.name, info.address, fields, actions);
+            fillRemoteTable();
+        };
+
+
+        $("#newRuleModal").on("shown.bs.modal", function () {
+            axios.get("/api/Devices", {
+                params: null
+            })
+            .then(function (response) {
+                devices = response.data;
+                    $("#selectSourceDeviceId").empty();
+                    $("#selectTargetDeviceId").empty();
+                    
+                selectSourceDeviceId = document.getElementById("selectSourceDeviceId");
+                selectEvent = document.getElementById("selectEvent");
+
+                selectSourceDeviceId.onchange = function () {
+                    $("#selectEvent").empty();
+                    events = devices.find(d => d.id == selectSourceDeviceId.value).info.events;
+
+                    for (let i in events) {
+                        e = events[i];
+                        opt = document.createElement("option");
+                        opt.innerHTML = e.name;
+                        opt.value = JSON.stringify(e);
+                        selectEvent.appendChild(opt);
+                    }
+                };
+
+
+                selectTargetDeviceId = document.getElementById("selectTargetDeviceId");
+                selectAction = document.getElementById("selectAction");
+
+
+                selectTargetDeviceId.onchange = function () {
+                    $("#selectAction").empty();
+                    actions = devices.find(d => d.id == selectTargetDeviceId.value).info.actions;
+
+                    for (let i in actions) {
+                        a = actions[i];
+                        opt = document.createElement("option");
+                        opt.innerHTML = a.path;
+                        opt.value = JSON.stringify(a);
+                        selectAction.appendChild(opt);
+                    }
+                };
+
+
+                for (let i in devices) {
+                    let d = devices[i];
+                    console.log(i);
+                    opt = document.createElement("option");
+                    opt.innerHTML = d.name + ":" + d.id;
+                    opt.value = d.id;
+                    selectSourceDeviceId.appendChild(opt);
+
+                    opt = document.createElement("option");
+                    opt.innerHTML = d.name + ":" + d.id;
+                    opt.value = d.id;
+                    selectTargetDeviceId.appendChild(opt);
+                }
+
+                createNewRuleButton.onclick = function () {
+                    var rule = {
+                        Name: "Rule",
+                        SourceDeviceId: selectSourceDeviceId.value,
+                        Event: JSON.parse(selectEvent.value),
+                        TargetDeviceId: selectTargetDeviceId.value,
+                        Action: JSON.parse(selectAction.value),
+                    };
+                    value = document.getElementById("inputValue").value;
+                        axios.post("/api/Devices/rule", rule, {
+                        params: {
+                            actionArgument: value,
+                        }
+                    })
+                    .then(function (response) {
+                        $("#newRuleModal").modal("hide");
+                        fillRuleTable();
+                    })
+                    .catch(function (error) {
+                        window.alert(error.message);
+                    });
+                };
+
+                selectSourceDeviceId.onchange();
+                selectTargetDeviceId.onchange();
+            
+            })
+            .catch(function (error) {
+                window.alert(error.message);
+            });
+        });
+
+        fillTimerTable();
+        fillRemoteTable();
+        fillRuleTable();
+        fillLogTable();
     </script>
 </body>
 

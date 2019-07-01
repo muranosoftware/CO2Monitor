@@ -19,10 +19,13 @@ using Swashbuckle.AspNetCore.Swagger;
 
 
 using CO2Monitor.Core.Interfaces;
-using CO2Monitor.Infrastructure.RemoteServices;
+using CO2Monitor.Infrastructure.Devices;
 using CO2Monitor.Infrastructure.Services;
 using CO2Monitor.Infrastructure.Data;
+using CO2Monitor.Infrastructure.Helpers;
+using CO2Monitor.Infrastructure.Logging;
 using CO2Monitor.Controller.Helpers;
+
 
 namespace CO2Monitor.Controller
 {
@@ -41,18 +44,32 @@ namespace CO2Monitor.Controller
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddMvc()
+                    .AddJsonOptions(opt =>
+                    {
+                    })
+                    .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
-            services.AddScoped<IMeasurementRepository, SQLiteMeasurmentRepository>();
+            /////////////////////////////////
 
-            services.AddTransient<IRemoteCO2Driver, RemoteCO2Driver>();
+            services.AddScoped<ILogViewer, DbLogViewer>();
 
-            services.AddTransient<IRemoteCO2FanController, RemoteCO2FanController>();
+            services.AddTransient<IDeviceFactory, DeviceFactory>();
 
-            services.AddSingleton<ICO2ControllerService, CO2ControllerService>();
+            services.AddTransient<IDeviceRepository, FileDeviceRepository>();
 
-            services.AddHostedService<BackgroundServiceStarter<ICO2ControllerService>>();
+            services.AddTransient<IActionRuleRepository, FileActionRuleRepository>();
 
+            services.AddSingleton<IDeviceManagerService, DeviceManagerService>();
+
+            services.AddHostedService<BackgroundServiceStarter<IDeviceManagerService>>();
+
+            services.AddDevice<ScheduleTimer>();
+
+            services.AddDevice<RemoteDevice>();
+
+            
+            ///////////////////////////////////
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new Info { Title = "CO2Monitor API", Version = "v1" });
@@ -64,9 +81,14 @@ namespace CO2Monitor.Controller
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, Microsoft.AspNetCore.Hosting.IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app,
+                              Microsoft.AspNetCore.Hosting.IHostingEnvironment env, 
+                              ILoggerFactory loggerFactory)
         {
             loggerFactory.AddFile("Logs/C02Monitor.Controller.log");
+            loggerFactory.AddDbContext(LogLevel.Information, Configuration.GetConnectionString(DbLogger.ConnectionStringConfigurationKey));
+
+            DbLogger.Configure(Configuration);
 
             SQLiteMeasurmentRepository.Configure(Configuration);
 
@@ -99,6 +121,7 @@ namespace CO2Monitor.Controller
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
             });
+
 
             app.UseMvc();
         }

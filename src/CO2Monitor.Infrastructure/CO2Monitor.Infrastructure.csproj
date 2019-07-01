@@ -5,6 +5,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="ServiceExtentions\**" />
+    <EmbeddedResource Remove="ServiceExtentions\**" />
+    <None Remove="ServiceExtentions\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\CO2Monitor.Core\CO2Monitor.Core.csproj" />
   </ItemGroup>
 
