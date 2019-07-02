@@ -59,7 +59,20 @@ namespace CO2Monitor.Infrastructure.Data
 
         public bool Delete(Predicate<ActionRule> predicate)
         {
-            throw new NotImplementedException();
+            var found = false;
+            var rules = _data.Rules.Values.Where((x) => predicate(x)).ToList();
+            if (rules.Count > 0)
+                found = true;
+
+            foreach (var d in rules)
+            {
+                //_logger.LogInformation(
+                _data.Rules.Remove(d.Id);
+            }
+
+            Save();
+
+            return found;
         }
 
         public IEnumerable<ActionRule> List(Predicate<ActionRule> predicate)

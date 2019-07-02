@@ -16,9 +16,7 @@ namespace CO2Monitor.Infrastructure.Logging
 
         public static ILoggerFactory AddDbContext(this ILoggerFactory factory, LogLevel minLevel, string connectionStr)
         {
-            return AddDbContext(
-                factory,
-                (_, logLevel) => logLevel >= minLevel, connectionStr);
+            return AddDbContext( factory, (_, logLevel) => logLevel >= minLevel, connectionStr);
         }
     }
 }

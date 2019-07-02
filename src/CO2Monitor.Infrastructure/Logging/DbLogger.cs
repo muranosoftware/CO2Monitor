@@ -8,6 +8,7 @@ using Dapper;
 
 using CO2Monitor.Core.Entities;
 using CO2Monitor.Core.Interfaces;
+using CO2Monitor.Infrastructure.Data;
 using Microsoft.Extensions.Configuration;
 using System.IO;
 
@@ -79,9 +80,9 @@ namespace CO2Monitor.Infrastructure.Logging
         public static void Configure(IConfiguration configuration)
         {
             var connectionString = configuration.GetConnectionString(ConnectionStringConfigurationKey);
-            var dbFile = ParseConnectionString(connectionString)["Data Source"];
+            var dbFile = SQLiteHelper.ParseConnectionString(connectionString)[SQLiteHelper.DataSourceKey];
 
-            if (dbFile == ":memory:" || !File.Exists(dbFile))
+            if (dbFile == SQLiteHelper.InMemorySource  || !File.Exists(dbFile))
             {
                 SQLiteConnection.CreateFile(dbFile);
 
@@ -97,18 +98,7 @@ namespace CO2Monitor.Infrastructure.Logging
             }
         }
 
-        private static Dictionary<string, string> ParseConnectionString(string connectionString)
-        {
-            var result = new Dictionary<string, string>();
-
-            foreach (var i in connectionString.Split(';', StringSplitOptions.RemoveEmptyEntries))
-            {
-                var kv = i.Split('=', StringSplitOptions.RemoveEmptyEntries).Select( x=> x.Trim()).ToList();
-                result.Add(kv[0], kv[1]);
-            }
-
-            return result;
-        }
+       
 
 
     }

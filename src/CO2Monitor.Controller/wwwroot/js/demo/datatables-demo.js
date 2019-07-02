@@ -1,4 +1,6 @@
 // Call the dataTables jQuery plugin
 $(document).ready(function() {
-  $('#remoteTable').DataTable();
+    //$('#remoteTable').DataTable();
+    //$('#timerTable').DataTable();
+
 });

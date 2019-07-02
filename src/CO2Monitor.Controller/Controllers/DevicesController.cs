@@ -39,7 +39,6 @@ namespace CO2Monitor.Controller.Controllers
             return _deviceManager.DeviceRepository.List<IScheduleTimer>();
         }
 
-
         [HttpPost("timers")]
         public IActionResult CreateTimer([FromQuery, Required] string name, [FromQuery, Required] string time)
         {
@@ -61,6 +60,53 @@ namespace CO2Monitor.Controller.Controllers
                 {
                     return BadRequest("Bad time format");
                 }
+            }
+        }
+
+        [HttpPatch("timers")]
+        public IActionResult PatchTimer([FromQuery, Required] int id, [FromQuery] string name, [FromQuery] string time)
+        {
+            try
+            {
+                var timer = _deviceManager.DeviceRepository.GetById<IScheduleTimer>(id);
+                if (timer == null)
+                    return NotFound(id);
+                if (!string.IsNullOrWhiteSpace(time))
+                {
+                    var timeSpan = TimeSpan.Parse(time);
+                    if (timeSpan.TotalHours > 24)
+                        throw new FormatException();
+                    timer.AlarmTime = timeSpan;
+                }
+
+                if (!string.IsNullOrWhiteSpace(name))
+                    timer.Name = name;
+
+                return Ok(timer);
+            }
+            catch (CO2MonitorException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (FormatException)
+            {
+                return BadRequest("Bad time format");
+            }
+        }
+
+        [HttpDelete()]
+        public IActionResult DeleteDevice([FromQuery, Required] int id)
+        {
+            try
+            {
+                if (_deviceManager.DeviceRepository.Delete<IDevice>(x => x.Id == id))
+                    return Ok();
+                else
+                    return NotFound();
+            }
+            catch (CO2MonitorException ex)
+            {
+                return BadRequest(ex.Message);
             }
         }
 
@@ -104,27 +150,5 @@ namespace CO2Monitor.Controller.Controllers
                 return BadRequest(ex.Message);
             }
         }
-
-        [HttpGet("rule")]
-        public IEnumerable<ActionRule> GetRules()
-        {
-            return _deviceManager.RuleRepository.List();
-        }
-
-        [HttpPost("rule")]
-        public IActionResult CreateActionRule([FromBody, Required] ActionRule rule, [FromQuery] string actionArgument)
-        {
-            try
-            {
-                rule.ActionArgument = actionArgument; //new Value(rule.Action.Argument, actionArgument);
-
-                return Ok(_deviceManager.RuleRepository.Add(rule));
-            }
-            catch (CO2MonitorException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
     }
 }

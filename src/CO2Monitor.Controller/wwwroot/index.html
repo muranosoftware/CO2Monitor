@@ -8,7 +8,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
     <meta name="author" content="">
-    <meta http-equiv="refresh" content="60">
     <title>CO2 Monitor</title>
 
     <!-- Custom fonts for this template-->
@@ -76,46 +75,7 @@
 
     <div id="wrapper">
 
-        <!-- Sidebar -->
-        <ul class="sidebar navbar-nav">
-            <li class="nav-item active">
-                <a class="nav-link" href="index.html">
-                    <i class="fas fa-fw fa-tachometer-alt"></i>
-                    <span>Dashboard</span>
-                </a>
-            </li>
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="pagesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <i class="fas fa-fw fa-folder"></i>
-                    <span>Pages</span>
-                </a>
-                <div class="dropdown-menu" aria-labelledby="pagesDropdown">
-                    <h6 class="dropdown-header">Login Screens:</h6>
-                    <a class="dropdown-item" href="login.html">Login</a>
-                    <a class="dropdown-item" href="register.html">Register</a>
-                    <a class="dropdown-item" href="forgot-password.html">Forgot Password</a>
-                    <div class="dropdown-divider"></div>
-                    <h6 class="dropdown-header">Other Pages:</h6>
-                    <a class="dropdown-item" href="404.html">404 Page</a>
-                    <a class="dropdown-item" href="blank.html">Blank Page</a>
-                </div>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="charts.html">
-                    <i class="fas fa-fw fa-chart-area"></i>
-                    <span>Charts</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="tables.html">
-                    <i class="fas fa-fw fa-table"></i>
-                    <span>Tables</span>
-                </a>
-            </li>
-        </ul>
-
         <div id="content-wrapper">
-
             <div class="container-fluid">
                 <!-- Breadcrumbs-->
                 <ol class="breadcrumb">
@@ -124,13 +84,12 @@
                     </li>
                     <li class="breadcrumb-item active">Overview</li>
                 </ol>
-
                 <div class="card mb-3">
                     <div class="card-header">
                         <i class="fas fa-table"></i>
                         Remote Sensors
                         <span>
-                            <a class="btn btn-primary" href="#" data-toggle="modal" data-target="#newRemoteModal">New</a>
+                            <a class="btn btn-info" href="#" data-toggle="modal" data-target="#newRemoteModal">New</a>
                         </span>
                     </div>
                     <div class="card-body">
@@ -138,22 +97,15 @@
                             <table class="table table-bordered" id="remoteTable" width="100%" cellspacing="0">
                                 <thead>
                                     <tr>
-                                        <th>Name</th>
-                                        <th>Id</th>
-                                        <th>Status</th>
-                                        <th>State</th>
-                                        <th>Address</th>
+                                        <th style="width: 15.0%">Name</th>
+                                        <th style="width: 5.0%">Id</th>
+                                        <th style="width: 15.00%">Status</th>
+                                        <th style="width: 40.00%">State</th>
+                                        <th style="width: 15.00%">Address</th>
+                                        <th style="width: 5.00%"></th>
+                                        <th style="width: 5.00%"></th>
                                     </tr>
                                 </thead>
-                                <tfoot>
-                                    <tr>
-                                        <th>Name</th>
-                                        <th>Id</th>
-                                        <th>Status</th>
-                                        <th>State</th>
-                                        <th>Address</th>
-                                    </tr>
-                                </tfoot>
                                 <tbody></tbody>
                             </table>
                         </div>
@@ -165,7 +117,7 @@
                         <i class="fas fa-chart-area"></i>
                         Timers
                         <span>
-                            <a class="btn btn-primary" href="#" data-toggle="modal" data-target="#newTimerModal">New</a>
+                            <a class="btn btn-info" href="#" data-toggle="modal" data-target="#newTimerModal">New</a>
                         </span>
                     </div>
                     <div class="card-body">
@@ -173,20 +125,13 @@
                             <table class="table table-bordered" id="timerTable" width="100%" cellspacing="0">
                                 <thead>
                                     <tr>
-                                        <th>Name</th>
-                                        <th>Id</th>
-                                        <th>Time</th>
-                                        <th></th>
+                                        <th style="width: 40.00%">Name</th>
+                                        <th style="width: 10.00%">Id</th>
+                                        <th style="width: 40.00%">Time</th>
+                                        <th style="width: 5.00%"></th>
+                                        <th style="width: 5.00%"></th>
                                     </tr>
                                 </thead>
-                                <tfoot>
-                                    <tr>
-                                        <th>Name</th>
-                                        <th>Id</th>
-                                        <th>Time</th>
-                                        <th></th>
-                                    </tr>
-                                </tfoot>
                                 <tbody></tbody>
                             </table>
                         </div>
@@ -198,7 +143,7 @@
                         <i class="fas fa-table"></i>
                         Rules
                         <span>
-                            <a class="btn btn-primary" href="#" data-toggle="modal" data-target="#newRuleModal">New</a>
+                            <a class="btn btn-info" href="#" data-toggle="modal" data-target="#newRuleModal">New</a>
                         </span>
                     </div>
                     <div class="card-body">
@@ -206,18 +151,13 @@
                             <table class="table table-bordered" id="ruleTable" width="100%" cellspacing="0">
                                 <thead>
                                     <tr>
-                                        <th>Name</th>
-                                        <th>Id</th>
-                                        <th>Descr</th>
+                                        <th style="width: 20.00%">Name</th>
+                                        <th style="width: 5.00%">Id</th>
+                                        <th style="width: 65.00%">Descr</th>
+                                        <th style="width: 5.00%"></th>
+                                        <th style="width: 5.00%"></th>
                                     </tr>
                                 </thead>
-                                <tfoot>
-                                    <tr>
-                                        <th>Name</th>
-                                        <th>Id</th>
-                                        <th>Descr</th>
-                                    </tr>
-                                </tfoot>
                                 <tbody></tbody>
                             </table>
                         </div>
@@ -252,13 +192,6 @@
                                         <th>Message</th>
                                     </tr>
                                 </thead>
-                                <tfoot>
-                                    <tr>
-                                        <th>Time</th>
-                                        <th>Level</th>
-                                        <th>Message</th>
-                                    </tr>
-                                </tfoot>
                                 <tbody></tbody>
                             </table>
                         </div>
@@ -288,7 +221,7 @@
 
     <!--New Remote Modal-->
     <div class="modal fade" id="newRemoteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
+        <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">New Remote Sensor</h5>
@@ -316,17 +249,15 @@
                                 <span>
                                     <a id="addFieldNewRemoteButton" class="btn btn-primary">Add</a>
                                 </span>
-                                <!--<span>
-                                        <a id="delActionNewRemoteButton" class="btn btn-primary">Del</a>
-                                    </span> -->
                             </div>
                             <div>
                                 <table class="table table-bordered" id="newRemoteFieldTable" width="100%" cellspacing="0">
                                     <thead>
                                         <tr>
-                                            <th>Name</th>
-                                            <th>Argument Type</th>
-                                            <th>Argument Enum Values</th>
+                                            <th style="width: 35.00%">Name </th>
+                                            <th style="width: 15.00%">Argument Type</th>
+                                            <th style="width: 38.00%">Argument Enum Values</th>
+                                            <th style="width: 12.00%"></th>
                                         </tr>
                                     </thead>
                                     <tbody id="newRemoteFieldTableBody"></tbody>
@@ -337,17 +268,15 @@
                                 <span>
                                     <a id="addActionNewRemoteButton" class="btn btn-primary">Add</a>
                                 </span>
-                                <!--<span>
-                                        <a id="delActionNewRemoteButton" class="btn btn-primary">Del</a>
-                                    </span> -->
                             </div>
                             <div>
                                 <table class="table table-bordered" id="newRemoteActionTable" width="100%" cellspacing="0">
                                     <thead>
                                         <tr>
-                                            <th>Path</th>
-                                            <th>Argument Type</th>
-                                            <th>Argument Enum Values</th>
+                                            <th style="width: 35.00%">Path</th>
+                                            <th style="width: 15.00%">Argument Type</th>
+                                            <th style="width: 38.00%">Argument Enum Values</th>
+                                            <th style="width: 12.00%"></th>
                                         </tr>
                                     </thead>
                                     <tbody id="newRemoteActionTableBody"></tbody>
@@ -366,7 +295,7 @@
 
 
     <!--New Timer Modal-->
-    <div class="modal fade" id="newTimerModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal fade" id="newTimerModal" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -396,6 +325,41 @@
                 <div class="modal-footer">
                     <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
                     <a id="createNewTimerButton" class="btn btn-primary">Create</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="editTimerModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Timer</h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="container">
+                    <div class="card-body">
+                        <form id="editTimerForm">
+                            <div class="form-group">
+                                <div class="form-label-group">
+                                    <input type="text" name="name" id="inputTimerEditedName" class="form-control" placeholder="Name" required="required" autofocus="autofocus">
+                                    <label for="inputTimerEditedName">Name</label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="form-label-group">
+                                    <input type="text" name="time" id="inputTimerEditedTime" class="form-control" placeholder="Time" required="required">
+                                    <label for="inputTimerEditedTime">Alarm time (hh:mm:ss)</label>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                    <a id="saveTimerChanchedButton" class="btn btn-info">Save</a>
                 </div>
             </div>
         </div>
@@ -431,14 +395,14 @@
                             </div>
                             <div class="form-group">
                                 <label for="selectAction">Value</label>
-                                <input name="Value" id="inputValue" class="form-control" input/>
+                                <input name="Value" id="inputValue" class="form-control" input />
                             </div>
                         </form>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                    <a id="createNewRuleButton" class="btn btn-primary">Create</a>
+                    <a id="createNewRuleButton" class="btn btn-info">Create</a>
                 </div>
             </div>
         </div>
@@ -464,176 +428,95 @@
     <!-- Demo scripts for this page-->
     <script src="js/demo/datatables-demo.js"></script>
     <script src="js/demo/chart-area-demo.js"></script>
+
+    <script src="js/co2monitor-api.js"></script>
     <script>
-        function isEmptyOrSpaces(str) {
-            return str === null || str.match(/^ *$/) !== null;
+        function deleteDeviceClicked(event) {
+            device = jQuery.data(event.srcElement.closest("tr"), "data");
+
+            if (window.confirm(`Do you really want to delete device [${device.name}:${device.id}]?`))
+            {
+                deleteDevice(device.id, () => {
+                    fillTimerTable();
+                    fillRemoteTable();
+                });
+            }
+        };
+
+        function showEditRemoteModal(event) {
+            window.alert("Not Implemented!");
         }
-
-        function serializedArrToObj(arr) {
-            var obj = {};
-            $.map(arr, function (n, i) {
-                obj[n['name']] = n['value'];
-            });
-            return obj;
-        }
-
-        function createTableRow(data, columns) {
-            tr = document.createElement('tr');
-            for (let i in columns) {
-                c = columns[i];
-                td = document.createElement('td');
-                td.innerHTML = data[c];
-                tr.appendChild(td);
-            }
-            return tr;
-        }
-
-        function checkTimeFormat(time) {
-            reg = /^\d\d[:]\d\d[:]\d\d$/i;
-            if (!reg.test(time)) {
-                window.alert("Invalid time format [" + time + "] Must be hh:mm:ss");
-                return false;
-            }
-
-            reg = /\d\d/g;
-            hms = [...time.match(reg)];
-            if (hms[0] > "23") {
-                window.alert("Hours must be less 24");
-                return false;
-            }
-
-            if (hms[1] > "59") {
-                window.alert("Minutes must be less 60");
-                return false;
-            }
-
-            if (hms[2] > "59") {
-                window.alert("Seconds must be less 60");
-                return false;
-            }
-
-            return true;
-        }
-
-        function fillTable(tableId, data, columns) {
-
-            tbody = document.createElement('tbody');
-            for (let i in data) {
-                tbody.appendChild(createTableRow(data[i], columns));
-            }
-            table = document.getElementById(tableId);
-            table.replaceChild(tbody, table.getElementsByTagName("tbody")[0]);
-        }
-
 
         function fillRemoteTable() {
-            axios.get("/api/Devices/remote", {
-                params: null
-            })
-            .then(function (response) {
-                fillTable("remoteTable", response.data, ["name", "id", "status", "state", "address"]);
-            })
-            .catch(function (error) {
-                window.alert(error.message);
+            getRemote((remote) => {
+                for (let i in remote) {
+                    r = remote[i];
+                    r.edit = '<button class="btn btn-info" onclick="showEditRemoteModal(event)">Edit</button>';
+                    r.del = '<button class="btn btn-danger" onclick="deleteDeviceClicked(event)">Del</button>';
+                }
+                fillTable("remoteTable", remote, ["name", "id", "status", "state", "address", "edit", "del"]);
             });
+        }
+
+        function showEditTimerModal(event) {
+            timer = jQuery.data(event.srcElement.closest("tr"), "data");
+            $("#editTimerForm").data("data", timer);
+            document.getElementById("inputTimerEditedName").value = timer.name;
+            document.getElementById("inputTimerEditedTime").value = timer.alarmTime;
+            $('#editTimerModal').modal('show');
         }
 
         function fillTimerTable() {
-            axios.get("/api/Devices/timers", {
-                params: null
-            })
-            .then(function (response) {
-                timers = response.data;
+            getTimers((timers) => {
                 for (let i in timers) {
                     t = timers[i];
-                    t.edit = `<button class="btn btn-primary">Edit</button>`; 
+                    t.edit = `<button class="btn btn-info" onclick="showEditTimerModal(event)">Edit</button>`;
+                    t.del = `<button class="btn btn-danger" onclick="deleteDeviceClicked(event)">Del</button>`;
                 }
-                
-                fillTable("timerTable", timers, ["name", "id", "alarmTime", "edit"]);
-            })
-            .catch(function (error) {
-                window.alert(error.message);
+                fillTable("timerTable", timers, ["name", "id", "alarmTime", "edit", "del"]);
             });
         }
+
+        function showEditRuleModal(event) {
+            window.alert("Not Implemented!");
+        }
+
+        function deleteRuleClicked(event) {
+            rule = jQuery.data(event.srcElement.closest("tr"), "data");
+            if (window.confirm(`Do you really want to delete rule [${rule.name}:${rule.id}]?`))
+            {
+                deleteRule(rule.id, () => {
+                    fillRuleTable();
+                });
+            }
+        };
 
         function fillRuleTable() {
-            axios.get("/api/Devices/Rule", {
-                params: null
-            })
-            .then(function (response) {
-                rules = response.data;
+            getRules((rules) => {
                 for (let i in rules) {
                     r = rules[i];
-                    r.desc =  `Src: { Id = ${r.sourceDeviceId}, Event = "${r.event.name}}", Target: { Id = ${r.targetDeviceId}, Action="${r.action.path}", Argument="${r.actionArgument}"}`; 
+                    r.desc = `Src: { Id = ${r.sourceDeviceId}, Event = "${r.event.name}}", Target: { Id = ${r.targetDeviceId}, Action="${r.action.path}", Argument="${r.actionArgument}"}`;
+                    r.edit = '<button class="btn btn-info" onclick="showEditRuleModal(event)">Edit</button>';
+                    r.del = '<button class="btn btn-danger" onclick="deleteRuleClicked(event)">Del</button>';
                 }
-                fillTable("ruleTable", response.data, ["name", "id", "desc"]);
-            })
-            .catch(function (error) {
-                window.alert(error.message);
+                fillTable("ruleTable", rules, ["name", "id", "desc", "edit", "del"]);
             });
         }
 
-        
         function fillLogTable() {
-            axios.get("/api/Log", {
-                params: null
-            })
-            .then(function (response) {
-                records = response.data;    
+            getLog((records) => {
                 for (let i in records) {
                     r = records[i];
                     t = new Date(r.time);
                     r.formatTime = t.toISOString().split('.')[0].replace('T', ' ');
                 }
-                fillTable("logTable", records, ["formatTime", "logLevel" ,"message"]);
-            })
-            .catch(function (error) {
-                window.alert(error.message);
+                fillTable("logTable", records, ["formatTime", "logLevel", "message"]);
             });
         }
 
-
-        function createTimer(name, time) {
-            axios.post("/api/Devices/timers", null, {
-                params: {
-                    type: "ScheduleTimer",
-                    name: name,
-                    time: time 
-                }
-            })
-            .then(function (response) {
-                $('#newTimerModal').modal('hide');
-                fillTimerTable();
-            })
-            .catch(function (error) {
-                window.alert(error.message);
-            });
-        }
-
-        function createRemote(name, address, fields, actions) {
-            axios.post("/api/Devices/remote", {
-                actions: actions,
-                fields: fields,
-                events: []
-            }, {
-                    params: {
-                        name: name,
-                        address: address
-                    }
-                })
-                .then(function (response) {
-                    $('#newRemoteModal').modal('hide');
-                    fillRemoteTable();
-                })
-                .catch(function (error) {
-                    window.alert(error.message);
-                });
-        }
 
         newTimerBtn = document.getElementById("createNewTimerButton");
         newTimerBtn.onclick = function () {
-            mdl = document.getElementById("newTimerModal");
-            form = mdl.getElementsByTagName("form")[0];
             timerData = serializedArrToObj($("#newTimerForm").serializeArray());
             if (!checkTimeFormat(timerData.time))
                 return;
@@ -643,9 +526,37 @@
                 return;
             }
 
-            createTimer(timerData.name, timerData.time);
+            createTimer(timerData.name, timerData.time, () => {
+                $('#newTimerModal').modal('hide');
+                fillTimerTable();
+            });
         };
 
+        saveTimerChanchedBtn = document.getElementById("saveTimerChanchedButton");
+        saveTimerChanchedBtn.onclick = function () {
+
+            timer = $("#editTimerForm").data("data");
+          
+            timerData = serializedArrToObj($("#editTimerForm").serializeArray());
+            if (!checkTimeFormat(timerData.time))
+                return;
+
+            if (isEmptyOrSpaces(timerData.name)) {
+                window.alert("Timer Name must be not empty!");
+                return;
+            }
+
+            patchTimer(timer.id, timerData.name, timerData.time, () => {
+                $('#editTimerModal').modal('hide');
+                fillTimerTable();
+            });
+        };
+
+        function deleteActionFromNewRemoteClick(event) {
+            body = event.srcElement.closest("tbody");
+            row = event.srcElement.closest("tr");
+            body.removeChild(row);
+        }
 
         addActionBtn = document.getElementById("addActionNewRemoteButton");
         addActionBtn.onclick = function () {
@@ -653,27 +564,11 @@
             tbody = table.getElementsByTagName("tbody")[0];
 
             tr = document.createElement("tr");
-
-            td = document.createElement("td");
-            input = document.createElement("input");
-            input.setAttribute("class", "form-control");
-            td.appendChild(input);
-            tr.appendChild(td);
-
-
-            td = document.createElement("td");
-            select = document.createElement("select");
-            select.setAttribute("class", "form-control");
-            select.innerHTML = "<option>Void</option><option>Float</option><option>String</option><option>Enum</option>";
-            td.appendChild(select);
-            tr.appendChild(td);
-
-            td = document.createElement("td");
-            input = document.createElement("input");
-            input.setAttribute("class", "form-control");
-            td.appendChild(input);
-            tr.appendChild(td);
-
+            tr.innerHTML = `<td><input class="form-control"></td>` +
+                `<td><select class="form-control"><option>Void</option><option>Float</option><option>String</option><option>Enum</option></select></td>` +
+                `<td><input class="form-control"></td>` + 
+                `<td><button class="btn btn-danger" onclick="deleteActionFromNewRemoteClick(event)">Del</button></td>`
+                ;
             tbody.appendChild(tr);
         };
 
@@ -715,8 +610,8 @@
             actions = [];
             fields = [];
 
-            $("#newRemoteActionTableBody").find("tr").each(function () {
-                tds = table.getElementsByTagName("td");
+            $("#newRemoteActionTableBody").find("tr").each(function (i, row) {
+                tds = row.getElementsByTagName("td");
 
                 type = tds[1].getElementsByTagName("select")[0].value;
                 vals = null;
@@ -733,8 +628,8 @@
                 });
             });
 
-            $("#newRemoteFieldTableBody").find("tr").each(function () {
-                tds = table.getElementsByTagName("td");
+            $("#newRemoteFieldTableBody").find("tr").each(function (i, row) {
+                tds = row.getElementsByTagName("td");
 
                 type = tds[1].getElementsByTagName("select")[0].value;
                 vals = null;
@@ -757,99 +652,106 @@
 
 
         $("#newRuleModal").on("shown.bs.modal", function () {
-            axios.get("/api/Devices", {
+            axios.get("/api/devices", {
                 params: null
             })
-            .then(function (response) {
-                devices = response.data;
+                .then(function (response) {
+                    devices = response.data;
                     $("#selectSourceDeviceId").empty();
                     $("#selectTargetDeviceId").empty();
-                    
-                selectSourceDeviceId = document.getElementById("selectSourceDeviceId");
-                selectEvent = document.getElementById("selectEvent");
 
-                selectSourceDeviceId.onchange = function () {
-                    $("#selectEvent").empty();
-                    events = devices.find(d => d.id == selectSourceDeviceId.value).info.events;
+                    selectSourceDeviceId = document.getElementById("selectSourceDeviceId");
+                    selectEvent = document.getElementById("selectEvent");
 
-                    for (let i in events) {
-                        e = events[i];
-                        opt = document.createElement("option");
-                        opt.innerHTML = e.name;
-                        opt.value = JSON.stringify(e);
-                        selectEvent.appendChild(opt);
-                    }
-                };
+                    selectSourceDeviceId.onchange = function () {
+                        $("#selectEvent").empty();
+                        events = devices.find(d => d.id == selectSourceDeviceId.value).info.events;
 
-
-                selectTargetDeviceId = document.getElementById("selectTargetDeviceId");
-                selectAction = document.getElementById("selectAction");
-
-
-                selectTargetDeviceId.onchange = function () {
-                    $("#selectAction").empty();
-                    actions = devices.find(d => d.id == selectTargetDeviceId.value).info.actions;
-
-                    for (let i in actions) {
-                        a = actions[i];
-                        opt = document.createElement("option");
-                        opt.innerHTML = a.path;
-                        opt.value = JSON.stringify(a);
-                        selectAction.appendChild(opt);
-                    }
-                };
-
-
-                for (let i in devices) {
-                    let d = devices[i];
-                    console.log(i);
-                    opt = document.createElement("option");
-                    opt.innerHTML = d.name + ":" + d.id;
-                    opt.value = d.id;
-                    selectSourceDeviceId.appendChild(opt);
-
-                    opt = document.createElement("option");
-                    opt.innerHTML = d.name + ":" + d.id;
-                    opt.value = d.id;
-                    selectTargetDeviceId.appendChild(opt);
-                }
-
-                createNewRuleButton.onclick = function () {
-                    var rule = {
-                        Name: "Rule",
-                        SourceDeviceId: selectSourceDeviceId.value,
-                        Event: JSON.parse(selectEvent.value),
-                        TargetDeviceId: selectTargetDeviceId.value,
-                        Action: JSON.parse(selectAction.value),
-                    };
-                    value = document.getElementById("inputValue").value;
-                        axios.post("/api/Devices/rule", rule, {
-                        params: {
-                            actionArgument: value,
+                        for (let i in events) {
+                            e = events[i];
+                            opt = document.createElement("option");
+                            opt.innerHTML = e.name;
+                            opt.value = JSON.stringify(e);
+                            selectEvent.appendChild(opt);
                         }
-                    })
-                    .then(function (response) {
-                        $("#newRuleModal").modal("hide");
-                        fillRuleTable();
-                    })
-                    .catch(function (error) {
-                        window.alert(error.message);
-                    });
-                };
+                    };
 
-                selectSourceDeviceId.onchange();
-                selectTargetDeviceId.onchange();
-            
-            })
-            .catch(function (error) {
-                window.alert(error.message);
-            });
+
+                    selectTargetDeviceId = document.getElementById("selectTargetDeviceId");
+                    selectAction = document.getElementById("selectAction");
+
+
+                    selectTargetDeviceId.onchange = function () {
+                        $("#selectAction").empty();
+                        actions = devices.find(d => d.id == selectTargetDeviceId.value).info.actions;
+
+                        for (let i in actions) {
+                            a = actions[i];
+                            opt = document.createElement("option");
+                            opt.innerHTML = a.path;
+                            opt.value = JSON.stringify(a);
+                            selectAction.appendChild(opt);
+                        }
+                    };
+
+
+                    for (let i in devices) {
+                        let d = devices[i];
+                        console.log(i);
+                        opt = document.createElement("option");
+                        opt.innerHTML = d.name + ":" + d.id;
+                        opt.value = d.id;
+                        selectSourceDeviceId.appendChild(opt);
+
+                        opt = document.createElement("option");
+                        opt.innerHTML = d.name + ":" + d.id;
+                        opt.value = d.id;
+                        selectTargetDeviceId.appendChild(opt);
+                    }
+
+                    createNewRuleButton.onclick = function () {
+                        var rule = {
+                            Name: "Rule",
+                            SourceDeviceId: selectSourceDeviceId.value,
+                            Event: JSON.parse(selectEvent.value),
+                            TargetDeviceId: selectTargetDeviceId.value,
+                            Action: JSON.parse(selectAction.value),
+                        };
+                        value = document.getElementById("inputValue").value;
+                        axios.post("/api/rules", rule, {
+                            params: {
+                                actionArgument: value,
+                            }
+                        })
+                            .then(function (response) {
+                                $("#newRuleModal").modal("hide");
+                                fillRuleTable();
+                            })
+                            .catch(function (error) {
+                                window.alert(error.message);
+                            });
+                    };
+
+                    selectSourceDeviceId.onchange();
+                    selectTargetDeviceId.onchange();
+
+                })
+                .catch(function (error) {
+                    window.alert(error.message);
+                });
         });
 
-        fillTimerTable();
-        fillRemoteTable();
-        fillRuleTable();
-        fillLogTable();
+        function updateTables() {
+            fillTimerTable();
+            fillRemoteTable();
+            fillRuleTable();
+            fillLogTable();
+        }
+
+        updateTables();
+        
+        setInterval(updateTables, 5000);
+
     </script>
 </body>
 

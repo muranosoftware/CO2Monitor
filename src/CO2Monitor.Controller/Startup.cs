@@ -52,6 +52,8 @@ namespace CO2Monitor.Controller
 
             /////////////////////////////////
 
+            services.AddSingleton<IDeviceStateRepository, SQLiteDeviceStateRepository>();
+
             services.AddScoped<ILogViewer, DbLogViewer>();
 
             services.AddTransient<IDeviceFactory, DeviceFactory>();
@@ -64,6 +66,7 @@ namespace CO2Monitor.Controller
 
             services.AddHostedService<BackgroundServiceStarter<IDeviceManagerService>>();
 
+            
             services.AddDevice<ScheduleTimer>();
 
             services.AddDevice<RemoteDevice>();
@@ -90,7 +93,7 @@ namespace CO2Monitor.Controller
 
             DbLogger.Configure(Configuration);
 
-            SQLiteMeasurmentRepository.Configure(Configuration);
+            SQLiteDeviceStateRepository.Configure(Configuration);
 
             if (env.IsDevelopment())
             {

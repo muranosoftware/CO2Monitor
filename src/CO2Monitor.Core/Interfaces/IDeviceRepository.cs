@@ -7,7 +7,7 @@ namespace CO2Monitor.Core.Interfaces
 {
     public interface IDeviceRepository : INotifyCollectionChanged
     {
-        IEnumerable<T>  List<T>(Predicate<T> condition = null) where T : class, IDevice;
+        IEnumerable<T> List<T>(Predicate<T> condition = null) where T : class, IDevice;
 
         T GetById<T>(int id) where T : class, IDevice;
 

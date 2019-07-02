@@ -32,7 +32,7 @@ namespace CO2Monitor.Infrastructure.Data
         private const string _ConfigurationFile = "Devices.json";
         private readonly JsonSerializerSettings _jsonSettings;
         private readonly ILogger<FileDeviceRepository> _logger;
-
+        private readonly DeviceData _data;
 
         public FileDeviceRepository(IConfiguration configuration,
                                     ILogger<FileDeviceRepository> logger,
@@ -58,12 +58,16 @@ namespace CO2Monitor.Infrastructure.Data
             };
 
             if (File.Exists(_ConfigurationFile))
+            {
                 _data = JsonConvert.DeserializeObject<DeviceData>(File.ReadAllText(_ConfigurationFile), _jsonSettings);
+                foreach (var d in _data.Devices.Values)
+                    d.SettingsChanged += DeviceSettingsChanged;
+            }
             else
                 _data = new DeviceData();
         }
 
-        readonly DeviceData _data;
+
 
         public event NotifyCollectionChangedEventHandler CollectionChanged;
 

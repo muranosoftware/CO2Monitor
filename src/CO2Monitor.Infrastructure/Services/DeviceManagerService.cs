@@ -38,6 +38,10 @@ namespace CO2Monitor.Infrastructure.Services
             _deviceRepository = deviceRepository;
             _deviceFactory = deviceFactory;
             _logger = logger;
+            foreach (var d in _deviceRepository.List<IDevice>())
+            {
+                d.EventRaised += DeviceEventRaised;
+            }
         }
 
         public IDeviceRepository DeviceRepository => _deviceRepository;
@@ -81,10 +85,11 @@ namespace CO2Monitor.Infrastructure.Services
 
         private void DeviceEventRaised(IBaseDevice sender, DeviceEventDeclaration eventDeclaration, Value data, int? deviceId)
         {
-            _logger.LogInformation($"Event [{eventDeclaration.Name}] from [{sender.Name}:{deviceId??-1}] raised with data: {data}.");
+            _logger.LogInformation($"Event [{eventDeclaration.Name}] from [{sender.Name}:{deviceId??-1}] raised with data [{data}].");
 
             foreach (var r in _ruleRepository.List( x=> x.SourceDeviceId == deviceId))
             {
+                _logger.LogInformation($"Found rule [{r.Name}:{r.Id}] binded to event [{eventDeclaration.Name}] from [{sender.Name}:{deviceId ?? -1}]");
                 var device = _deviceRepository.GetById<IDevice>(r.TargetDeviceId);
                 if (device == null)
                 {
@@ -93,9 +98,14 @@ namespace CO2Monitor.Infrastructure.Services
                 }
 
                 if (device.Info.Actions.Contains(r.Action))
+                {
+                    _logger.LogInformation($"Try execute rule's [{r.Name}:{r.Id}] action on [{r.TargetDeviceId}]");
                     device.ExecuteAction(r.Action, new Value(r.Action.Argument, r.ActionArgument));
+                }
                 else
+                {
                     _logger.LogInformation($"Target device [{r.TargetDeviceId}] of rule [{r.Name}:{r.Id}] does not have action [{r.Action}]. Skip");
+                }
             }
         }
         

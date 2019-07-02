@@ -47,6 +47,7 @@ namespace CO2Monitor.Infrastructure.Devices
 
         TimeSpan _alarmTime;
         Timer _timer;
+        private string _name = nameof(ScheduleTimer);
 
         public ScheduleTimer()
         {
@@ -55,7 +56,19 @@ namespace CO2Monitor.Infrastructure.Devices
             UpdateInernalTimer();
         }
 
-        public string Name { get; set; } = nameof(ScheduleTimer);
+        public string Name
+        {
+            get => _name;
+            set
+            {
+                if (_name != value)
+                {
+                    _name = value;
+                    SettingsChanged?.Invoke(this, new PropertyChangedEventArgs("Name"));
+                }
+            }
+        }
+
         public int Id { get; set; }
 
         public bool IsRemote => false;

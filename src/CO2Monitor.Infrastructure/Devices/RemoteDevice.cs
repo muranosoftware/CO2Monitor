@@ -15,7 +15,7 @@ using System.Runtime.CompilerServices;
 
 namespace CO2Monitor.Infrastructure.Devices
 {
-    public class RemoteDevice : BaseDevice, IRemoteDevice
+    public class RemoteDevice : IRemoteDevice
     {
         private readonly HashSet<DeviceStateFieldDeclaration> _stateFields = new HashSet<DeviceStateFieldDeclaration>();
 
@@ -23,23 +23,38 @@ namespace CO2Monitor.Infrastructure.Devices
 
         private readonly HashSet<DeviceEventDeclaration> _events = new HashSet<DeviceEventDeclaration>();
 
-        float _pollingRate;
-        string _address;
-        readonly Timer _timer;
-        DeviceInfo _info;
-        ILogger _logger;
-        private object _lock = new object();
-
-
-        public RemoteDevice(ILogger<RemoteDevice> logger)
+        private string _name;
+        private float _pollingRate;
+        private string _address;
+        private readonly Timer _timer;
+        private DeviceInfo _info;
+        private readonly ILogger _logger;
+        private readonly IDeviceStateRepository _stateRepository;
+        
+        public RemoteDevice(ILogger<RemoteDevice> logger, IDeviceStateRepository repository)
         {
             _info = new DeviceInfo(_stateFields, _actions, _events);
             _pollingRate = 60.0f;
             _timer = new Timer(MakeStateRequest, null, TimeSpan.FromSeconds(_pollingRate), TimeSpan.FromSeconds(_pollingRate));
             _logger = logger;
+            _stateRepository = repository;
         }
 
         public int Id { get; set; }
+
+
+        public string Name
+        {
+            get => _name;
+            set
+            {
+                if (_name != value)
+                {
+                    _name = value;
+                    SettingsChanged?.Invoke(this, new PropertyChangedEventArgs("Name"));
+                }
+            }
+        }
 
         public bool IsRemote => true;
 
@@ -94,7 +109,7 @@ namespace CO2Monitor.Infrastructure.Devices
             }
         }
 
-        public override DeviceInfo Info { get => _info; set => _info = value; }
+        public  DeviceInfo Info { get => _info; set => _info = value; }
 
         
         public string Address
@@ -121,15 +136,15 @@ namespace CO2Monitor.Infrastructure.Devices
 
         public string State { get; set; }
 
-        public override event PropertyChangedEventHandler SettingsChanged;
-        public override event DeviceEventHandler EventRaised;
+        public event PropertyChangedEventHandler SettingsChanged;
+        public event DeviceEventHandler EventRaised;
 
         public void AddExtention(IDeviceExtention extention)
         {
             throw new NotImplementedException();
         }
 
-        public override void Dispose()
+        public void Dispose()
         {
             _timer.Dispose();
         }
@@ -139,7 +154,7 @@ namespace CO2Monitor.Infrastructure.Devices
             _info = new DeviceInfo(StateFields.ToArray(), Actions.ToArray(), Events.ToArray());
         }
 
-        public override async Task ExecuteAction(DeviceActionDeclaration deviceActionDeclaration, Value value)
+        public async Task ExecuteAction(DeviceActionDeclaration deviceActionDeclaration, Value value)
         {
             var url = Address + "/" + deviceActionDeclaration.Path;
 
@@ -154,8 +169,12 @@ namespace CO2Monitor.Infrastructure.Devices
                 {
                     HttpResponseMessage response = await client.PutAsync(url, new StringContent(string.Empty));
                     response.EnsureSuccessStatusCode();
-                    _logger.LogInformation($"Action [{deviceActionDeclaration.Path}/{value?.ToString()}] executed on [{Name}:{Id}] on [{Address}]");
+                    State = await response.Content.ReadAsStringAsync();
 
+                    _stateRepository.Add(new DeviceStateMeasurement() { DeviceId = Id, Time = DateTime.Now, State = State });
+                    Status = RemoteDeviceStatus.Ok;
+                    LatestSuccessfullAccess = DateTime.Now;
+                    _logger.LogInformation($"Action [{deviceActionDeclaration.Path}/{value?.ToString()}] executed on [{Name}:{Id}] on [{Address}]. New state [{State}]");        
                 }
                 catch (OperationCanceledException e)
                 {
@@ -198,12 +217,13 @@ namespace CO2Monitor.Infrastructure.Devices
                     HttpResponseMessage response = await client.PutAsync(url, new StringContent(string.Empty));
                     response.EnsureSuccessStatusCode();
                     State = await response.Content.ReadAsStringAsync();
-
-                    _logger.LogInformation($"Get state of [{Name}:{Id}] from [{Address}]: [{State}]");
+                    _stateRepository.Add(new DeviceStateMeasurement() { DeviceId = Id, Time = DateTime.Now, State = State });
                     Status = RemoteDeviceStatus.Ok;
                     LatestSuccessfullAccess = DateTime.Now;
+                    _logger.LogInformation($"Get state of [{Name}:{Id}] from [{Address}]: [{State}]");
+
                 }
-                catch (OperationCanceledException e)
+                catch (OperationCanceledException)
                 {
                     var msg = $"Can not get state of remote device [{Name}:{Id}] from [{Address}]. Timeout expired!";
                     Status = RemoteDeviceStatus.NotAccessible;
