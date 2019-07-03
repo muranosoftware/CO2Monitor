@@ -1,36 +1,34 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿namespace CO2Monitor.Core.Entities {
+	public sealed class DeviceEventDeclaration {
+		public DeviceEventDeclaration(string name, VariantDeclaration dataDeclaration) {
+			Name = name;
+			DataType = dataDeclaration;
+		}
 
-namespace CO2Monitor.Core.Entities
-{
-    public class DeviceEventDeclaration
-    {
-        public DeviceEventDeclaration(string name, ValueDeclaration dataDeclaration)
-        {
-            Name = name;
-            DataType = dataDeclaration;
-        }
+		public string Name { get; }
+		public VariantDeclaration DataType { get; }
 
-        public string Name { get; private set; }
-        public ValueDeclaration DataType {get; private set;}
+		public bool Equals(DeviceEventDeclaration other) {
+			if (other == null)
+				return false;
 
+			return (DataType.Equals(other.DataType)) && (Name == other.Name);
+		}
 
-        public override bool Equals(object obj)
-        {
-            if (obj == null)
-                return false;
+		public override bool Equals(object obj) {
+			return Equals(obj as DeviceEventDeclaration);
+		}
 
-            if (this.GetType() != obj.GetType())
-                return false;
+		public override int GetHashCode() {
+			return DataType.GetHashCode() + 431 * (Name == null ? 0 : Name.GetHashCode());
+		}
 
-            var other = (DeviceEventDeclaration)obj;
-            return (this.DataType == other.DataType) && (this.Name == other.Name);
-        }
+		public static bool operator ==(DeviceEventDeclaration a, DeviceEventDeclaration b) {
+			return a.Equals(b);
+		}
 
-        public override int GetHashCode()
-        {
-            return DataType.GetHashCode() + 431 * (Name == null ? 0 : Name.GetHashCode());
-        }
-    }
+		public static bool operator !=(DeviceEventDeclaration a, DeviceEventDeclaration b) {
+			return !a.Equals(b);
+		}
+	}
 }

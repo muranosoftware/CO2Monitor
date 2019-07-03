@@ -1,39 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Linq;
+﻿namespace CO2Monitor.Core.Entities {
+	public class DeviceActionDeclaration {
+		public DeviceActionDeclaration(string path, VariantDeclaration argumentDeclaration) {
+			Path = path;
+			Argument = argumentDeclaration; 
+		}
 
-namespace CO2Monitor.Core.Entities
-{
-  
-    public class DeviceActionDeclaration
-    {
-        public DeviceActionDeclaration(string path, ValueDeclaration argumentDeclaration)
-        {
-            Path = path;
-            Argument = argumentDeclaration; 
-        }
+		public string Path { get; }
 
-        public string Path { get; }
+		public VariantDeclaration Argument { get; set; }
 
-        public ValueDeclaration Argument { get; set; }
+		public override bool Equals(object obj) {
+			if (obj == null)
+				return false;
 
+			if (GetType() != obj.GetType())
+				return false;
 
-        public override bool Equals(object obj)
-        {
-            if (obj == null)
-                return false;
+			var other = (DeviceActionDeclaration)obj;
+			return (Argument.Equals(other.Argument)) && (Path == other.Path);
+		}
 
-            if (this.GetType() != obj.GetType())
-                return false;
-
-            var other = (DeviceActionDeclaration)obj;
-            return (this.Argument.Equals(other.Argument)) && (this.Path == other.Path);
-        }
-
-        public override int GetHashCode()
-        {
-            return Argument.GetHashCode() + 431 * (Path == null ? 0 : Path.GetHashCode());
-        }
-    }
+		public override int GetHashCode() {
+			return Argument.GetHashCode() + 431 * (Path == null ? 0 : Path.GetHashCode());
+		}
+	}
 }
