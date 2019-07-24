@@ -1,22 +1,23 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Threading.Tasks;
-using CO2Monitor.Core.Entities;
-using CO2Monitor.Core.Interfaces;
 using System.Threading;
+using System.Threading.Tasks;
+using Newtonsoft.Json;
+using CO2Monitor.Core.Entities;
+using CO2Monitor.Core.Shared;
+using CO2Monitor.Core.Interfaces.Devices;
 
 namespace CO2Monitor.Infrastructure.Devices {
 	public class ScheduleTimer : IScheduleTimer {
-		private static readonly DeviceStateFieldDeclaration[] StateFieldDeclarations = new DeviceStateFieldDeclaration[] {
-			new DeviceStateFieldDeclaration(nameof(AlarmTime), new VariantDeclaration(ValueTypes.Time))
+		private static readonly IReadOnlyDictionary<DeviceStateFieldDeclaration, Func<ScheduleTimer, Variant>> StateFieldDeclarations = new Dictionary<DeviceStateFieldDeclaration, Func<ScheduleTimer, Variant>> {
+			{ new DeviceStateFieldDeclaration(nameof(AlarmTime), VariantDeclaration.Time), (timer) => new Variant(timer.AlarmTime) }
 		};
 
 		private static readonly IReadOnlyDictionary<DeviceActionDeclaration, Func<ScheduleTimer, Variant, Task>> Actions = new Dictionary<DeviceActionDeclaration, Func<ScheduleTimer, Variant, Task>> {
 			{
-				new DeviceActionDeclaration("SetAlarmTime", new VariantDeclaration(ValueTypes.Time)), (timer, val) => {
-					if (val.Declaration.Type != ValueTypes.Time)
+				new DeviceActionDeclaration("SetAlarmTime", new VariantDeclaration(VariantType.Time)), (timer, val) => {
+					if (val.Declaration.Type != VariantType.Time)
 						throw new InvalidOperationException();
 					timer.AlarmTime = val.Time;
 					return Task.CompletedTask;
@@ -24,19 +25,18 @@ namespace CO2Monitor.Infrastructure.Devices {
 			},
 		};
 
-		private static readonly DeviceEventDeclaration AlarmEventDeclaration = new DeviceEventDeclaration("Alarm", new VariantDeclaration(ValueTypes.Time));
+		private static readonly DeviceEventDeclaration AlarmEventDeclaration = new DeviceEventDeclaration("Alarm", new VariantDeclaration(VariantType.Time));
 
 		private static readonly DeviceEventDeclaration[] EventDeclarations = new DeviceEventDeclaration[] {
 			AlarmEventDeclaration
 		};
 
-		private static readonly DeviceInfo TimerDeviceInfo = new DeviceInfo(StateFieldDeclarations, Actions.Keys.ToArray(), EventDeclarations);
+		private static readonly DeviceInfo TimerDeviceInfo = new DeviceInfo(StateFieldDeclarations.Keys, Actions.Keys, EventDeclarations);
 
 		TimeSpan _alarmTime;
 		Timer _timer;
 		private string _name = nameof(ScheduleTimer);
-		private static readonly IReadOnlyCollection<IDeviceExtention> EmptyDeviceExtentionsCollection = Array.Empty<IDeviceExtention>();
-
+		
 		public ScheduleTimer() {
 			_timer = new Timer(Alarm);
 			AlarmTime = TimeSpan.FromHours(12);
@@ -55,16 +55,9 @@ namespace CO2Monitor.Infrastructure.Devices {
 
 		public int Id { get; set; }
 
-		public bool IsRemote => false;
+		public DeviceInfo BaseInfo => TimerDeviceInfo;
 
-		public bool IsExtensible => false;
-
-		public DeviceInfo Info {
-			get => TimerDeviceInfo;
-			set { }
-		}
-
-		public IReadOnlyCollection<IDeviceExtention> DeviceExtentions => EmptyDeviceExtentionsCollection;
+		public DeviceInfo Info => TimerDeviceInfo;
 
 		public TimeSpan AlarmTime {
 			get => _alarmTime;
@@ -80,19 +73,26 @@ namespace CO2Monitor.Infrastructure.Devices {
 			}
 		}
 
+		public string State => JsonConvert.SerializeObject(new Dictionary<string, string> {
+			{ nameof(AlarmTime), AlarmTime.ToString() }
+		});
+
 		public event PropertyChangedEventHandler SettingsChanged;
 
 		public event DeviceEventHandler EventRaised;
-
-		public void AddExtention(IDeviceExtention extention) {
-			throw new NotSupportedException();
-		}
 
 		public Task ExecuteAction(DeviceActionDeclaration deviceActionDeclaration, Variant value) {
 			if (!Actions.ContainsKey(deviceActionDeclaration))
 				throw new InvalidOperationException();
 
 			return Actions[deviceActionDeclaration](this, value);
+		}
+
+		public Task<Variant> GetField(DeviceStateFieldDeclaration fieldDeclaration) {
+			if (StateFieldDeclarations.ContainsKey(fieldDeclaration))
+				return Task.FromResult(StateFieldDeclarations[fieldDeclaration](this));
+			else
+				throw new CO2MonitorArgumentException("ScheduleTimer does not contains field " + fieldDeclaration);
 		}
 
 		public void Dispose() {

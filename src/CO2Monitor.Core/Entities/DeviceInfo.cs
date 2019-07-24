@@ -1,32 +1,33 @@
 ﻿using System.Collections.Generic;
+using Newtonsoft.Json;
 using System.Linq;
 
 namespace CO2Monitor.Core.Entities {
 	public class DeviceInfo {
-		//public IReadOnlyCollection<DeviceStateFieldDeclaration> Fields { get; private set; }
-		//
-		//public IReadOnlyCollection<DeviceActionDeclaration> Actions { get; private set; }
-		//
-		//public IReadOnlyCollection<DeviceEventDeclaration> Events { get; private set; }
-
-		public List<DeviceStateFieldDeclaration> Fields { get; private set; }
-
-		public List<DeviceActionDeclaration> Actions { get; private set; }
-		
-		public List<DeviceEventDeclaration> Events { get; private set; }
-
-		public DeviceInfo() {
-			Fields = new List<DeviceStateFieldDeclaration>();
-			Actions = new List<DeviceActionDeclaration>();
-			Events = new List<DeviceEventDeclaration>();
+		[JsonProperty]
+		public IReadOnlyCollection<DeviceStateFieldDeclaration> Fields {
+			get;
+			private set;
 		}
 
-		public DeviceInfo(IReadOnlyCollection<DeviceStateFieldDeclaration> fields, 
-		                  IReadOnlyCollection<DeviceActionDeclaration> actions, 
-		                  IReadOnlyCollection<DeviceEventDeclaration> events) {
-			Fields = fields.ToList();
-			Actions = actions.ToList();
-			Events = events.ToList();
+		[JsonProperty]
+		public IReadOnlyCollection<DeviceActionDeclaration> Actions { get; private set; }
+
+		[JsonProperty]
+		public IReadOnlyCollection<DeviceEventDeclaration> Events { get; private set; }
+
+		public DeviceInfo() {
+			Fields = new List<DeviceStateFieldDeclaration>().AsReadOnly();
+			Actions = new List<DeviceActionDeclaration>().AsReadOnly();
+			Events = new List<DeviceEventDeclaration>().AsReadOnly();
+		}
+
+		public DeviceInfo(IEnumerable<DeviceStateFieldDeclaration> fields, 
+		                  IEnumerable<DeviceActionDeclaration> actions, 
+		                  IEnumerable<DeviceEventDeclaration> events) {
+			Fields = fields.ToList().AsReadOnly();
+			Actions = actions.ToList().AsReadOnly();
+			Events = events.ToList().AsReadOnly();
 		}
 	}
 }

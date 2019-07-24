@@ -6,7 +6,7 @@ using Newtonsoft.Json.Converters;
 
 namespace CO2Monitor.Core.Entities {
 	[JsonConverter(typeof(StringEnumConverter))]
-	public enum ValueTypes {
+	public enum VariantType {
 		Void,
 		Float,
 		Enum,
@@ -15,56 +15,89 @@ namespace CO2Monitor.Core.Entities {
 	}
 
 	public sealed class VariantDeclaration {
-		public VariantDeclaration(ValueTypes type, IReadOnlyList<string> enumValues = null) {
-			Type = type;
+		public static VariantDeclaration BooleanEnum => new VariantDeclaration(VariantType.Enum, new[] { "false", "true" });
 
-			if (type == ValueTypes.Enum) {
-				if (enumValues == null || enumValues.Count == 0)
-					throw new ArgumentException("enumValues must be not null and has at least one element!");
-			} else if (enumValues != null)
-				throw new ArgumentException("Can not set enumValues for non enum ValueDescription");
+		public static VariantDeclaration Float => new VariantDeclaration(VariantType.Float);
 
-			EnumValues = enumValues;
+		public static VariantDeclaration String => new VariantDeclaration(VariantType.String);
+
+		public static VariantDeclaration Void => new VariantDeclaration(VariantType.Void);
+
+		public static VariantDeclaration Time => new VariantDeclaration(VariantType.Time);
+
+		IReadOnlyList<string> _enumValues;
+
+		[JsonConstructor]
+		private VariantDeclaration() {
+			Type = VariantType.Void;
 		}
 
-		public ValueTypes Type { get; }
+		public VariantDeclaration(VariantType type, IReadOnlyList<string> enumValues = null) {
+			Type = type;
 
-		public IReadOnlyList<string> EnumValues { get; set; }
+			if (type == VariantType.Enum) {
+				if (enumValues is null || enumValues.Count == 0)
+					throw new ArgumentException("enumValues must be not null and has at least one element!");
+				EnumValues = enumValues.Select(x => x.ToLower()).ToList();
+			} else if (enumValues != null)
+				throw new ArgumentException("Can not set enumValues for non enum ValueDescription");
+		}
 
-		public override bool Equals(object obj) {
-			if (obj == null)
+		public VariantType Type { get; set; }
+
+		public IReadOnlyList<string> EnumValues {
+			get => _enumValues;
+			set { _enumValues = value?.Select(x => x.ToLower()).ToList(); }
+		}
+
+		public bool Equals(VariantDeclaration other) {
+			if (other is null)
 				return false;
 
-			if (GetType() != obj.GetType())
-				return false;
-
-			var other = (VariantDeclaration)obj;
 			if (Type != other.Type)
 				return false;
 
-			if (Type == ValueTypes.Enum && ToString() != other.ToString())
-				return false;
+			if (Type == VariantType.Enum) {
+				if (EnumValues.Count != other.EnumValues.Count)
+					return false;
+
+				for (int i = 0; i < EnumValues.Count; i++)
+					if (EnumValues[i] != other.EnumValues[i])
+						return false;
+			}
 			return true;
+		}
+
+		public override bool Equals(object obj) {
+			return Equals(obj as VariantDeclaration);
+		}
+
+		public override int GetHashCode() {
+			int hash = (int)Type;
+			if (Type == VariantType.Enum) {
+				for (int i = 0; i < EnumValues.Count; i++)
+					hash = 431 * hash + EnumValues[i].GetHashCode();
+			}
+			return hash;
 		}
 
 		public override string ToString() {
 			switch (Type) {
-				case ValueTypes.Enum:
-					return ValueTypes.Enum.ToString().ToLower() + ": " + EnumValues.Aggregate((acc, x) => acc + ", " + x);
+				case VariantType.Enum:
+					return VariantType.Enum.ToString().ToLower() + ": " + EnumValues.Aggregate((acc, x) => acc + ", " + x);
 				default:
 					return Type.ToString().ToLower();
 			}
 		}
-
 		public static VariantDeclaration Parse(string valueDeclaration) {
 			if (string.IsNullOrEmpty(valueDeclaration))
 				throw new ArgumentException("Declaration can not be null or whitespace");
 
 			string[] splits = valueDeclaration.Split(':');
 
-			var type = Enum.Parse<ValueTypes>(splits[0].Trim(), true);
+			var type = Enum.Parse<VariantType>(splits[0].Trim(), true);
 			IReadOnlyList<string> enumValues = null;
-			if (type == ValueTypes.Enum) {
+			if (type == VariantType.Enum) {
 				if (splits.Length != 2)
 					throw new ArgumentException("Invalid format: " + valueDeclaration);
 				enumValues = splits[1].Split(',', StringSplitOptions.RemoveEmptyEntries).Select(x => x.ToLower().Trim()).ToList();
@@ -74,6 +107,20 @@ namespace CO2Monitor.Core.Entities {
 			}
 
 			return new VariantDeclaration(type, enumValues);
+		}
+
+		public static bool operator ==(VariantDeclaration a, VariantDeclaration b) {
+			if (a is null)
+				return b is null;
+
+			return a.Equals(b);
+		}
+
+		public static bool operator !=(VariantDeclaration a, VariantDeclaration b) {
+			if (a is null)
+				return !(b is null);
+
+			return !a.Equals(b);
 		}
 	}
 }

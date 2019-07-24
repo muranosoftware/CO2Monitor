@@ -6,9 +6,10 @@ using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using CO2Monitor.Core.Interfaces;
 using CO2Monitor.Infrastructure.Helpers;
 using System.Collections.Specialized;
+using CO2Monitor.Core.Interfaces.Services;
+using CO2Monitor.Core.Interfaces.Devices;
 
 namespace CO2Monitor.Infrastructure.Data {
 	public class FileDeviceRepository : IDeviceRepository {
@@ -34,13 +35,35 @@ namespace CO2Monitor.Infrastructure.Data {
 			_logger = logger;
 
 			var jsonResolver = new PropRenAndIgnDepInjSerializerContractResolver(serviceProvider);
-			foreach (Type t in deviceFactory.GetDeviceTypes())
-				jsonResolver.IgnoreProperty(t, 
-				                            nameof(IDevice.IsRemote), 
-				                            nameof(IDevice.IsExtensible), 
-				                            nameof(IRemoteDevice.LatestSuccessfulAccess), 
-				                            nameof(IRemoteDevice.Status), 
-				                            nameof(IRemoteDevice.State));
+			foreach (Type t in deviceFactory.GetDeviceTypes()) {
+				jsonResolver.IgnoreProperty(typeof(IBaseDevice), nameof(IBaseDevice.State));
+				jsonResolver.IgnoreProperty(typeof(IDevice), nameof(IDevice.Info));
+
+				if (t.GetInterfaces().Contains(typeof(IDevice))) {
+					jsonResolver.IgnoreProperty(t, 
+					                            nameof(IDevice.Info));
+				}
+
+				if (t.GetInterfaces().Contains(typeof(ICalendarDevice))) {
+					jsonResolver.IgnoreProperty(t, 
+					                            nameof(ICalendarDevice.IsTodayWorkDay), 
+					                            nameof(ICalendarDevice.IsTomorrowWorkDay), 
+					                            nameof(ICalendarDevice.BaseInfo), 
+					                            nameof(ICalendarDevice.IsYesterdayWorkDay));
+				}
+
+				if (t.GetInterfaces().Contains(typeof(IScheduleTimer))) {
+					jsonResolver.IgnoreProperty(t,
+					                            nameof(IScheduleTimer.BaseInfo));
+				}
+
+				if (t.GetInterfaces().Contains(typeof(IRemoteDevice))) {
+					jsonResolver.IgnoreProperty(t, 
+					                            nameof(IRemoteDevice.LatestSuccessfulAccess), 
+					                            nameof(IRemoteDevice.Status), 
+					                            "DeviceState");
+				}
+			}
 
 			_jsonSettings = new JsonSerializerSettings {
 				TypeNameHandling = TypeNameHandling.Auto,
@@ -59,6 +82,9 @@ namespace CO2Monitor.Infrastructure.Data {
 		public event NotifyCollectionChangedEventHandler CollectionChanged;
 
 		public T Add<T>(T device) where T : class, IDevice {
+			if (_data.Devices.ContainsKey(device.Id))
+				return device;
+
 			device.Id = _data.GetNextId();
 			_logger.LogInformation($"Adding device [{device.GetType().Name}:{device.Name}:{device.Id}] to repo");
 
@@ -92,10 +118,10 @@ namespace CO2Monitor.Infrastructure.Data {
 		}
 
 		public IEnumerable<T> List<T>(Predicate<T> condition = null) where T : class, IDevice {
-			if (condition != null)
-				return _data.Devices.Values.OfType<T>().Where(x => condition(x));
-			else
+			if (condition is null)
 				return _data.Devices.Values.OfType<T>();
+			else
+				return _data.Devices.Values.OfType<T>().Where(x => condition(x));
 		}
 
 		public void Update<T>(T device) where T : class, IDevice {

@@ -1,0 +1,1 @@
+{"stop":" action Fan.light(off)","start":" action Fan.light(on)","co2plot":" plot CO2Sensor co2"}

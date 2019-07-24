@@ -1,6 +1,6 @@
 ﻿using System;
 using Microsoft.Extensions.DependencyInjection;
-using CO2Monitor.Core.Interfaces;
+using CO2Monitor.Core.Interfaces.Devices;
 
 namespace CO2Monitor.Infrastructure.Devices {
 	class DeviceBuilder<T> : IDeviceBuilder where T : IDevice {

@@ -37,8 +37,9 @@ namespace CO2Monitor.Infrastructure.Helpers {
 		protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization) {
 			JsonProperty property = base.CreateProperty(member, memberSerialization);
 
-			if (IsIgnored(property.DeclaringType, property.PropertyName)) {
+			if (!property.Writable || IsIgnored(property.DeclaringType, property.PropertyName)) {
 				property.ShouldSerialize = i => false;
+				property.ShouldDeserialize = i => false;
 				property.Ignored = true;
 			}
 

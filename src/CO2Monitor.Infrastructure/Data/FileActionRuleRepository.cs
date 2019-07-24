@@ -6,8 +6,8 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using Newtonsoft.Json;
 using CO2Monitor.Core.Entities;
-using CO2Monitor.Core.Interfaces;
 using CO2Monitor.Infrastructure.Helpers;
+using CO2Monitor.Core.Interfaces.Services;
 
 namespace CO2Monitor.Infrastructure.Data {
 	public class FileActionRuleRepository : IActionRuleRepository {
@@ -62,10 +62,10 @@ namespace CO2Monitor.Infrastructure.Data {
 		}
 
 		public IEnumerable<ActionRule> List(Predicate<ActionRule> predicate) {
-			if (predicate != null)
-				return _data.Rules.Values.Where(predicate.Invoke);
-			else
+			if (predicate is null)
 				return _data.Rules.Values;
+			else
+				return _data.Rules.Values.Where(predicate.Invoke);
 		}
 	
 		public void Update(ActionRule rule) {

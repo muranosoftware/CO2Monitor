@@ -5,22 +5,36 @@
 			Type = fieldType;
 		}
 
-		public string Name { get; private set; }
-		public VariantDeclaration Type { get; private set; }
+		public string Name { get; set; }
+		public VariantDeclaration Type { get; set; }
 
-		public override bool Equals(object obj) {
-			if (obj == null)
+		public bool Equals(DeviceStateFieldDeclaration other) {
+			if (other is null)
 				return false;
 
-			if (GetType() != obj.GetType())
-				return false;
-
-			var other = (DeviceStateFieldDeclaration)obj;
-			return (Type == other.Type) && (Name == other.Name);
+			return Type.Equals(other.Type) && Name == other.Name;
 		}
 
+		public override bool Equals(object obj) => Equals(obj as DeviceStateFieldDeclaration);
+
 		public override int GetHashCode() {
-			return Type.GetHashCode() + 431 * (Name == null ? 0 : Name.GetHashCode());
+			return Type.GetHashCode() + 431 * (Name is null ? 0 : Name.GetHashCode());
+		}
+
+		public override string ToString() => $"{Name} {Type}";
+		
+		public static bool operator ==(DeviceStateFieldDeclaration a, DeviceStateFieldDeclaration b) {
+			if (a is null)
+				return b is null;
+			
+			return a.Equals(b);
+		}
+
+		public static bool operator !=(DeviceStateFieldDeclaration a, DeviceStateFieldDeclaration b) {
+			if (a is null)
+				return !(b is null);
+
+			return !a.Equals(b);
 		}
 	}
 }

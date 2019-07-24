@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
-using CO2Monitor.Core.Interfaces;
+using CO2Monitor.Core.Interfaces.Devices;
 
 namespace CO2Monitor.Infrastructure.Devices {
 	public class DeviceFactory : IDeviceFactory {

@@ -1,4 +1,30 @@
-﻿//////////////////////////////////////// DEVICES//////////////////////////////////////////////////
+﻿//////////////////////////////////////// ERRORS //////////////////////////////////////////////////
+
+function showErrorWindow(error) {
+    var msg = error.message;
+    if ("response" in error && "data" in error.response) {
+        Object.keys(error.response.data).forEach(p => msg += "\n" + p);
+        
+    }
+
+    window.alert(msg);
+}
+
+//////////////////////////////////////// DEVICES //////////////////////////////////////////////////
+function getDevices(thenFunc) {
+    axios.get("/api/devices", {
+        params: null
+    })
+        .then(function (response) {
+            if (thenFunc) {
+                thenFunc(response.data);
+            }
+        })
+        .catch(function (error) {
+            showErrorWindow(error);
+        });
+}
+
 
 function deleteDevice(id, thenFunc) {
     axios.delete("/api/devices", {
@@ -12,7 +38,7 @@ function deleteDevice(id, thenFunc) {
             }
         })
         .catch(function (error) {
-            window.alert(error.message);
+            showErrorWindow(error);
         });
 }
 
@@ -29,7 +55,7 @@ function getRemote(thenFunc) {
             }
         })
         .catch(function (error) {
-            window.alert(error.message);
+            showErrorWindow(error);
         });
 }
 
@@ -56,7 +82,7 @@ function createRemote(name, address, fields, actions, thenFunc) {
             //
         })
         .catch(function (error) {
-            window.alert(error.message);
+            showErrorWindow(error);
         });
 }
 
@@ -72,7 +98,7 @@ function getTimers(thenFunc) {
             }
         })
         .catch(function (error) {
-            window.alert(error.message);
+            showErrorWindow(error);
         });
 }
 
@@ -90,7 +116,7 @@ function createTimer(name, time, thenFunc) {
             }
         })
         .catch(function (error) {
-            window.alert(error.message);
+            showErrorWindow(error);
         });
 }
 
@@ -108,7 +134,7 @@ function patchTimer(id, name, time, thenFunc) {
             }
         })
         .catch(function (error) {
-            window.alert(error.message);
+            showErrorWindow(error);
         });
 }
 
@@ -125,7 +151,33 @@ function getRules(thenFunc) {
             }
         })
         .catch(function (error) {
-            window.alert(error.message);
+            showErrorWindow(error);
+        });
+}
+
+function createRule(rule, thenFunc) {
+    axios.post("/api/rules", rule, {
+        params: null
+    })
+        .then(function (response) {
+            $("#newRuleModal").modal("hide");
+            fillRuleTable();
+        })
+        .catch(function (error) {
+            showErrorWindow(error);
+        });
+}
+
+function editRule(rule, thenFunc) {
+    axios.patch("/api/rules", rule, {
+        params: null
+    })
+        .then(function (response) {
+            $("#newRuleModal").modal("hide");
+            fillRuleTable();
+        })
+        .catch(function (error) {
+            showErrorWindow(error);
         });
 }
 
@@ -141,7 +193,42 @@ function deleteRule(id, thenFunc) {
             }
         })
         .catch(function (error) {
-            window.alert(error.message);
+            showErrorWindow(error);
+        });
+}
+
+////////////////////////////////////////////////// EXTENTIONS ///////////////////////////////////////////
+
+function getExtensionTypes(thenFunc) {
+    axios.get("/api/devices/extensionTypes", {
+        params: null
+    })
+        .then(function (response) {
+            if (thenFunc) {
+                thenFunc(response.data);
+            }
+        })
+        .catch(function (error) {
+            showErrorWindow(error);
+        });
+}
+
+
+function createExtension(deviceId, type, parameter, thenFunc) {
+    axios.post("/api/devices/extensions", null, {
+        params: {
+            deviceId: deviceId,
+            type: type,
+            parameter: parameter
+        }
+    })
+        .then(function (response) {
+            if (thenFunc) {
+                thenFunc(response.data);
+            }
+        })
+        .catch(function (error) {
+            showErrorWindow(error);
         });
 }
 
@@ -157,7 +244,7 @@ function getLog(thenFunc) {
             }
         })
         .catch(function (error) {
-            window.alert(error.message);
+            showErrorWindow(error);
         });
 }
 
@@ -176,7 +263,7 @@ function serializedArrToObj(arr) {
 }
 
 function createTableRow(data, columns) {
-    tr = document.createElement('tr');
+    var tr = document.createElement('tr');
     jQuery.data(tr, "data", data);
     for (let i in columns) {
         c = columns[i];
@@ -216,11 +303,61 @@ function checkTimeFormat(time) {
 
 function fillTable(tableId, data, columns) {
 
-    tbody = document.createElement('tbody');
+    var tbody = document.createElement('tbody');
     for (let i in data) {
         tbody.appendChild(createTableRow(data[i], columns));
     }
-    table = document.getElementById(tableId);
+    var table = document.getElementById(tableId);
     table.replaceChild(tbody, table.getElementsByTagName("tbody")[0]);
 }
 
+
+function createTr(params) {
+    var tr = document.createElement('tr');
+    for (var i = 0; i < arguments.length; i++) {
+        var td = document.createElement('td');
+        td.appendChild(arguments[i]);
+        tr.appendChild(td);
+    }
+    return tr;
+}
+
+
+function createButton(text, onclick, cls = null) {
+    var b = document.createElement('button');
+    b.onclick = onclick;
+    b.innerHTML = text;
+    if (cls)
+        b.setAttribute("class", cls);
+    var div = document.createElement("div");
+    div.setAttribute("align", "center");
+    div.appendChild(b);
+
+    return div;
+}
+
+function createSelect(optionValueData, selector, onchange = null, cls = null) {
+    var slct = document.createElement('select');
+    for (var i = 0; i < optionValueData.length; i++) {
+        var opt = document.createElement('option');
+        opt.value = optionValueData[i];
+        jQuery.data(opt, "data", optionValueData[i]);
+        opt.innerHTML = selector(optionValueData[i]);
+        slct.appendChild(opt);
+    }
+
+    if (cls)
+        slct.setAttribute("class", cls);
+
+    if (onchange)
+        slct.onchange = onchange;
+    return slct;
+}
+
+function createInput(cls = null, disabled = false) {
+    var input = document.createElement("input");
+    input.disabled = disabled;
+    if (cls)
+        input.setAttribute("class", cls);
+    return input;
+}

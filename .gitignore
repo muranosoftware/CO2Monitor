@@ -273,3 +273,4 @@ CO2ControllerSettings.json
 /src/CO2Monitor.Controller/EventLog.sqlite
 /src/CO2Monitor.Controller/Rules.json
 /src/CO2Monitor.Controller/CO2Monitor.sqlite
+/src/CO2Monitor.Controller/sectrets.ini

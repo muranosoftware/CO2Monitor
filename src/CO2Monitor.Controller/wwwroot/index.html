@@ -10,14 +10,12 @@
     <meta name="author" content="">
     <title>CO2 Monitor</title>
 
-    <!-- Custom fonts for this template-->
     <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
 
-    <!-- Page level plugin CSS-->
     <link href="vendor/datatables/dataTables.bootstrap4.css" rel="stylesheet">
 
-    <!-- Custom styles for this template-->
     <link href="css/sb-admin.css" rel="stylesheet">
+
     <script src="js/axios.min.js"></script>
 </head>
 
@@ -32,45 +30,7 @@
         </button>
 
         <!-- Navbar -->
-        <ul class="navbar-nav ml-auto ml-md-0">
-            <li class="nav-item dropdown no-arrow mx-1">
-                <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <i class="fas fa-bell fa-fw"></i>
-                    <span class="badge badge-danger">9+</span>
-                </a>
-                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="alertsDropdown">
-                    <a class="dropdown-item" href="#">Action</a>
-                    <a class="dropdown-item" href="#">Another action</a>
-                    <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="#">Something else here</a>
-                </div>
-            </li>
-            <li class="nav-item dropdown no-arrow mx-1">
-                <a class="nav-link dropdown-toggle" href="#" id="messagesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <i class="fas fa-envelope fa-fw"></i>
-                    <span class="badge badge-danger">7</span>
-                </a>
-                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="messagesDropdown">
-                    <a class="dropdown-item" href="#">Action</a>
-                    <a class="dropdown-item" href="#">Another action</a>
-                    <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="#">Something else here</a>
-                </div>
-            </li>
-            <li class="nav-item dropdown no-arrow">
-                <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <i class="fas fa-user-circle fa-fw"></i>
-                </a>
-                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
-                    <a class="dropdown-item" href="#">Settings</a>
-                    <a class="dropdown-item" href="#">Activity Log</a>
-                    <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">Logout</a>
-                </div>
-            </li>
-        </ul>
-
-
+        <ul class="navbar-nav ml-auto ml-md-0"></ul>
     </nav>
 
     <div id="wrapper">
@@ -99,10 +59,9 @@
                                     <tr>
                                         <th style="width: 15.0%">Name</th>
                                         <th style="width: 5.0%">Id</th>
-                                        <th style="width: 15.00%">Status</th>
-                                        <th style="width: 40.00%">State</th>
-                                        <th style="width: 15.00%">Address</th>
-                                        <th style="width: 5.00%"></th>
+                                        <th style="width: 5.00%"><div align="center"> Status </div></th>
+                                        <th style="width: 50.00%">State</th>
+                                        <th style="width: 20.00%">Address</th>
                                         <th style="width: 5.00%"></th>
                                     </tr>
                                 </thead>
@@ -143,7 +102,7 @@
                         <i class="fas fa-table"></i>
                         Rules
                         <span>
-                            <a class="btn btn-info" href="#" data-toggle="modal" data-target="#newRuleModal">New</a>
+                            <a onclick="newRuleModalButtonClicked(event)"  class="btn btn-info"  href="#" data-toggle="modal">New</a>
                         </span>
                     </div>
                     <div class="card-body">
@@ -163,19 +122,6 @@
                         </div>
                     </div>
                 </div>
-
-
-                <!-- Area Chart Example-->
-                <div class="card mb-3">
-                    <div class="card-header">
-                        <i class="fas fa-chart-area"></i>
-                        Area Chart Example
-                    </div>
-                    <div class="card-body">
-                        <canvas id="myAreaChart" width="100%" height="30"></canvas>
-                    </div>
-                </div>
-
 
                 <div class="card mb-3">
                     <div class="card-header">
@@ -247,7 +193,7 @@
                             <div class="modal-header">
                                 <h5 class="modal-title">Fields</h5>
                                 <span>
-                                    <a id="addFieldNewRemoteButton" class="btn btn-primary">Add</a>
+                                    <a id="addFieldNewRemoteButton" class="btn btn-info">Add</a>
                                 </span>
                             </div>
                             <div>
@@ -255,8 +201,8 @@
                                     <thead>
                                         <tr>
                                             <th style="width: 35.00%">Name </th>
-                                            <th style="width: 15.00%">Argument Type</th>
-                                            <th style="width: 38.00%">Argument Enum Values</th>
+                                            <th style="width: 15.00%">Type</th>
+                                            <th style="width: 38.00%">Enum Values</th>
                                             <th style="width: 12.00%"></th>
                                         </tr>
                                     </thead>
@@ -266,7 +212,7 @@
                             <div class="modal-header">
                                 <h5 class="modal-title">Actions</h5>
                                 <span>
-                                    <a id="addActionNewRemoteButton" class="btn btn-primary">Add</a>
+                                    <a id="addActionNewRemoteButton" class="btn btn-info">Add</a>
                                 </span>
                             </div>
                             <div>
@@ -282,12 +228,30 @@
                                     <tbody id="newRemoteActionTableBody"></tbody>
                                 </table>
                             </div>
+                            <div class="modal-header">
+                                <h5 class="modal-title">Extensions</h5>
+                                <span>
+                                    <a id="addExtensionNewRemoteButton" class="btn btn-info">Add</a>
+                                </span>
+                            </div>
+                            <div>
+                                <table class="table table-bordered" id="newRemoteExtensionTable" width="100%" cellspacing="0">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 44.00%">Extension</th>
+                                            <th style="width: 44.00%">Parameter</th>
+                                            <th style="width: 12.00%"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="newRemoteExtensionTableBody"></tbody>
+                                </table>
+                            </div>
                         </form>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                    <a id="createNewRemoteButton" class="btn btn-primary">Create</a>
+                    <a id="createNewRemoteButton" class="btn btn-info">Create</a>
                 </div>
             </div>
         </div>
@@ -324,7 +288,7 @@
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                    <a id="createNewTimerButton" class="btn btn-primary">Create</a>
+                    <a id="createNewTimerButton" class="btn btn-info">Create</a>
                 </div>
             </div>
         </div>
@@ -366,10 +330,10 @@
     </div>
 
     <div class="modal fade" id="newRuleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
+        <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">New Rule</h5>
+                    <h5 class="modal-title">New/Edit Rule</h5>
                     <button class="close" type="button" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">×</span>
                     </button>
@@ -377,6 +341,10 @@
                 <div class="container">
                     <div class="card-body">
                         <form id="newRuleForm">
+                            <div class="form-group">
+                                <label for="inputRuleName">Rule Name</label>
+                                <input name="Name" id="inputRuleName" class="form-control">
+                            </div>
                             <div class="form-group">
                                 <label for="selectSourceDeviceId">Event Source Device</label>
                                 <select name="SourceDeviceId" id="selectSourceDeviceId" class="form-control"></select>
@@ -394,8 +362,36 @@
                                 <select name="Action" id="selectAction" class="form-control"></select>
                             </div>
                             <div class="form-group">
-                                <label for="selectAction">Value</label>
-                                <input name="Value" id="inputValue" class="form-control" input />
+                                <label for="selectArgumentSoource">Action Argument Source</label>
+                                <select name="argumentSource" id="selectArgumentSource" onchange="selectArgumentSourceOnChange(event)" class="form-control">
+                                    <option value="EventData">EventData</option>
+                                    <option value="Constant">Constant</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="selectAction">Constant</label>
+                                <input name="Value" id="inputValue" class="form-control" input disabled />
+                            </div>
+                            <div class="modal-header">
+                                <h5 class="modal-title">Conditions</h5>
+                                <span>
+                                    <a id="addRuleConditionButton" class="btn btn-info">Add</a>
+                                </span>
+                            </div>
+
+                            <div>
+                                <table class="table table-bordered" id="newRuleConditionTable" width="100%" cellspacing="0">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 25.00%">Device</th>
+                                            <th style="width: 25.00%">Field</th>
+                                            <th style="width: 15.00%"></th>
+                                            <th style="width: 25.00%">Value</th>
+                                            <th style="width: 10.00%"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="newRuleConditionTableBody"></tbody>
+                                </table>
                             </div>
                         </form>
                     </div>
@@ -407,9 +403,6 @@
             </div>
         </div>
     </div>
-
-
-
     <!-- Bootstrap core JavaScript-->
     <script src="vendor/jquery/jquery.min.js"></script>
     <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
@@ -425,332 +418,594 @@
     <!-- Custom scripts for all pages-->
     <script src="js/sb-admin.min.js"></script>
 
-    <!-- Demo scripts for this page-->
-    <script src="js/demo/datatables-demo.js"></script>
-    <script src="js/demo/chart-area-demo.js"></script>
+    <script src="js/signalr/signalr.min.js"></script>
 
     <script src="js/co2monitor-api.js"></script>
     <script>
-        function deleteDeviceClicked(event) {
-            device = jQuery.data(event.srcElement.closest("tr"), "data");
+    function deleteDeviceClicked(event) {
+        var device = jQuery.data(event.srcElement.closest("tr"), "data");
 
-            if (window.confirm(`Do you really want to delete device [${device.name}:${device.id}]?`))
-            {
-                deleteDevice(device.id, () => {
-                    fillTimerTable();
-                    fillRemoteTable();
-                });
-            }
-        };
-
-        function showEditRemoteModal(event) {
-            window.alert("Not Implemented!");
-        }
-
-        function fillRemoteTable() {
-            getRemote((remote) => {
-                for (let i in remote) {
-                    r = remote[i];
-                    r.edit = '<button class="btn btn-info" onclick="showEditRemoteModal(event)">Edit</button>';
-                    r.del = '<button class="btn btn-danger" onclick="deleteDeviceClicked(event)">Del</button>';
-                }
-                fillTable("remoteTable", remote, ["name", "id", "status", "state", "address", "edit", "del"]);
-            });
-        }
-
-        function showEditTimerModal(event) {
-            timer = jQuery.data(event.srcElement.closest("tr"), "data");
-            $("#editTimerForm").data("data", timer);
-            document.getElementById("inputTimerEditedName").value = timer.name;
-            document.getElementById("inputTimerEditedTime").value = timer.alarmTime;
-            $('#editTimerModal').modal('show');
-        }
-
-        function fillTimerTable() {
-            getTimers((timers) => {
-                for (let i in timers) {
-                    t = timers[i];
-                    t.edit = `<button class="btn btn-info" onclick="showEditTimerModal(event)">Edit</button>`;
-                    t.del = `<button class="btn btn-danger" onclick="deleteDeviceClicked(event)">Del</button>`;
-                }
-                fillTable("timerTable", timers, ["name", "id", "alarmTime", "edit", "del"]);
-            });
-        }
-
-        function showEditRuleModal(event) {
-            window.alert("Not Implemented!");
-        }
-
-        function deleteRuleClicked(event) {
-            rule = jQuery.data(event.srcElement.closest("tr"), "data");
-            if (window.confirm(`Do you really want to delete rule [${rule.name}:${rule.id}]?`))
-            {
-                deleteRule(rule.id, () => {
-                    fillRuleTable();
-                });
-            }
-        };
-
-        function fillRuleTable() {
-            getRules((rules) => {
-                for (let i in rules) {
-                    r = rules[i];
-                    r.desc = `Src: { Id = ${r.sourceDeviceId}, Event = "${r.event.name}}", Target: { Id = ${r.targetDeviceId}, Action="${r.action.path}", Argument="${r.actionArgument}"}`;
-                    r.edit = '<button class="btn btn-info" onclick="showEditRuleModal(event)">Edit</button>';
-                    r.del = '<button class="btn btn-danger" onclick="deleteRuleClicked(event)">Del</button>';
-                }
-                fillTable("ruleTable", rules, ["name", "id", "desc", "edit", "del"]);
-            });
-        }
-
-        function fillLogTable() {
-            getLog((records) => {
-                for (let i in records) {
-                    r = records[i];
-                    t = new Date(r.time);
-                    r.formatTime = t.toISOString().split('.')[0].replace('T', ' ');
-                }
-                fillTable("logTable", records, ["formatTime", "logLevel", "message"]);
-            });
-        }
-
-
-        newTimerBtn = document.getElementById("createNewTimerButton");
-        newTimerBtn.onclick = function () {
-            timerData = serializedArrToObj($("#newTimerForm").serializeArray());
-            if (!checkTimeFormat(timerData.time))
-                return;
-
-            if (isEmptyOrSpaces(timerData.name)) {
-                window.alert("Timer Name must be not empty!");
-                return;
-            }
-
-            createTimer(timerData.name, timerData.time, () => {
-                $('#newTimerModal').modal('hide');
+        if (window.confirm(`Do you really want to delete device [${device.name}:${device.id}]?`)) {
+            deleteDevice(device.id, () => {
                 fillTimerTable();
+                fillRemoteTable();
             });
-        };
+        }
+    };
 
-        saveTimerChanchedBtn = document.getElementById("saveTimerChanchedButton");
-        saveTimerChanchedBtn.onclick = function () {
 
-            timer = $("#editTimerForm").data("data");
-          
-            timerData = serializedArrToObj($("#editTimerForm").serializeArray());
-            if (!checkTimeFormat(timerData.time))
-                return;
+    function fillRemoteTable() {
+        getRemote((remote) => {
+            for (let i in remote) {
+                r = remote[i];
+                r.del = '<div align="center"><button class="btn btn-danger" onclick="deleteDeviceClicked(event)">Del</button></div>';
+                if (r.status == "Ok") {
+                    r.statusIcon = '<div align="center"><img src="img/ok-64.png" alt="NotAccessible" width="32"></div>';
+                } else {
+                        r.statusIcon = '<div align="center"><img src="img/not-accessible.png" alt="NotAccessible" width="32"></div>';
+                }
+            }
+            fillTable("remoteTable", remote, ["name", "id", "statusIcon", "state", "address", "del"]);
+        });
+    }
 
-            if (isEmptyOrSpaces(timerData.name)) {
-                window.alert("Timer Name must be not empty!");
-                return;
+    function showEditTimerModal(event) {
+        var timer = jQuery.data(event.srcElement.closest("tr"), "data");
+        $("#editTimerForm").data("data", timer);
+        document.getElementById("inputTimerEditedName").value = timer.name;
+        document.getElementById("inputTimerEditedTime").value = timer.alarmTime;
+        $('#editTimerModal').modal('show');
+    }
+
+    function fillTimerTable() {
+        getTimers((timers) => {
+            for (let i in timers) {
+                t = timers[i];
+                t.del = `<div align="center"><button class="btn btn-danger" onclick="deleteDeviceClicked(event)">Del</button></div>`;
+                t.edit = `<div align="center"><button class="btn btn-info" onclick="showEditTimerModal(event)">Edit</button></div>`;
+            }
+            fillTable("timerTable", timers, ["name", "id", "alarmTime", "edit", "del"]);
+        });
+    }
+
+    
+    function newRuleModalButtonClicked(event) {
+        var form = document.getElementById("newRuleForm");
+        jQuery.data(form, "command", "new");
+        jQuery.data(form, "rule", {});
+
+        document.getElementById("createNewRuleButton").innerHTML = "Create";
+
+        $('#newRuleModal').modal('show');
+    }
+
+    function showEditRuleModal(event) {
+         var rule = jQuery.data(event.srcElement.closest("tr"), "data");
+
+        var form = document.getElementById("newRuleForm");
+        jQuery.data(form, "command", "edit");
+        jQuery.data(form, "rule", rule);
+
+        document.getElementById("createNewRuleButton").innerHTML = "Save";
+
+
+        $('#newRuleModal').modal('show');
+    }
+
+    function deleteRuleClicked(event) {
+        var rule = jQuery.data(event.srcElement.closest("tr"), "data");
+        if (window.confirm(`Do you really want to delete rule [${rule.name}:${rule.id}]?`)) {
+            deleteRule(rule.id, () => {
+                fillRuleTable();
+            });
+        }
+    };
+
+    function fillRuleTable() {
+        getRules((rules) => {
+            for (let i in rules) {
+                r = rules[i];
+                r.desc = `Src: { Id = ${r.sourceDeviceId}, Event = "${r.event.name}}", Target: { Id = ${r.targetDeviceId}, Action="${r.action.path}", ArgumentSource="${r.argumentSource}" , ConstantArgument="${r.actionArgument}"}, Conditons="${JSON.stringify(r.conditions.map(c => c.deviceId + "." + c.field.name + " " + c.conditionType + " " + c.conditionArgument))}"`;
+                r.edit = '<button class="btn btn-info" onclick="showEditRuleModal(event)">Edit</button>';
+                r.del = '<button class="btn btn-danger" onclick="deleteRuleClicked(event)">Del</button>';
+            }
+            fillTable("ruleTable", rules, ["name", "id", "desc", "edit", "del"]);
+        });
+    }
+
+    function fillLogTable() {
+        getLog((records) => {
+            var prev = 0;   
+            var tableRecords = [];
+            for (let i in records) {
+                r = records[i];
+                t = new Date(r.time);
+                r.formatTime = t.toLocaleTimeString("ru-RU"); 
+                if (r.logLevel == "Error") {
+                    r.level = '<b>Error</b>';
+                } else {
+                    r.level = r.logLevel.substring(0, 4);            
+                }
+
+                var cur = 3600 * t.getHours() + 60 * t.getMinutes() + t.getSeconds();
+                if (cur > prev) {
+                    tableRecords.push({ formatTime: `<b> ${t.toISOString().substring(0,10).replace(/-/g, '.')} </b>`, level: "", message: "" });
+                }
+                prev = cur;
+
+                tableRecords.push(r);
+            }
+            fillTable("logTable", tableRecords, ["formatTime", "level", "message"]);
+        });
+    }
+
+    $("#newTimerModal").on("shown.bs.modal", () => {
+        getDevices((devices) => {
+            var id = 1;
+            if (devices.length > 0) {
+                id = Math.max.apply(Math, devices.map(d => d.id)) + 1;
             }
 
-            patchTimer(timer.id, timerData.name, timerData.time, () => {
-                $('#editTimerModal').modal('hide');
-                fillTimerTable();
-            });
-        };
+            inputTimerName = document.getElementById("inputTimerName");
+            inputTimerName.value = "Timer" + id;
+        });
+    });
 
-        function deleteActionFromNewRemoteClick(event) {
-            body = event.srcElement.closest("tbody");
-            row = event.srcElement.closest("tr");
-            body.removeChild(row);
+    var newTimerBtn = document.getElementById("createNewTimerButton");
+    newTimerBtn.onclick = function () {
+        timerData = serializedArrToObj($("#newTimerForm").serializeArray());
+        if (!checkTimeFormat(timerData.time))
+            return;
+
+        if (isEmptyOrSpaces(timerData.name)) {
+            window.alert("Timer Name must be not empty!");
+            return;
         }
 
-        addActionBtn = document.getElementById("addActionNewRemoteButton");
-        addActionBtn.onclick = function () {
-            table = document.getElementById("newRemoteActionTable");
-            tbody = table.getElementsByTagName("tbody")[0];
+        createTimer(timerData.name, timerData.time, () => {
+            $('#newTimerModal').modal('hide');
+            fillTimerTable();
+        });
+    };
 
-            tr = document.createElement("tr");
-            tr.innerHTML = `<td><input class="form-control"></td>` +
-                `<td><select class="form-control"><option>Void</option><option>Float</option><option>String</option><option>Enum</option></select></td>` +
-                `<td><input class="form-control"></td>` + 
-                `<td><button class="btn btn-danger" onclick="deleteActionFromNewRemoteClick(event)">Del</button></td>`
-                ;
-            tbody.appendChild(tr);
-        };
+    var saveTimerChanchedBtn = document.getElementById("saveTimerChanchedButton");
+    saveTimerChanchedBtn.onclick = function () {
 
-        addFieldBtn = document.getElementById("addFieldNewRemoteButton");
-        addFieldBtn.onclick = function () {
-            table = document.getElementById("newRemoteFieldTable");
-            tbody = table.getElementsByTagName("tbody")[0];
+        timer = $("#editTimerForm").data("data");
 
-            tr = document.createElement("tr");
+        timerData = serializedArrToObj($("#editTimerForm").serializeArray());
+        if (!checkTimeFormat(timerData.time))
+            return;
 
-            td = document.createElement("td");
-            input = document.createElement("input");
-            input.setAttribute("class", "form-control");
-            td.appendChild(input);
-            tr.appendChild(td);
+        if (isEmptyOrSpaces(timerData.name)) {
+            window.alert("Timer Name must be not empty!");
+            return;
+        }
 
+        patchTimer(timer.id, timerData.name, timerData.time, () => {
+            $('#editTimerModal').modal('hide');
+            fillTimerTable();
+        });
+    };
 
-            td = document.createElement("td");
-            select = document.createElement("select");
-            select.setAttribute("class", "form-control");
-            select.innerHTML = "<option>Float</option><option>String</option><option>Enum</option>";
-            td.appendChild(select);
-            tr.appendChild(td);
-
-            td = document.createElement("td");
-            input = document.createElement("input");
-            input.setAttribute("class", "form-control");
-            td.appendChild(input);
-            tr.appendChild(td);
-
-            tbody.appendChild(tr);
-        };
+    function deleteRowFromTableClick(event) {
+        var body = event.srcElement.closest("tbody");
+        var row = event.srcElement.closest("tr");
+        body.removeChild(row);
+    }
 
 
-        createRemoteBtn = document.getElementById("createNewRemoteButton");
-        createRemoteBtn.onclick = function () {
-            info = serializedArrToObj($("#newRemoteForm").serializeArray());
-            console.debug(info);
-            actions = [];
-            fields = [];
+    function enableEnumValuesInput(event) {
+        var typeSelect = event.srcElement;
+        typeSelect.value
 
-            $("#newRemoteActionTableBody").find("tr").each(function (i, row) {
-                tds = row.getElementsByTagName("td");
+        var input = typeSelect.closest("tr").getElementsByTagName("input")[1];
+        if (typeSelect.value == "Enum") {
+            input.disabled = false;
+        } else {
+            input.disabled = true;
+            input.value = null;
+        }
+    }
 
-                type = tds[1].getElementsByTagName("select")[0].value;
-                vals = null;
-                if (type == "Enum") {
-                    vals = tds[2].getElementsByTagName("input")[0].value.split(",").map(x => x.trim());
+    var addActionBtn = document.getElementById("addActionNewRemoteButton");
+    addActionBtn.onclick = function () {
+        var table = document.getElementById("newRemoteActionTable");
+        var tbody = table.getElementsByTagName("tbody")[0];
+
+        var tr = createTr(
+            createInput("form-control"),
+            createSelect(["Void", "Float", "String", "Enum"], x => x, enableEnumValuesInput, "form-control"),
+            createInput("form-control", true),
+            createButton("Del", deleteRowFromTableClick, "btn btn-danger"));
+        tbody.appendChild(tr);
+    };
+
+    var addFieldBtn = document.getElementById("addFieldNewRemoteButton");
+    addFieldBtn.onclick = function () {
+        var table = document.getElementById("newRemoteFieldTable");
+        var tbody = table.getElementsByTagName("tbody")[0];
+
+        var tr = createTr(
+            createInput("form-control"),
+            createSelect(["Float", "Time", "String", "Enum"], (x) => x, enableEnumValuesInput, "form-control"),
+            createInput("form-control", true),
+            createButton("Del", deleteRowFromTableClick, "btn btn-danger"));
+
+
+        tbody.appendChild(tr);
+    };
+
+
+    function selectArgumentSourceOnChange() {
+        slct = document.getElementById("selectArgumentSource");
+        if (slct.value == "Constant") {
+            document.getElementById("inputValue").disabled = false;
+        } else {
+            document.getElementById("inputValue").disabled = true;
+        }
+    }
+
+    var addExtensionNewRemoteBtn = document.getElementById("addExtensionNewRemoteButton");
+    addExtensionNewRemoteBtn.onclick = function () {
+        getExtensionTypes(types => {
+            var tbody = document.getElementById("newRemoteExtensionTableBody");
+            tbody.appendChild(
+                createTr(
+                    createSelect(types, (x) => x, null, "form-control"),
+                    createInput("form-control"),
+                    createButton("Del", deleteRowFromTableClick, "btn btn-danger")
+                )
+            );
+        });
+    }
+
+    var createRemoteBtn = document.getElementById("createNewRemoteButton");
+    createRemoteBtn.onclick = function () {
+        var info = serializedArrToObj($("#newRemoteForm").serializeArray());
+        console.debug(info);
+        var actions = [];
+        var fields = [];
+        var extensions = [];
+
+        $("#newRemoteActionTableBody").find("tr").each(function (i, row) {
+            var tds = row.getElementsByTagName("td");
+
+            var type = tds[1].getElementsByTagName("select")[0].value;
+            var vals = null;
+            if (type == "Enum") {
+                vals = tds[2].getElementsByTagName("input")[0].value.split(",").map(x => x.trim());
+            }
+
+            actions.push({
+                path: tds[0].getElementsByTagName("input")[0].value.trim(),
+                argument: {
+                    type: type,
+                    enumValues: vals
                 }
-
-                actions.push({
-                    path: tds[0].getElementsByTagName("input")[0].value,
-                    argument: {
-                        type: type,
-                        enumValues: vals
-                    }
-                });
             });
-
-            $("#newRemoteFieldTableBody").find("tr").each(function (i, row) {
-                tds = row.getElementsByTagName("td");
-
-                type = tds[1].getElementsByTagName("select")[0].value;
-                vals = null;
-                if (type == "Enum") {
-                    vals = tds[2].getElementsByTagName("input")[0].value.split(",").map(x => x.trim());
-                }
-
-                fields.push({
-                    name: tds[0].getElementsByTagName("input")[0].value,
-                    argument: {
-                        type: type,
-                        enumValues: vals
-                    }
-                });
-            });
-
-            createRemote(info.name, info.address, fields, actions);
-            fillRemoteTable();
-        };
-
-
-        $("#newRuleModal").on("shown.bs.modal", function () {
-            axios.get("/api/devices", {
-                params: null
-            })
-                .then(function (response) {
-                    devices = response.data;
-                    $("#selectSourceDeviceId").empty();
-                    $("#selectTargetDeviceId").empty();
-
-                    selectSourceDeviceId = document.getElementById("selectSourceDeviceId");
-                    selectEvent = document.getElementById("selectEvent");
-
-                    selectSourceDeviceId.onchange = function () {
-                        $("#selectEvent").empty();
-                        events = devices.find(d => d.id == selectSourceDeviceId.value).info.events;
-
-                        for (let i in events) {
-                            e = events[i];
-                            opt = document.createElement("option");
-                            opt.innerHTML = e.name;
-                            opt.value = JSON.stringify(e);
-                            selectEvent.appendChild(opt);
-                        }
-                    };
-
-
-                    selectTargetDeviceId = document.getElementById("selectTargetDeviceId");
-                    selectAction = document.getElementById("selectAction");
-
-
-                    selectTargetDeviceId.onchange = function () {
-                        $("#selectAction").empty();
-                        actions = devices.find(d => d.id == selectTargetDeviceId.value).info.actions;
-
-                        for (let i in actions) {
-                            a = actions[i];
-                            opt = document.createElement("option");
-                            opt.innerHTML = a.path;
-                            opt.value = JSON.stringify(a);
-                            selectAction.appendChild(opt);
-                        }
-                    };
-
-
-                    for (let i in devices) {
-                        let d = devices[i];
-                        console.log(i);
-                        opt = document.createElement("option");
-                        opt.innerHTML = d.name + ":" + d.id;
-                        opt.value = d.id;
-                        selectSourceDeviceId.appendChild(opt);
-
-                        opt = document.createElement("option");
-                        opt.innerHTML = d.name + ":" + d.id;
-                        opt.value = d.id;
-                        selectTargetDeviceId.appendChild(opt);
-                    }
-
-                    createNewRuleButton.onclick = function () {
-                        var rule = {
-                            Name: "Rule",
-                            SourceDeviceId: selectSourceDeviceId.value,
-                            Event: JSON.parse(selectEvent.value),
-                            TargetDeviceId: selectTargetDeviceId.value,
-                            Action: JSON.parse(selectAction.value),
-                        };
-                        value = document.getElementById("inputValue").value;
-                        axios.post("/api/rules", rule, {
-                            params: {
-                                actionArgument: value,
-                            }
-                        })
-                            .then(function (response) {
-                                $("#newRuleModal").modal("hide");
-                                fillRuleTable();
-                            })
-                            .catch(function (error) {
-                                window.alert(error.message);
-                            });
-                    };
-
-                    selectSourceDeviceId.onchange();
-                    selectTargetDeviceId.onchange();
-
-                })
-                .catch(function (error) {
-                    window.alert(error.message);
-                });
         });
 
-        function updateTables() {
-            fillTimerTable();
-            fillRemoteTable();
-            fillRuleTable();
-            fillLogTable();
-        }
+        $("#newRemoteFieldTableBody").find("tr").each(function (i, row) {
+            var tds = row.getElementsByTagName("td");
 
-        updateTables();
+            var type = tds[1].getElementsByTagName("select")[0].value;
+            var vals = null;
+            if (type == "Enum") {
+                vals = tds[2].getElementsByTagName("input")[0].value.split(",").map(x => x.trim());
+            }
+
+            fields.push({
+                name: tds[0].getElementsByTagName("input")[0].value.trim(),
+                type: {
+                    type: type,
+                    enumValues: vals
+                }
+            });
+        });
+
+        $("#newRemoteExtensionTableBody").find("tr").each(function (i, row) {
+            var tds = row.getElementsByTagName("td");
+
+            extensions.push({
+                type: tds[0].getElementsByTagName("select")[0].value,
+                parameter: tds[1].getElementsByTagName("input")[0].value
+            });
+        });
+
+        info.name = info.name.trim();
+        info.address = info.address.trim();
+        while (info.address[info.address - 1] == "/")
+            info.address = info.address.slice(0, -1);
+            
+        createRemote(info.name, info.address , fields, actions, (remote) => {
+
+            for (let i in extensions) {
+                createExtension(remote.id, extensions[i].type, extensions[i].parameter, () => { });
+            }
+            fillRemoteTable();
+
+            $('#newRemoteModal').modal('hide');
+        });
+    };
+
+    function ruleConditionDeviceSelectOnChange(event) {
+        var deviceSelect = event.srcElement;
+        var device = jQuery.data(deviceSelect.options[deviceSelect.selectedIndex], "data");
+
+        var tr = deviceSelect.closest("tr");
+        var oldFieldSelect = tr.getElementsByTagName("select")[1];
+        var td = tr.getElementsByTagName("select")[1].closest("td");
+        td.removeChild(oldFieldSelect);
+
+        td.appendChild(createSelect(device.info.fields, x => x.name, null, "form-control"));
+    }
+
+
+    $("#newRuleModal").on("shown.bs.modal", () => {
+        getRules((rules) => {
+            var id = 1;
+            if (rules.length > 0) {
+                id = Math.max.apply(Math, rules.map(d => d.id)) + 1;
+            }
+            inputRuleName = document.getElementById("inputRuleName");
+            inputRuleName.value = "Rule" + id;
+        });
+
         
-        setInterval(updateTables, 5000);
+        getDevices((devices) => {
+
+            var form = document.getElementById("newRuleForm");
+            var command = jQuery.data(form, "command");
+            var rule = jQuery.data(form, "rule");
+
+            var selectTargetDeviceId = document.getElementById("selectTargetDeviceId");
+            var selectAction = document.getElementById("selectAction");
+
+            $("#selectSourceDeviceId").empty();
+            $("#selectTargetDeviceId").empty();
+            document.getElementById("newRuleConditionTableBody").innerHTML = "";
+
+            var selectSourceDeviceId = document.getElementById("selectSourceDeviceId");
+            var selectEvent = document.getElementById("selectEvent");
+
+            selectSourceDeviceId.onchange = function () {
+                $("#selectEvent").empty();
+                events = devices.find(d => d.id == selectSourceDeviceId.value).info.events;
+
+                for (let i in events) {
+                    var e = events[i];
+                    var opt = document.createElement("option");
+                    opt.innerHTML = e.name;
+                    opt.value = e.name;
+                    jQuery.data(opt, "data", e);
+                    selectEvent.appendChild(opt);
+                }
+            };
+
+            selectTargetDeviceId.onchange = function () {
+                $("#selectAction").empty();
+                actions = devices.find(d => d.id == selectTargetDeviceId.value).info.actions;
+
+                for (let i in actions) {
+                    var a = actions[i];
+                    var opt = document.createElement("option");
+                    opt.innerHTML = a.path;
+                    opt.value = a.path;
+                    jQuery.data(opt, "data", a);
+                    selectAction.appendChild(opt);
+                }
+            };
+
+            for (let i in devices) {
+                let d = devices[i];
+                if (d.info.events.length > 0) {
+                    var opt = document.createElement("option");
+                    opt.innerHTML = d.name + ":" + d.id;
+                    opt.value = d.id;
+                    selectSourceDeviceId.appendChild(opt);
+                }
+
+                if (d.info.actions.length > 0) {
+                    var opt = document.createElement("option");
+                    opt.innerHTML = d.name + ":" + d.id;
+                    opt.value = d.id;
+                    selectTargetDeviceId.appendChild(opt);
+                }
+            }
+
+            createNewRuleButton.onclick = function () {
+                var conditions = [];
+
+                $("#newRuleConditionTableBody").find("tr").each(function (i, row) {
+                    var tds = row.getElementsByTagName("td");
+
+                    var deviceSelect = tds[0].getElementsByTagName("select")[0];
+                    var device = jQuery.data(deviceSelect.options[deviceSelect.selectedIndex], "data");
+                    var fieldSelect = tds[1].getElementsByTagName("select")[0];
+                    var field = jQuery.data(fieldSelect.options[fieldSelect.selectedIndex], "data");
+                    var condTypeSelect = tds[2].getElementsByTagName("select")[0];
+                    condType = jQuery.data(condTypeSelect.options[condTypeSelect.selectedIndex], "data").cond;
+
+                    conditions.push({
+                        deviceId: device.id,
+                        field: field,
+                        conditionType: condType,
+                        conditionArgument: tds[3].getElementsByTagName("input")[0].value
+                    });
+                });
+
+                rule.name = document.getElementById("inputRuleName").value;
+                rule.sourceDeviceId = selectSourceDeviceId.value;
+                rule.event = jQuery.data(selectEvent.options[selectEvent.selectedIndex], "data");
+                rule.targetDeviceId = selectTargetDeviceId.value;
+                rule.action = jQuery.data(selectAction.options[selectAction.selectedIndex], "data");
+                rule.actionArgument = document.getElementById("inputValue").value;
+                rule.argumentSource = document.getElementById("selectArgumentSource").value;
+                rule.conditions = conditions;
+            
+                if (command == "new") {
+                    createRule(rule, () => {
+                        $("#newRuleModal").modal("hide");
+                        fillRuleTable();
+                    });
+                } else {
+                    editRule(rule, () => {
+                        $("#newRuleModal").modal("hide");
+                        fillRuleTable();
+                    });
+                }
+            };
+
+
+            addRuleConditionBtn = document.getElementById("addRuleConditionButton");
+            addRuleConditionBtn.onclick = () => {
+                var table = document.getElementById("newRuleConditionTable");
+                var tbody = table.getElementsByTagName("tbody")[0];
+                var signs = [{ cond: "Equal", sign: "==" },
+                { cond: "NotEqual", sign: "!=" },
+                { cond: "GreaterThan", sign: ">" },
+                { cond: "LessTahn", sign: "<" },
+                { cond: "GreaterThanOrEqual", sign: ">=" },
+                { cond: "LessThanOrEqual", sign: "<=" }];
+                var deviceSelect = createSelect(devices, x => x.name + "." + x.id, ruleConditionDeviceSelectOnChange, "form-control");
+
+                tr = createTr(
+                    createSelect(devices, x => x.name + "." + x.id, ruleConditionDeviceSelectOnChange, "form-control"),
+                    createSelect(devices[0].info.fields, x => x.name, null, "form-control"),
+                    createSelect(signs, x => x.sign, null, "form-control"),
+                    createInput("form-control"),
+                    createButton("Del", deleteRowFromTableClick, "btn btn-danger"));
+                tbody.appendChild(tr);
+
+            };
+
+            
+            selectSourceDeviceId.onchange();
+            selectTargetDeviceId.onchange();
+
+            if (rule.name)
+                inputRuleName.value = rule.name;
+
+            if (rule.sourceDeviceId) {
+                selectSourceDeviceId.value = rule.sourceDeviceId;
+                selectSourceDeviceId.onchange();
+            }
+            
+            if (rule.event)
+                selectEvent.value = rule.event.name;
+
+            if (rule.targetDeviceId) {
+                selectTargetDeviceId.value = rule.targetDeviceId;
+                selectTargetDeviceId.onchange();
+            }
+
+            if (rule.action)
+                selectAction.value = rule.action.path;
+
+            if (rule.actionArgument)
+                document.getElementById("inputValue").value = rule.actionArgument;
+
+            if (rule.argumentSource) {
+                document.getElementById("selectArgumentSource").value = rule.argumentSource;
+                selectArgumentSourceOnChange();
+            }
+            if (rule.conditions)
+            {
+                for (let i in rule.conditions)
+                    addRuleConditionBtn.onclick();
+
+                $("#newRuleConditionTableBody").find("tr").each(function (i, row) {
+                    var tds = row.getElementsByTagName("td");
+
+                    cond = rule.conditions[i];
+
+                    var deviceSelect = tds[0].getElementsByTagName("select")[0];
+
+                    for (let j = 0; j < deviceSelect.options.length; j++)
+                    {
+                        var opt = deviceSelect.options[j];
+                        if (cond.deviceId == jQuery.data(opt, "data").id)
+                        {
+                            opt.selected = true;
+                            ruleConditionDeviceSelectOnChange({ srcElement: deviceSelect });
+                            break;
+                        }
+                    }
+
+                    var fieldSelect = tds[1].getElementsByTagName("select")[0];
+
+                    for (let j = 0; j < fieldSelect.options.length; j++)
+                    {
+                        var opt = fieldSelect.options[j];
+                        if (cond.field.name == jQuery.data(opt, "data").name)
+                        {
+                            opt.selected = true;
+                            break;
+                        }
+                    }
+                    
+                    var condTypeSelect = tds[2].getElementsByTagName("select")[0];
+
+                    for (let j = 0; j < condTypeSelect.options.length; j++)
+                    {
+                        var opt = condTypeSelect.options[j];
+                        if (cond.conditionType == jQuery.data(opt, "data").cond)
+                        {
+                            opt.selected = true;
+                            break;
+                        }
+                    }
+
+                    tds[3].getElementsByTagName("input")[0].value = cond.conditionArgument;
+
+                });
+
+            }
+
+        });
+    });
+
+    function updateTables() {
+        fillTimerTable();
+        fillRemoteTable();
+        fillRuleTable();
+        fillLogTable();
+    }
+
+    updateTables();
+
+    var connection = new signalR.HubConnectionBuilder()
+        .withUrl("/events")
+        .configureLogging(signalR.LogLevel.Information)
+        .build();
+
+    connection.on("ServerEvent", function (message) {
+        console.log(`ServerEvent: ${message}`);
+        updateTables();
+    });
+
+
+
+    async function start() {
+        try {
+            await connection.start();
+            console.log("connected");
+        } catch (err) {
+            console.log(err);
+            setTimeout(() => start(), 5000);
+        }
+    };
+
+    connection.onclose(async () => {
+        await start();
+    });
+
+    connection.start().then(() => {
+        console.log("connected");
+    });
+
+
 
     </script>
 </body>

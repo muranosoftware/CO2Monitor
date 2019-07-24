@@ -2,7 +2,7 @@
 
 namespace CO2Monitor.Core.Entities {
 	public class DeviceStateMeasurement {
-		public int Id { get; set; }
+		public int? Id { get; set; }
 
 		public int DeviceId { get; set; }
 

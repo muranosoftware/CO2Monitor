@@ -3,7 +3,7 @@ using System.Runtime.Serialization;
 
 namespace CO2Monitor.Infrastructure.Helpers {
 	public class TypeNameSerializationBinder : SerializationBinder {
-		public string TypeFormat { get; private set; }
+		public string TypeFormat { get; }
 
 		public TypeNameSerializationBinder(string typeFormat) {
 			TypeFormat = typeFormat;

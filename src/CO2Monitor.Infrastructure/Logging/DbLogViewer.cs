@@ -1,38 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.SQLite;
-using Microsoft.Extensions.Configuration;
-using Dapper;
 using CO2Monitor.Core.Entities;
-using CO2Monitor.Core.Interfaces;
+using CO2Monitor.Infrastructure.Helpers;
+using CO2Monitor.Core.Interfaces.Services;
 
 namespace CO2Monitor.Infrastructure.Logging {
 	public class DbLogViewer : ILogViewer {
-		private readonly string _connString;
+		private readonly ILogRecordsRepository _repo;
 
-		public DbLogViewer(IConfiguration configuration) {
-			_connString = configuration.GetConnectionString(DbLogger.ConnectionStringConfigurationKey);
+		public DbLogViewer(ILogRecordsRepository repo) {
+			_repo = repo;
 		}
 
-		public IEnumerable<LogRecord> GetRecords(DateTime? from = null, DateTime? to = null, int? limit = 100) {
-			string sql = "SELECT * FROM LogRecords";
-			if (from != null || to != null)
-				sql += " WHERE";
+		public IEnumerable<LogRecord> GetRecords(DateTime? from = null, DateTime? to = null, uint? limit = 100) {
+			var predicateBuilder = new PredicateBuilder<LogRecord>();
+
 			if (from != null)
-				sql += " time >= @from";
-			if (from != null && to != null)
-				sql += " AND";
+				predicateBuilder.AndAlso(x => x.Time >= from.Value);
+
 			if (to != null)
-				sql += " time <= @to";
+				predicateBuilder.AndAlso(x => x.Time >= to.Value);
 
-			sql += " ORDER BY time DESC";
+			IEnumerable<LogRecord> result = predicateBuilder.IsEmpty ? _repo.List(null, limit) : _repo.List(predicateBuilder.Predicate, limit);
 
-			if (limit != null)
-				sql += $" LIMIT {limit}";
-
-			using (var conn = new SQLiteConnection(_connString)) {
-				return conn.Query<LogRecord>(sql, new { from, to });
-			}
+			return result;
 		}
 	}
 }
