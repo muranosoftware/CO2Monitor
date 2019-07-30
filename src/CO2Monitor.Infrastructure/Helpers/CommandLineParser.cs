@@ -10,8 +10,9 @@ namespace CO2Monitor.Infrastructure.Helpers {
 
 		public CommandLineParser(string args) {
 			string[] words = args.Split(Spaces, StringSplitOptions.RemoveEmptyEntries);
-			if (args.Length == 0)
+			if (args.Length == 0) {
 				return;
+			}
 
 			Commnad = words[0];
 			var options = new Dictionary<string, string>();
@@ -19,13 +20,14 @@ namespace CO2Monitor.Infrastructure.Helpers {
 			var flags = new HashSet<string>();
 
 			for (var i = 1; i < words.Length; i++) {
-				if (words[i].StartsWith("--") && i + 1 < words.Length)
-					options.Add(words[i].Substring(2), words[++i]);
-				else if (words[i].StartsWith("-"))
-					flags.Add(words[i].Substring(1));
-				else
-					arguments.Add(words[i]);
-			}
+				if (words[i].StartsWith("--") && i + 1 < words.Length) {
+                    options.Add(words[i].Substring(2), words[++i]);
+                } else if (words[i].StartsWith("-")) {
+                    flags.Add(words[i].Substring(1));
+                } else {
+                    arguments.Add(words[i]);
+                }
+            }
 
 			Flags = flags;
 			Options = options;

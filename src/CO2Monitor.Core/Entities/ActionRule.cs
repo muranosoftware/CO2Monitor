@@ -22,9 +22,7 @@ namespace CO2Monitor.Core.Entities {
 
 		public string ConditionArgument { get; set; }
 
-		public override string ToString() {
-			return $"{Field} {ConditionType.ToString()} {ConditionArgument}"; 
-		}
+		public override string ToString() => $"{Field} {ConditionType.ToString()} {ConditionArgument}";
 	}
 
 	[JsonConverter(typeof(StringEnumConverter))]

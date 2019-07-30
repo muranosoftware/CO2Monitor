@@ -1,16 +1,18 @@
 ﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
 using CO2Monitor.Core.Entities;
 
 namespace CO2Monitor.Infrastructure.Data {
 	public class StateMeasurementDbContext : DbContext {
-#if DEBUG
+		private const string ConfigurationDataSourceKey = "StateMeasurementDbContext:DataSource";
 		private readonly ILoggerFactory _loggerFactory;
+		private readonly string _dataSource;
 
-		public StateMeasurementDbContext(ILoggerFactory loggerFactory) {
+		public StateMeasurementDbContext(ILoggerFactory loggerFactory, IConfiguration configuration) {
 			_loggerFactory = loggerFactory;
+			_dataSource = configuration.GetValue<string>(ConfigurationDataSourceKey);
 		}
-#endif
 
 		public DbSet<DeviceStateMeasurement> Measurements { get; set; }
 
@@ -24,11 +26,11 @@ namespace CO2Monitor.Infrastructure.Data {
 
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) {
 			optionsBuilder
-#if DEBUG
 				.UseLoggerFactory(_loggerFactory) //tie-up DbContext with LoggerFactory object
+#if DEBUG
 				.EnableSensitiveDataLogging()
 #endif
-				.UseSqlite("Data Source=EfStateMeasurementsDb.sqlite;");
+				.UseSqlite($"Data Source={_dataSource};");
 		}
 	}
 }

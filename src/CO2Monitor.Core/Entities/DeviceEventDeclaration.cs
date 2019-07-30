@@ -2,50 +2,29 @@
 
 namespace CO2Monitor.Core.Entities {
 	public sealed class DeviceEventDeclaration {
-		public DeviceEventDeclaration(string name, VariantDeclaration dataDeclaration) {
-			Name = name;
-			DataType = dataDeclaration;
-		}
-
 		[JsonConstructor]
-		private DeviceEventDeclaration() {
-			DataType = VariantDeclaration.Void;
+		public DeviceEventDeclaration(string name, VariantDeclaration dataType) {
+			Name = name;
+			DataType = dataType;
 		}
+		
+		public string Name { get; private set; }
+		public VariantDeclaration DataType { get; private set; }
 
-		public string Name { get; set; }
-		public VariantDeclaration DataType { get; set; }
+		public bool Equals(DeviceEventDeclaration other) => other is null ? false : DataType.Equals(other.DataType) && Name == other.Name;
 
-		public bool Equals(DeviceEventDeclaration other) {
-			if (other is null)
-				return false;
+		public override bool Equals(object obj) => Equals(obj as DeviceEventDeclaration);
 
-			return DataType.Equals(other.DataType) && Name == other.Name;
-		}
+		public override int GetHashCode() => DataType.GetHashCode() + (431 * (Name is null ? 0 : Name.GetHashCode()));
 
-		public override bool Equals(object obj) {
-			return Equals(obj as DeviceEventDeclaration);
-		}
-
-		public override int GetHashCode() {
-			return DataType.GetHashCode() + 431 * (Name is null ? 0 : Name.GetHashCode());
-		}
-
-		public override string ToString() {
-			return $"{Name}({DataType})";
-		}
+		public override string ToString() => $"{Name}({DataType})";
 
 		public static bool operator ==(DeviceEventDeclaration a, DeviceEventDeclaration b) {
-			if (a is null)
-				return b is null;
-
-			return a.Equals(b);
+			return a is null ? b is null : a.Equals(b);
 		}
 
 		public static bool operator !=(DeviceEventDeclaration a, DeviceEventDeclaration b) {
-			if (a is null)
-				return !(b is null);
-
-			return !a.Equals(b);
+			return a is null ? !(b is null) : !a.Equals(b);
 		}
 	}
 }

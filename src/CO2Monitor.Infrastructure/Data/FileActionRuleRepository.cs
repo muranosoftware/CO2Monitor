@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using Microsoft.Extensions.Configuration;
+using MoreLinq;
 using Newtonsoft.Json;
 using CO2Monitor.Core.Entities;
 using CO2Monitor.Infrastructure.Helpers;
@@ -17,22 +19,23 @@ namespace CO2Monitor.Infrastructure.Data {
 			public IDictionary<int, ActionRule> Rules { get; set; } = new ConcurrentDictionary<int, ActionRule>();
 
 			[MethodImpl(MethodImplOptions.Synchronized)]
-			public int GetNextId() {
-				return ++RuleIdSeq;
-			}
+			public int GetNextId() => ++RuleIdSeq;
 		}
 
-		private const string ConfigurationFile = "Rules.json";
+		private const string ConfigurationFileKey = "FileActionRuleRepository:File";
+		private readonly string _fileName;
 		private readonly JsonSerializerSettings _jsonSettings;
 		readonly ActionRuleData _data;
 
-		public FileActionRuleRepository() {
+		public FileActionRuleRepository(IConfiguration configuration) {
 			_jsonSettings = new JsonSerializerSettings {
 				TypeNameHandling = TypeNameHandling.Auto,
 				SerializationBinder = new TypeBinder(),
 			};
 
-			_data = File.Exists(ConfigurationFile) ? JsonConvert.DeserializeObject<ActionRuleData>(File.ReadAllText(ConfigurationFile), _jsonSettings) : new ActionRuleData();
+			_fileName = configuration.GetValue<string>(ConfigurationFileKey);
+
+			_data = File.Exists(_fileName) ? JsonConvert.DeserializeObject<ActionRuleData>(File.ReadAllText(_fileName), _jsonSettings) : new ActionRuleData();
 		}
 
 		public ActionRule Add(ActionRule rule) {
@@ -46,35 +49,32 @@ namespace CO2Monitor.Infrastructure.Data {
 		}
 
 		public bool Delete(Predicate<ActionRule> predicate) {
-			var found = false;
-			List<ActionRule> rules = _data.Rules.Values.Where((x) => predicate(x)).ToList();
-			if (rules.Count > 0)
-				found = true;
+			ActionRule [] rules = _data.Rules.Values.Where((x) => predicate(x)).ToArray();
 
-			foreach (ActionRule d in rules) {
-				//_logger.LogInformation(
-				_data.Rules.Remove(d.Id);
+			rules.ForEach( r =>	_data.Rules.Remove(r.Id));
+
+			Save();
+
+			return rules.Length > 0;
+		}
+
+		public IEnumerable<ActionRule> List(Predicate<ActionRule> predicate) =>
+			predicate is null ? _data.Rules.Values : _data.Rules.Values.Where(predicate.Invoke);
+
+		public bool Update(ActionRule rule) {
+			
+			if(List(x => x.Id == rule.Id).FirstOrDefault() == null) {
+				return false;
 			}
 
+			_data.Rules[rule.Id] = rule;
 			Save();
-
-			return found;
-		}
-
-		public IEnumerable<ActionRule> List(Predicate<ActionRule> predicate) {
-			if (predicate is null)
-				return _data.Rules.Values;
-			else
-				return _data.Rules.Values.Where(predicate.Invoke);
-		}
-	
-		public void Update(ActionRule rule) {
-			Save();
+			return true;
 		}
 
 		private void Save() {
 			var json = JsonConvert.SerializeObject(_data, _jsonSettings);
-			File.WriteAllText(ConfigurationFile, json);
+			File.WriteAllText(_fileName, json);
 		}
 	}
 }

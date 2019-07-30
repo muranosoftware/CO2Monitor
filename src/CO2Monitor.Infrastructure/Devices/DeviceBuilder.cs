@@ -12,8 +12,6 @@ namespace CO2Monitor.Infrastructure.Devices {
 
 		public Type DeviceType => typeof(T);
 
-		public IDevice CreateDevice() {
-			return _serviceProvider.GetService<T>();
-		}
+		public IDevice CreateDevice() => _serviceProvider.GetService<T>();
 	}
 }

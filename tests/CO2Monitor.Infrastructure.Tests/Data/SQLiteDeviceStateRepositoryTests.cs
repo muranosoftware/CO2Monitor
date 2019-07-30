@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Collections.Generic;
 using NUnit.Framework;
+using MoreLinq;
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using CO2Monitor.Infrastructure.Data;
@@ -29,13 +30,13 @@ namespace CO2Monitor.Infrastructure.Tests.Data {
 
 			DateTime now = DateTime.Now;
 
-			List<DeviceStateMeasurement> measurments = Enumerable.Range(0, 5).Select(
+			DeviceStateMeasurement[] measurments = Enumerable.Range(0, 5).Select(
 				x => new DeviceStateMeasurement {
 					Time = now.AddSeconds(x),
 					State = x.ToString()
-				}).ToList();
+				}).ToArray();
 
-			measurments.ForEach(x => repo.Add(x));
+			measurments.ForEach(m => repo.Add(m));
 
 			List<DeviceStateMeasurement> repoList = repo.List().ToList();
 
@@ -43,8 +44,9 @@ namespace CO2Monitor.Infrastructure.Tests.Data {
 
 			repoList.ForEach(x => measurments.Count(y => y.Time == x.Time).Should().Be(1));
 
-			if (File.Exists(repo.DataSource))
+			if (File.Exists(repo.DataSource)) {
 				File.Delete(repo.DataSource);
+			}
 		}
 
 		[Test]
@@ -61,7 +63,7 @@ namespace CO2Monitor.Infrastructure.Tests.Data {
 
 			DateTime to = now.AddSeconds(4);
 
-			repo.List(x => x.Time > now && x.Time < to).ToList().Count.Should().Be(3);
+			repo.List(x => x.Time > now && x.Time < to).ToArray().Length.Should().Be(3);
 		}
 	}
 }

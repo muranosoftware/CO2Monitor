@@ -5,7 +5,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace CO2Monitor.Infrastructure.Data {
+namespace CO2Monitor.Infrastructure.Helpers {
 	internal class ExpressionToSql {
 		private int _parametersCount;
 		private readonly Dictionary<ParameterExpression, string> _relations = new Dictionary<ParameterExpression, string>();
@@ -25,8 +25,9 @@ namespace CO2Monitor.Infrastructure.Data {
 			Parameters = parameters;
 			_parametersCount = Parameters.ParameterNames.Count();
 			int i = 0;
-			foreach (ParameterExpression p in exp.Parameters)
+			foreach (ParameterExpression p in exp.Parameters) {
 				_relations.Add(p, relations[i++]);
+			}
 
 			Sql = PredicateBodyParse(exp.Body);
 		}
@@ -35,8 +36,10 @@ namespace CO2Monitor.Infrastructure.Data {
 		private DynamicParameters Parameters { get; }
 
 		private string PredicateBodyParse(Expression body) {
-			if (!(body is BinaryExpression))
+			if (!(body is BinaryExpression)) {
 				throw new NotSupportedException($"Expression ({body}) must be binary");
+			}
+
 			var binExp = (BinaryExpression)body;
 			switch (binExp.NodeType) {
 				case ExpressionType.Equal:
@@ -47,13 +50,18 @@ namespace CO2Monitor.Infrastructure.Data {
 				case ExpressionType.GreaterThanOrEqual: {
 					var left = GetSqlFromMemberAcessOrConstant(binExp.Left);
 					var right = GetSqlFromMemberAcessOrConstant(binExp.Right);
-					if (left == null)
+					if (left == null) {
 						throw new ArgumentException("Expression can not contains compration with left side null object:" + binExp);
+					}
+
 					if (right == null) {
-						if (binExp.NodeType == ExpressionType.Equal)
+						if (binExp.NodeType == ExpressionType.Equal) {
 							return left + " IS NULL";
-						if (binExp.NodeType == ExpressionType.NotEqual)
+						}
+
+						if (binExp.NodeType == ExpressionType.NotEqual) {
 							return left + " IS NOT NULL";
+						}
 					}
 
 					return left + SqlOpDict[body.NodeType] + right;
@@ -73,14 +81,14 @@ namespace CO2Monitor.Infrastructure.Data {
 		private string GetSqlFromMemberAcessOrConstant(Expression exp) {
 			switch (exp) {
 				case MemberExpression memberExp:
-					if (memberExp.Expression == null) // static 
+					if (memberExp.Expression == null) { // static 
 						return AddParameter(GetPropertyOrFieldValue(memberExp, null));
-					else {
+					} else {
 						switch (memberExp.Expression) {
 							case ParameterExpression paramExp:
 								return _relations[paramExp] + "." + memberExp.Member.Name;
 							case ConstantExpression _: //may be closure 
-							case MemberExpression _: //may be local variables access 
+							case MemberExpression _: //may be local variable access 
 								return AddParameter(GetNestedMemberConstantValue(memberExp));
 							default:
 								throw new NotSupportedException($"Expression({memberExp.Expression}) has unsupported type: [{memberExp.Expression.NodeType}]");
@@ -122,11 +130,13 @@ namespace CO2Monitor.Infrastructure.Data {
 
 			MemberExpression top = memberStack.Peek();
 
-			if (top.Expression is ParameterExpression)
+			if (top.Expression is ParameterExpression) {
 				throw new NotSupportedException($"Nested parameter member access expression ({memberExp}) is not supported");
+			}
 
-			if (!(top.Expression is ConstantExpression))
+			if (!(top.Expression is ConstantExpression)) {
 				throw new NotSupportedException($"Can not process expression({memberExp})");
+			}
 
 			object obj = ((ConstantExpression)top.Expression).Value;
 
@@ -150,10 +160,11 @@ namespace CO2Monitor.Infrastructure.Data {
 							case ParameterExpression _:
 								return memberExp.Member.Name;
 							default:
-								if (memberExp.NodeType == ExpressionType.MemberAccess)
+								if (memberExp.NodeType == ExpressionType.MemberAccess) {
 									throw new NotSupportedException($"Member expression ({memberExp}) has unsupported nested member access. Use simple selectors: x => x.Prop");
-								else
+								} else {
 									throw new NotSupportedException($"Selector body expression ({memberExp}) has unsupported type: [{memberExp.NodeType}]. Use simple selectors: x => x.Prop");
+								}
 						}
 					}
 				default:
@@ -166,7 +177,7 @@ namespace CO2Monitor.Infrastructure.Data {
 				return null;
 			}
 
-			var param = "Param" + (_parametersCount++);
+			var param = "Param" + _parametersCount++;
 
 			Parameters.Add(param, obj);
 
@@ -174,11 +185,11 @@ namespace CO2Monitor.Infrastructure.Data {
 		}
 
 		public static string Select<T, TOrderBy>(Expression<Func<T, bool>> where,
-		                                         DynamicParameters parameters,
-		                                         string relation,
-		                                         Expression<Func<T, TOrderBy>> orderBySelector = null,
-		                                         bool orderByDesc = false,
-		                                         uint? limit = null) {
+												 DynamicParameters parameters,
+												 string relation,
+												 Expression<Func<T, TOrderBy>> orderBySelector = null,
+												 bool orderByDesc = false,
+												 uint? limit = null) {
 			var sql = $"SELECT * FROM {relation} ";
 			if (where != null) {
 				var ptsc = new ExpressionToSql(where, parameters, new[] { relation });
@@ -190,8 +201,9 @@ namespace CO2Monitor.Infrastructure.Data {
 				sql += " ORDER BY " + col + (orderByDesc ? " DESC " : "");
 			}
 
-			if (limit.HasValue)
+			if (limit.HasValue) {
 				sql += $" LIMIT {limit} ";
+			}
 
 			return sql;
 		}

@@ -6,9 +6,9 @@ using Microsoft.Extensions.Configuration;
 using Dapper;
 using CO2Monitor.Core.Entities;
 using CO2Monitor.Core.Interfaces.Services;
+using CO2Monitor.Infrastructure.Helpers;
 
-namespace CO2Monitor.Infrastructure.Data
-{
+namespace CO2Monitor.Infrastructure.Data {
 	public class SqLiteDeviceStateRepository : IDeviceStateRepository {
 		public const string DataSourceConfigurationKey = "SqLiteDeviceStateRepository:DataSource";
 
@@ -24,8 +24,7 @@ namespace CO2Monitor.Infrastructure.Data
 		}
 
 		public void Add(DeviceStateMeasurement measurement) {
-			using (var conn = new SQLiteConnection(_connectionString))
-			{
+			using (var conn = new SQLiteConnection(_connectionString)) {
 				conn.Execute(Mapping.CreateSql, measurement);
 			}
 		}

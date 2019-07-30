@@ -29,10 +29,9 @@ namespace CO2Monitor.Infrastructure.Logging {
 
 		public IEnumerable<LogRecord> List(Expression<Func<LogRecord, bool>> predicate = null, uint? limit = 0) {
 			lock (_lock) {
-				if (predicate != null)
-					return _dbContext.Records.Where(predicate).OrderByDescending(x => x.Time).ToList();
-				else
-					return _dbContext.Records.OrderByDescending(x => x.Time).ToList();
+				return predicate != null
+					? _dbContext.Records.Where(predicate).OrderByDescending(x => x.Time).ToList()
+					: _dbContext.Records.OrderByDescending(x => x.Time).ToList();
 			}
 		}
 	}

@@ -48,9 +48,9 @@ namespace CO2Monitor.Infrastructure.Data {
 			sbTableCreate.Append("CREATE TABLE IF NOT EXISTS {0} ( ");
 
 			PropertyInfo[] props = typeof(TEntity).GetProperties(BindingFlags.Instance | 
-			                                                     BindingFlags.Public | 
-			                                                     BindingFlags.SetProperty | 
-			                                                     BindingFlags.GetProperty);
+																 BindingFlags.Public | 
+																 BindingFlags.SetProperty | 
+																 BindingFlags.GetProperty);
 
 			var sbCreate = new StringBuilder();
 			sbCreate.Append("INSERT INTO {0} (");
@@ -59,8 +59,9 @@ namespace CO2Monitor.Infrastructure.Data {
 			sbUpdate.Append("UPDATE {0} SET ");
 
 			foreach (PropertyInfo pi in props) {
-				if (!SqLiteTypeMapping.ContainsKey(pi.PropertyType))
+				if (!SqLiteTypeMapping.ContainsKey(pi.PropertyType)) {
 					throw new NotSupportedException($"Can not map type [{pi.PropertyType.FullName}] to SqlLite type");
+				}
 
 				sbTableCreate.Append(pi.Name);
 				sbTableCreate.Append(" ");
@@ -88,10 +89,11 @@ namespace CO2Monitor.Infrastructure.Data {
 			sbUpdate[sbUpdate.Length - 1] = ' '; // remove last ,
 
 			foreach (PropertyInfo pi in props) {
-				if (pi.Name == "Id")
-					continue;
+				if (pi.Name == "Id") {
+                    continue;
+                }
 
-				sbCreate.Append("@");
+                sbCreate.Append("@");
 				sbCreate.Append(pi.Name);
 				sbCreate.Append(",");
 			}

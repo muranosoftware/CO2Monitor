@@ -11,10 +11,8 @@ namespace CO2Monitor.Infrastructure.Logging {
 			_logRecordsDbContextAccessor = logRecordsDbContextAccessor;
 		}
 
-		public ILogger CreateLogger(string categoryName) {
-			return new DbLogger(categoryName, _filter, _logRecordsDbContextAccessor.LogRepository);	
-		}
+        public ILogger CreateLogger(string categoryName) => new DbLogger(categoryName, _filter, _logRecordsDbContextAccessor.LogRepository);
 
-		public void Dispose() { }
+        public void Dispose() { }
 	}
 }

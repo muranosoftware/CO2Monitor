@@ -79,8 +79,9 @@ namespace CO2Monitor.Infrastructure.Services {
 					for (int t = 1; t < s.Data.Count; t++) {
 						TimeSpan dt = s.Data[t].Time - s.Data[t - 1].Time;
 
-						if (dt >= pollingRate * 2)
-							series.Points.Add(new DataPoint(DateTimeAxis.ToDouble(s.Data[t].Time + 0.5 * dt), double.NaN));
+						if (dt >= pollingRate * 2) {
+							series.Points.Add(new DataPoint(DateTimeAxis.ToDouble(s.Data[t].Time + (0.5 * dt)), double.NaN));
+						}
 
 						series.Points.Add(new DataPoint(DateTimeAxis.ToDouble(s.Data[t].Time), s.Data[t].Y));
 					}

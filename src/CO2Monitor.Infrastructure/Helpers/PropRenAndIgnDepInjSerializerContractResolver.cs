@@ -20,16 +20,19 @@ namespace CO2Monitor.Infrastructure.Helpers {
 		}
 
 		public void IgnoreProperty(Type type, params string[] jsonPropertyNames) {
-			if (!_ignores.ContainsKey(type))
+			if (!_ignores.ContainsKey(type)) {
 				_ignores[type] = new HashSet<string>();
+			}
 
-			foreach (var prop in jsonPropertyNames)
+			foreach (var prop in jsonPropertyNames) {
 				_ignores[type].Add(prop);
+			}
 		}
 
 		public void RenameProperty(Type type, string propertyName, string newJsonPropertyName) {
-			if (!_renames.ContainsKey(type))
+			if (!_renames.ContainsKey(type)) {
 				_renames[type] = new Dictionary<string, string>();
+			}
 
 			_renames[type][propertyName] = newJsonPropertyName;
 		}
@@ -37,14 +40,15 @@ namespace CO2Monitor.Infrastructure.Helpers {
 		protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization) {
 			JsonProperty property = base.CreateProperty(member, memberSerialization);
 
-			if (!property.Writable || IsIgnored(property.DeclaringType, property.PropertyName)) {
+			if (IsIgnored(property.DeclaringType, property.PropertyName)) {
 				property.ShouldSerialize = i => false;
 				property.ShouldDeserialize = i => false;
 				property.Ignored = true;
 			}
 
-			if (IsRenamed(property.DeclaringType, property.PropertyName, out var newJsonPropertyName))
+			if (IsRenamed(property.DeclaringType, property.PropertyName, out var newJsonPropertyName)) {
 				property.PropertyName = newJsonPropertyName;
+			}
 
 			return property;
 		}
@@ -60,12 +64,7 @@ namespace CO2Monitor.Infrastructure.Helpers {
 			return base.CreateObjectContract(objectType);
 		}
 
-		private bool IsIgnored(Type type, string jsonPropertyName) {
-			if (!_ignores.ContainsKey(type))
-				return false;
-
-			return _ignores[type].Contains(jsonPropertyName);
-		}
+		private bool IsIgnored(Type type, string jsonPropertyName) => !_ignores.ContainsKey(type) ? false : _ignores[type].Contains(jsonPropertyName);
 
 		private bool IsRenamed(Type type, string jsonPropertyName, out string newJsonPropertyName) {
 			if (_renames.TryGetValue(type, out Dictionary<string, string> renames) && renames.TryGetValue(jsonPropertyName, out newJsonPropertyName)) {

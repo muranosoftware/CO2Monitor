@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using MoreLinq;
 using Microsoft.Extensions.Logging;
 using CO2Monitor.Core.Shared;
 using CO2Monitor.Core.Entities;
@@ -11,52 +12,52 @@ using CO2Monitor.Core.Interfaces.Devices;
 using CO2Monitor.Core.Interfaces.Notifications;
 
 namespace CO2Monitor.Infrastructure.Services {
-	public class DeviceManagerService : IDeviceManagerService {
+	public class DeviceManagerService: IDeviceManagerService {
 		private readonly ILogger _logger;
-		private readonly IActionRuleRepository _ruleRepository;
-		private readonly IDeviceRepository _deviceRepository;
 		private readonly IDeviceFactory _deviceFactory;
 		private readonly IDeviceExtensionFactory _extensionFactory;
 		private readonly IEventNotificationService _notificationService;
 
-		public DeviceManagerService(ILogger<DeviceManagerService> logger, 
-		                            IActionRuleRepository ruleRepository, 
-		                            IDeviceRepository deviceRepository, 
-		                            IDeviceFactory deviceFactory, 
-		                            IDeviceExtensionFactory extensionFactory, 
-		                            IEventNotificationService notificationService) {
-			_ruleRepository = ruleRepository;
-			_deviceRepository = deviceRepository;
+		public DeviceManagerService(ILogger<DeviceManagerService> logger,
+									IActionRuleRepository ruleRepository,
+									IDeviceRepository deviceRepository,
+									IDeviceFactory deviceFactory,
+									IDeviceExtensionFactory extensionFactory,
+									IEventNotificationService notificationService) {
+			RuleRepository = ruleRepository;
+			DeviceRepository = deviceRepository;
 			_deviceFactory = deviceFactory;
 			_extensionFactory = extensionFactory;
 			_notificationService = notificationService;
 			_logger = logger;
 
-			if (_deviceRepository.List<ICalendarDevice>().FirstOrDefault() == null) {
+			if (DeviceRepository.List<ICalendarDevice>().FirstOrDefault() == null) {
 				var calendar = _deviceFactory.CreateDevice<ICalendarDevice>();
 				calendar.EventRaised += DeviceEventRaised;
-				_deviceRepository.Add(calendar);
+				DeviceRepository.Add(calendar);
 			}
 
-			foreach (IDevice d in _deviceRepository.List<IDevice>()) {
+			foreach (IDevice d in DeviceRepository.List<IDevice>()) {
 				d.EventRaised += DeviceEventRaised;
 			}
 		}
 
-		public IDeviceRepository DeviceRepository => _deviceRepository;
+		public IDeviceRepository DeviceRepository { get; }
 
-		public IActionRuleRepository RuleRepository => _ruleRepository;
+		public IActionRuleRepository RuleRepository { get; }
 
 		public async Task ExecuteAction(int deviceId, string action, string argument) {
-			var device = _deviceRepository.GetById<IDevice>(deviceId);
+			var device = DeviceRepository.GetById<IDevice>(deviceId);
 
-			if (device == null)
+			if (device == null) {
 				throw new CO2MonitorArgumentException(nameof(deviceId), $"There is not device with id = {0}");
+			}
 
 			DeviceActionDeclaration act = device.Info.Actions.FirstOrDefault(x => x.Path == action);
 
-			if (act == null)
+			if (act == null) {
 				throw new CO2MonitorArgumentException(nameof(deviceId), $"Device[{deviceId}] does not have action [{action}]");
+			}
 
 			var val = new Variant(act.Argument, argument);
 
@@ -68,7 +69,7 @@ namespace CO2Monitor.Infrastructure.Services {
 			timer.EventRaised += DeviceEventRaised;
 			timer.AlarmTime = time;
 			timer.Name = name;
-			return _deviceRepository.Add(timer);
+			return DeviceRepository.Add(timer);
 		}
 
 		public IRemoteDevice CreateRemoteDevice(Uri address, string name, DeviceInfo deviceInfo) {
@@ -77,15 +78,15 @@ namespace CO2Monitor.Infrastructure.Services {
 			remote.Name = name;
 			remote.Address = address;
 			remote.BaseInfo = deviceInfo;
-			return _deviceRepository.Add(remote);
+			return DeviceRepository.Add(remote);
 		}
 
 		private async void DeviceEventRaised(IBaseDevice sender, DeviceEventDeclaration eventDeclaration, Variant data, int? deviceId) {
 			_logger.LogInformation($"Event [{eventDeclaration.Name}] from [{sender.Name}:{deviceId ?? -1}] raised with data [{data}].");
 
-			foreach (ActionRule r in _ruleRepository.List(x => x.SourceDeviceId == deviceId)) {
+			foreach (ActionRule r in RuleRepository.List(x => x.SourceDeviceId == deviceId)) {
 				_logger.LogInformation($"Found rule [{r.Name}:{r.Id}] binded to event [{eventDeclaration.Name}] from [{sender.Name}:{deviceId ?? -1}]");
-				var device = _deviceRepository.GetById<IDevice>(r.TargetDeviceId);
+				var device = DeviceRepository.GetById<IDevice>(r.TargetDeviceId);
 				if (device == null) {
 					_logger.LogInformation($"Target device [{r.TargetDeviceId}] of rule [{r.Name}:{r.Id}] not found. Skip");
 					continue;
@@ -96,58 +97,68 @@ namespace CO2Monitor.Infrastructure.Services {
 					continue;
 				}
 
-				bool breaked = false;
-				foreach (ActionCondition cond in r.Conditions) {
-					try {
-						if (!await CheckCondition(cond)) {
-							_logger.LogInformation($"Condition [{cond}] is violated. Rule [{r.Name}:{r.Id}] is skipped.");
-							breaked = true;
-							break;
-						}
-					} catch (CO2MonitorException ex) {
-						_logger.LogError(ex, $"Can not check condition [{cond}]. Rule [{r.Name}:{r.Id}] is skipped.");
-						breaked = true;
-						break;
-					}
-				}
-
-				if (breaked)
+				if( !(await CheckConditions(r))) {
 					continue;
+				}
 
 				_logger.LogInformation($"Try execute rule's [{r.Name}:{r.Id}] action on [{r.TargetDeviceId}]");
-				Variant argument;
 
-				switch (r.ArgumentSource) {
-					case RuleActionArgumentSource.Constant:
-						try {
-							argument = new Variant(r.Action.Argument, r.ActionArgument);
-						} catch (CO2MonitorArgumentException ex) {
-							_logger.LogError(ex, $"Can not convert rule's argument constant [{r.ActionArgument}] to action argument type [{r.Action.Argument}]. Rule skip");
-							continue;
-						}
-						break;
-					case RuleActionArgumentSource.EventData:
-						if (data.Declaration != r.Action.Argument) {
-							_logger.LogError($"Event [{eventDeclaration.Name}] data has incompatible type [{data.Declaration}] with action [{r.Action.Path}] argument [{r.Action.Argument}]. Rule Skip");
-							continue;
-						}
-						argument = data;
-						break;
-					default:
-						throw new NotImplementedException();
+				if (!TryGetRuleActionArgument(r, eventDeclaration, data, out Variant argument)) {
+					continue;
 				}
+
 				try {
 					await device.ExecuteAction(r.Action, argument);
 				} catch (CO2MonitorException ex) {
 					_logger.LogError(ex, $"Can not execute rule [{r.Name}.{r.Id}] action  {device.Name}{{ Id = {device.Id}}}{r.Action}.");
 				}
 				var message = $"{device.Name}{{ Id = {device.Id}}}.{r.Action.Path}({argument.String}) executed using rule [{r.Name}.{r.Id}]";
-				await _notificationService.Notify(message);
+				_notificationService.Notify(message);
 			}
 		}
-		
+
+		private bool TryGetRuleActionArgument(ActionRule rule, DeviceEventDeclaration eventDeclaration, Variant eventData, out Variant argument) {
+			argument = null;
+			switch (rule.ArgumentSource) {
+				case RuleActionArgumentSource.Constant:
+					try {
+						argument = new Variant(rule.Action.Argument, rule.ActionArgument);
+					} catch (CO2MonitorArgumentException ex) {
+						_logger.LogError(ex, $"Can not convert rule's argument constant [{rule.ActionArgument}] to action argument type [{rule.Action.Argument}].  Rule [{rule.Name}:{rule.Id}] is skipped.");
+						return false;
+					}
+					break;
+				case RuleActionArgumentSource.EventData:
+					if (eventData.Declaration != rule.Action.Argument) {
+						_logger.LogError($"Event [{eventDeclaration.Name}] data has incompatible type [{eventData.Declaration}] with action [{rule.Action.Path}] argument [{rule.Action.Argument}]. Rule [{rule.Name}:{rule.Id}] is skipped.");
+						return false;
+					}
+					argument = eventData;
+					break;
+				default:
+					throw new NotImplementedException();
+			}
+			return true;
+		}
+
+		private async Task<bool> CheckConditions(ActionRule rule) {
+			foreach (ActionCondition cond in rule.Conditions) {
+				try {
+					if (!await CheckCondition(cond)) {
+						_logger.LogInformation($"Condition [{cond}] is violated. Rule [{rule.Name}:{rule.Id}] is skipped.");
+						return false;
+					}
+				} catch (CO2MonitorException ex) {
+					_logger.LogError(ex, $"Can not check condition [{cond}]. Rule [{rule.Name}:{rule.Id}] is skipped.");
+					return false;
+				}
+			}
+
+			return true;
+		}
+
 		public async Task<bool> CheckCondition(ActionCondition condition) {
-			var device = _deviceRepository.GetById<IDevice>(condition.DeviceId);
+			var device = DeviceRepository.GetById<IDevice>(condition.DeviceId);
 
 			if (device is null) {
 				_logger.LogError($"Can not found device with id [{condition.DeviceId}]. Condition [{condition}] is violated.");
@@ -181,20 +192,18 @@ namespace CO2Monitor.Infrastructure.Services {
 		}
 
 		public IDeviceExtension CreateDeviceExtension(Type type, int deviceId, string parameter){
-			var device = _deviceRepository.GetById<IDevice>(deviceId);
-			if (device == null)
-				throw new CO2MonitorArgumentException($"Can not find device with id {deviceId}");
-			if (!(device is IExtendableDevice))
-				throw new CO2MonitorArgumentException($"Device (id ={deviceId}) is not extensible!");
+			var device = DeviceRepository.GetById<IExtendableDevice>(deviceId);
+			if (device == null) {
+				throw new CO2MonitorArgumentException($"Can not find extendable device with id {deviceId}");
+			}
+
 			var extDevice = device as IExtendableDevice;
 			IDeviceExtension ext = (_extensionFactory.CreateExtension(type, parameter, device));
 			extDevice.AddExtension(ext);
 			return ext;
 		}
 
-		public IEnumerable<Type> GetDeviceExtensionsTypes(){
-			return _extensionFactory.GetExtensionTypes();
-		}
+		public IEnumerable<Type> GetDeviceExtensionsTypes() => _extensionFactory.GetExtensionTypes();
 
 		public Task StartAsync(CancellationToken cancellationToken) {
 			_logger.LogInformation("Starting DeviceManagerService background service.");
@@ -204,8 +213,8 @@ namespace CO2Monitor.Infrastructure.Services {
 		public Task StopAsync(CancellationToken cancellationToken) {
 			_logger.LogInformation("Stopping DeviceManagerService background service.");
 
-			foreach (IDevice d in _deviceRepository.List<IDevice>())
-				d.Dispose();
+			DeviceRepository.List<IDevice>().ForEach(d => d.Dispose());
+			
 
 			return Task.CompletedTask;
 		}

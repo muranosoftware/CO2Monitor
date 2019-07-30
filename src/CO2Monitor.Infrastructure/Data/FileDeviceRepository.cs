@@ -4,12 +4,15 @@ using System.Linq;
 using System.IO;
 using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
+using Microsoft.Extensions.Configuration;
+using MoreLinq;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using CO2Monitor.Infrastructure.Helpers;
 using System.Collections.Specialized;
 using CO2Monitor.Core.Interfaces.Services;
 using CO2Monitor.Core.Interfaces.Devices;
+using System.Linq.Expressions;
 
 namespace CO2Monitor.Infrastructure.Data {
 	public class FileDeviceRepository : IDeviceRepository {
@@ -19,20 +22,21 @@ namespace CO2Monitor.Infrastructure.Data {
 			public IDictionary<int, IDevice> Devices { get; set; } = new ConcurrentDictionary<int, IDevice>();
 
 			[MethodImpl(MethodImplOptions.Synchronized)]
-			public int GetNextId() {
-				return ++DeviceIdSeq;
-			}
+			public int GetNextId() => ++DeviceIdSeq;
 		}
 
-		private const string ConfigurationFile = "Devices.json";
+		private const string ConfigurationFileKey = "FileDeviceRepository:File";
+		private readonly string _fileName;
 		private readonly JsonSerializerSettings _jsonSettings;
 		private readonly ILogger<FileDeviceRepository> _logger;
 		private readonly DeviceData _data;
 
 		public FileDeviceRepository(ILogger<FileDeviceRepository> logger, 
-		                            IDeviceFactory deviceFactory, 
-		                            IServiceProvider serviceProvider) {
+									IConfiguration configuration, 
+									IDeviceFactory deviceFactory,
+									IServiceProvider serviceProvider) {
 			_logger = logger;
+			_fileName = configuration.GetValue<string>(ConfigurationFileKey);
 
 			var jsonResolver = new PropRenAndIgnDepInjSerializerContractResolver(serviceProvider);
 			foreach (Type t in deviceFactory.GetDeviceTypes()) {
@@ -41,27 +45,27 @@ namespace CO2Monitor.Infrastructure.Data {
 
 				if (t.GetInterfaces().Contains(typeof(IDevice))) {
 					jsonResolver.IgnoreProperty(t, 
-					                            nameof(IDevice.Info));
+												nameof(IDevice.Info));
 				}
 
+				
 				if (t.GetInterfaces().Contains(typeof(ICalendarDevice))) {
 					jsonResolver.IgnoreProperty(t, 
-					                            nameof(ICalendarDevice.IsTodayWorkDay), 
-					                            nameof(ICalendarDevice.IsTomorrowWorkDay), 
-					                            nameof(ICalendarDevice.BaseInfo), 
-					                            nameof(ICalendarDevice.IsYesterdayWorkDay));
+												nameof(ICalendarDevice.IsTodayWorkDay), 
+												nameof(ICalendarDevice.IsTomorrowWorkDay), 
+												nameof(ICalendarDevice.BaseInfo), 
+												nameof(ICalendarDevice.IsYesterdayWorkDay));
 				}
 
 				if (t.GetInterfaces().Contains(typeof(IScheduleTimer))) {
 					jsonResolver.IgnoreProperty(t,
-					                            nameof(IScheduleTimer.BaseInfo));
+												nameof(IScheduleTimer.BaseInfo));
 				}
 
 				if (t.GetInterfaces().Contains(typeof(IRemoteDevice))) {
 					jsonResolver.IgnoreProperty(t, 
-					                            nameof(IRemoteDevice.LatestSuccessfulAccess), 
-					                            nameof(IRemoteDevice.Status), 
-					                            "DeviceState");
+												nameof(IRemoteDevice.LatestSuccessfulAccess), 
+												nameof(IRemoteDevice.Status));
 				}
 			}
 
@@ -71,19 +75,20 @@ namespace CO2Monitor.Infrastructure.Data {
 				ContractResolver = jsonResolver,
 			};
 
-			if (File.Exists(ConfigurationFile)) {
-				_data = JsonConvert.DeserializeObject<DeviceData>(File.ReadAllText(ConfigurationFile), _jsonSettings);
-				foreach (IDevice d in _data.Devices.Values)
-					d.SettingsChanged += DeviceSettingsChanged;
-			} else
+			if (File.Exists(_fileName)) {
+				_data = JsonConvert.DeserializeObject<DeviceData>(File.ReadAllText(_fileName), _jsonSettings);
+				_data.Devices.Values.ForEach(d => d.SettingsChanged += DeviceSettingsChanged);
+			} else {
 				_data = new DeviceData();
+			}
 		}
 
 		public event NotifyCollectionChangedEventHandler CollectionChanged;
 
 		public T Add<T>(T device) where T : class, IDevice {
-			if (_data.Devices.ContainsKey(device.Id))
+			if (_data.Devices.ContainsKey(device.Id)) {
 				return device;
+			}
 
 			device.Id = _data.GetNextId();
 			_logger.LogInformation($"Adding device [{device.GetType().Name}:{device.Name}:{device.Id}] to repo");
@@ -97,12 +102,11 @@ namespace CO2Monitor.Infrastructure.Data {
 			return device;
 		}
 
-		public bool Delete<T>(Predicate<T> condition) where T : class, IDevice {
-			var found = false;
-			List<T> devices = _data.Devices.Values.OfType<T>().Where((x) => condition(x)).ToList();
-			if (devices.Count > 0)
-				found = true;
+		public bool Delete<T>(Expression<Func<T, bool>> predicate) where T : class, IDevice {
+			Func<T, bool> func = predicate.Compile();
 
+			T[] devices = _data.Devices.Values.OfType<T>().Where(func).ToArray();
+			
 			foreach (T d in devices) {
 				_logger.LogInformation($"Deleting device [{d.GetType().Name}:{d.Name}:{d.Id}] from repo");
 				d.SettingsChanged -= DeviceSettingsChanged;
@@ -114,35 +118,28 @@ namespace CO2Monitor.Infrastructure.Data {
 
 			CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, devices));
 
-			return found;
+			return devices.Length > 0;
 		}
 
-		public IEnumerable<T> List<T>(Predicate<T> condition = null) where T : class, IDevice {
-			if (condition is null)
+		public IEnumerable<T> List<T>(Expression<Func<T, bool>> predicate = null) where T : class, IDevice {
+			if (predicate is null) {
 				return _data.Devices.Values.OfType<T>();
-			else
-				return _data.Devices.Values.OfType<T>().Where(x => condition(x));
+			}
+
+			Func<T, bool> func = predicate.Compile();
+			return _data.Devices.Values.OfType<T>().Where(func);
 		}
 
-		public void Update<T>(T device) where T : class, IDevice {
-			Save();
-		}
+		public void Update<T>(T device) where T : class, IDevice => Save();
 
-		private void DeviceSettingsChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) {
-			Save();
-		}
+		private void DeviceSettingsChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) => Save();
 
 		private void Save() {
-			_logger.LogInformation($"Saving device configuration to file [{ConfigurationFile}]");
+			_logger.LogInformation($"Saving device configuration to file [{_fileName}]");
 			var json = JsonConvert.SerializeObject(_data, _jsonSettings);
-			File.WriteAllText(ConfigurationFile, json);
+			File.WriteAllText(_fileName, json);
 		}
 
-		public T GetById<T>(int id) where T : class, IDevice {
-			if (!_data.Devices.ContainsKey(id))
-				return null;
-			else
-				return (T)_data.Devices[id];
-		}
+		public T GetById<T>(int id) where T : class, IDevice => _data.Devices.ContainsKey(id) ? (T)_data.Devices[id] : null;
 	}
 }

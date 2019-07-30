@@ -17,19 +17,23 @@ namespace CO2Monitor.Infrastructure.Logging {
 		}
 
 		public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter) {
-			if (!IsEnabled(logLevel))
+			if (!IsEnabled(logLevel)) {
 				return;
+			}
 
-			if (formatter == null)
+			if (formatter == null) {
 				throw new ArgumentNullException(nameof(formatter));
+			}
 
 			var message = formatter(state, exception);
 
-			if (string.IsNullOrEmpty(message))
+			if (string.IsNullOrEmpty(message)) {
 				return;
+			}
 
-			if (exception != null)
+			if (exception != null) {
 				message += "\n" + exception;
+			}
 
 			message = message.Length > MessageMaxLength ? message.Substring(0, MessageMaxLength) : message;
 			var log = new LogRecord {
@@ -42,12 +46,8 @@ namespace CO2Monitor.Infrastructure.Logging {
 			_repo.Add(log);
 		}
 
-		public bool IsEnabled(LogLevel logLevel) {
-			return (_filter == null || _filter(_categoryName, logLevel));
-		}
+		public bool IsEnabled(LogLevel logLevel) => (_filter == null || _filter(_categoryName, logLevel));
 
-		public IDisposable BeginScope<TState>(TState state) {
-			return null;
-		}
+		public IDisposable BeginScope<TState>(TState state) => null;
 	}
 }

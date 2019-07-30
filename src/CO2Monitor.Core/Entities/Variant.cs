@@ -21,9 +21,11 @@ namespace CO2Monitor.Core.Entities {
 				switch (Declaration.Type) {
 					case VariantType.Enum:
 						val = val.ToLower();
-						if (!Declaration.EnumValues.Contains(val))
-							throw new CO2MonitorArgumentException(nameof(val), $"Enum [{Declaration}] does not contain value [{val}]");
-						_string = val;
+						if (!Declaration.EnumValues.Contains(val)) {
+						throw new CO2MonitorArgumentException(nameof(val), $"Enum [{Declaration}] does not contain value [{val}]");
+					}
+
+					_string = val;
 						break;
 					case VariantType.Float:
 						_float = double.Parse(val);
@@ -39,8 +41,8 @@ namespace CO2Monitor.Core.Entities {
 					default:
 						throw new NotImplementedException();
 				}
-			} catch (Exception ex) {
-				throw new CO2MonitorArgumentException(nameof(val), $"Can not init Value with type [{Declaration}] and string value [{val}]", ex);
+			} catch (FormatException ex) {
+				throw new CO2MonitorArgumentException(nameof(val), $"Can not init Value with type [{Declaration}] and string value [{val}]. Bad format", ex);
 			}
 		}
 
@@ -63,9 +65,10 @@ namespace CO2Monitor.Core.Entities {
 			value = value.ToLower();
 			Declaration = new VariantDeclaration(VariantType.Enum, enumValues);
 
-			if (!enumValues.Contains(value))
+			if (!enumValues.Contains(value)) {
 				throw new CO2MonitorArgumentException($"value \"{value}\" is not in enumValues [{enumValues.Aggregate((acc, x) => acc + $"\"{x}\" ")}]");
-			
+			}
+
 			_string = value;
 		}
 
@@ -73,8 +76,9 @@ namespace CO2Monitor.Core.Entities {
 
 		public string Enum {
 			get {
-				if (Declaration.Type != VariantType.Enum)
-					throw new InvalidOperationException($"Value type is {Declaration.Type} not Enum");
+				if (Declaration.Type != VariantType.Enum) {
+					throw new CO2MonitorException($"Value type is {Declaration.Type} not Enum");
+				}
 
 				return _string;
 			}
@@ -95,8 +99,9 @@ namespace CO2Monitor.Core.Entities {
 
 		public double Float {
 			get {
-				if (Declaration.Type != VariantType.Float)
-					throw new InvalidOperationException($"Value type is {Declaration.Type} not Float");
+				if (Declaration.Type != VariantType.Float) {
+					throw new CO2MonitorException($"Value type is {Declaration.Type} not Float");
+				}
 
 				return _float;
 			}
@@ -104,18 +109,22 @@ namespace CO2Monitor.Core.Entities {
 
 		public TimeSpan Time {
 			get {
-				if (Declaration.Type != VariantType.Time)
-					throw new InvalidOperationException($"Value type is {Declaration.Type} not Time");
+				if (Declaration.Type != VariantType.Time) {
+					throw new CO2MonitorException($"Value type is {Declaration.Type} not Time");
+				}
+
 				return _time;
 			}
 		}
 
 		public bool Equals(Variant other) {
-			if (other == null)
+			if (other == null) {
 				return false;
+			}
 
-			if (Declaration != other.Declaration)
+			if (Declaration != other.Declaration) {
 				return false;
+			}
 
 			switch (Declaration.Type) {
 				case VariantType.Enum:
@@ -139,11 +148,11 @@ namespace CO2Monitor.Core.Entities {
 			switch (Declaration.Type) {
 				case VariantType.Enum:
 				case VariantType.String:
-					return hash + 431 * _string.GetHashCode();
+					return hash + (431 * _string.GetHashCode());
 				case VariantType.Float:
-					return hash + 431 * _float.GetHashCode();
+					return hash + (431 * _float.GetHashCode());
 				case VariantType.Time:
-					return hash + 431 * _time.GetHashCode();
+					return hash + (431 * _time.GetHashCode());
 				case VariantType.Void:
 					return hash;
 				default:
@@ -168,22 +177,17 @@ namespace CO2Monitor.Core.Entities {
 		}
 
 		public static bool operator ==(Variant a, Variant b) {
-			if (a is null)
-				return b is null;
-
-			return a.Equals(b);
+			return a is null ? b is null : a.Equals(b);
 		}
 
 		public static bool operator !=(Variant a, Variant b) {
-			if (a is null)
-				return !(b is null);
-
-			return !a.Equals(b);
+			return a is null ? !(b is null) : !a.Equals(b);
 		}
 
 		public static bool operator <(Variant a, Variant b) {
-			if (a is null || b is null || a.Declaration != b.Declaration)
+			if (a is null || b is null || a.Declaration != b.Declaration) {
 				return false;
+			}
 
 			switch (a.Declaration.Type) {
 				case VariantType.Enum:
@@ -202,8 +206,9 @@ namespace CO2Monitor.Core.Entities {
 		}
 
 		public static bool operator >(Variant a, Variant b) {
-			if (a is null || b is null || a.Declaration != b.Declaration)
+			if (a is null || b is null || a.Declaration != b.Declaration) {
 				return false;
+			}
 
 			switch (a.Declaration.Type) {
 				case VariantType.Enum:
@@ -222,8 +227,9 @@ namespace CO2Monitor.Core.Entities {
 		}
 
 		public static bool operator <=(Variant a, Variant b) {
-			if (a is null || b is null || a.Declaration != b.Declaration)
+			if (a is null || b is null || a.Declaration != b.Declaration) {
 				return false;
+			}
 
 			switch (a.Declaration.Type) {
 				case VariantType.Enum:
@@ -242,8 +248,9 @@ namespace CO2Monitor.Core.Entities {
 		}
 
 		public static bool operator >=(Variant a, Variant b) {
-			if (a is null || b is null || a.Declaration != b.Declaration)
+			if (a is null || b is null || a.Declaration != b.Declaration) {
 				return false;
+			}
 
 			switch (a.Declaration.Type) {
 				case VariantType.Enum:

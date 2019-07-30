@@ -13,9 +13,7 @@ namespace CO2Monitor.Infrastructure.Migrations.LogRecordsDb {
 					Message = table.Column<string>(nullable: true),
 					Time = table.Column<DateTime>(nullable: false)
 				},
-				constraints: table => {
-					table.PrimaryKey("PK_Records", x => x.Id);
-				});
+				constraints: table => table.PrimaryKey("PK_Records", x => x.Id));
 
 			migrationBuilder.CreateIndex(
 				name: "IX_Records_Time",

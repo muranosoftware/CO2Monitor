@@ -5,13 +5,12 @@ namespace CO2Monitor.Infrastructure.Devices {
 	public class DeviceExtensionBuilder<T> : IDeviceExtensionBuilder where T : IDeviceExtension {
 		public Type ExtensionType => typeof(T);
 
-		private readonly Func<string, IDevice, T> _activator;
+		private readonly Func<string, IExtendableDevice, T> _activator;
 
-		public IDeviceExtension CreateDeviceExtension(string parameter, IDevice device) {
-			return _activator(parameter, device);
-		}
+		public IDeviceExtension CreateDeviceExtension(string parameter, IExtendableDevice device) =>
+			_activator(parameter, device);
 
-		public DeviceExtensionBuilder(Func<string, IDevice, T> activator) {
+		public DeviceExtensionBuilder(Func<string, IExtendableDevice, T> activator) {
 			_activator = activator;
 		}
 	}

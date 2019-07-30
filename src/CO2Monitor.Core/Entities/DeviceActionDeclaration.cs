@@ -1,45 +1,31 @@
-﻿namespace CO2Monitor.Core.Entities {
+﻿using Newtonsoft.Json;
+
+namespace CO2Monitor.Core.Entities {
 	public sealed class DeviceActionDeclaration {
-		public DeviceActionDeclaration(string path, VariantDeclaration argumentDeclaration) {
+		[JsonConstructor]
+		public DeviceActionDeclaration(string path, VariantDeclaration argument) {
 			Path = path;
-			Argument = argumentDeclaration;
+			Argument = argument;
 		}
 
-		public string Path { get; set; }
+		public string Path { get; private set; }
 
-		public VariantDeclaration Argument { get; set; }
+		public VariantDeclaration Argument { get; private set; }
 
-		public bool Equals(DeviceActionDeclaration other) {
-			if (other is null)
-				return false;
+		public bool Equals(DeviceActionDeclaration other) => other is null ? false : (Argument == other.Argument) && (Path == other.Path);
 
-			return (Argument == other.Argument) && (Path == other.Path);
-		}
+		public override bool Equals(object obj) => Equals(obj as DeviceActionDeclaration);
 
-		public override bool Equals(object obj) {
-			return Equals(obj as DeviceActionDeclaration);
-		}
+		public override int GetHashCode() => Argument.GetHashCode() + (431 * (Path?.GetHashCode() ?? 0));
 
-		public override int GetHashCode() {
-			return Argument.GetHashCode() + 431 * (Path?.GetHashCode() ?? 0);
-		}
-
-		public override string ToString() {
-			return $"{Path}({Argument})";
-		}
+		public override string ToString() => $"{Path}({Argument})";
 
 		public static bool operator ==(DeviceActionDeclaration a, DeviceActionDeclaration b) {
-			if (a is null)
-				return b is null;
-
-			return a.Equals(b);
+			return a is null ? b is null : a.Equals(b);
 		}
 
 		public static bool operator !=(DeviceActionDeclaration a, DeviceActionDeclaration b) {
-			if (a is null)
-				return !(b is null);
-
-			return !a.Equals(b);
+			return a is null ? !(b is null) : !a.Equals(b);
 		}
 	}
 }

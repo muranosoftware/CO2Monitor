@@ -12,9 +12,7 @@ namespace CO2Monitor.Infrastructure.Migrations {
 					Time = table.Column<DateTime>(nullable: false),
 					State = table.Column<string>(nullable: true)
 				},
-				constraints: table => {
-					table.PrimaryKey("PK_Measurements", x => x.Id);
-				});
+				constraints: table => table.PrimaryKey("PK_Measurements", x => x.Id));
 
 			migrationBuilder.CreateIndex(
 				name: "IX_Measurements_DeviceId",

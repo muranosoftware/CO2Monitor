@@ -26,14 +26,11 @@ namespace CO2Monitor.Infrastructure.Data {
 		}
 
 		public IEnumerable<DeviceStateMeasurement> List(Expression<Func<DeviceStateMeasurement, bool>> predicate = null) {
-			if (predicate != null)
-				return _dbContext.Measurements.Where(predicate).OrderBy(x => x.Time);
-			
-			return _dbContext.Measurements.OrderBy(x => x.Time);
+			return predicate == null
+				? _dbContext.Measurements.OrderBy(x => x.Time)
+				: _dbContext.Measurements.Where(predicate).OrderBy(x => x.Time);
 		}
 
-		public void EnsureCreated() {
-			_dbContext.Database.EnsureCreated();
-		}
+		public void EnsureCreated() => _dbContext.Database.EnsureCreated();
 	}
 }

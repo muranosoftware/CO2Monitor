@@ -8,8 +8,9 @@ namespace CO2Monitor.Infrastructure.Helpers {
 		public static IEnumerable<TimeSeriesPoint> GetFloatFieldValues(IEnumerable<DeviceStateMeasurement> measurements, string field) {
 			foreach (DeviceStateMeasurement m in measurements) {
 				JObject json = JObject.Parse(m.State);
-				if (json.ContainsKey(field))
+				if (json.ContainsKey(field)) {
 					yield return new TimeSeriesPoint(m.Time, json.Property(field).ToObject<double>());
+				}
 			}
 		}
 
@@ -25,9 +26,10 @@ namespace CO2Monitor.Infrastructure.Helpers {
 
 			foreach (DeviceStateMeasurement m in measurements) {
 				JObject json = JObject.Parse(m.State);
-				if (json.ContainsKey(field))
-					yield return new TimeSeriesPoint(m.Time, indexes[json.Property(field).ToObject<string>()]);
-			}
+				if (json.ContainsKey(field)) {
+                    yield return new TimeSeriesPoint(m.Time, indexes[json.Property(field).ToObject<string>()]);
+                }
+            }
 		}
 	}
 }

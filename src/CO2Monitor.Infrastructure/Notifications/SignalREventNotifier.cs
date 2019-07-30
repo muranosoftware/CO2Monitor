@@ -10,8 +10,6 @@ namespace CO2Monitor.Infrastructure.Notifications {
 			_eventHubContext = eventHubContext;
 		}
 
-		public async Task Notify(string message) {
-			await _eventHubContext.Clients.All.SendCoreAsync("ServerEvent", new object[] { message });
-		}
+		public async Task Notify(string message) => await _eventHubContext.Clients.All.SendCoreAsync("ServerEvent", new object[] { message });
 	}
 }

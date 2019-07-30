@@ -7,17 +7,20 @@ using CO2Monitor.Core.Interfaces.Services;
 namespace CO2Monitor.Infrastructure.Services {
 	public static class ServicesConfigurationExt {
 		public static IServiceCollection AddDeviceServices(this IServiceCollection services) {
+
+#if !DISABLE_BOT
 			services.AddSingleton<ITextCommandProvider, SlackProxyHubTextCommandProvider>();
 
 			services.AddHostedService<BackgroundServiceStarter<ITextCommandProvider>>();
 
 			services.AddSingleton<IDeviceTextCommandService, DeviceTextCommandService>();
+#endif // !DISABLE_BOT
 
 			services.AddSingleton<StateMeasurementDbContext>();
 
 			services.AddSingleton<IDeviceStateRepository, SqLiteDeviceStateRepository>();
 
-			services.AddTransient<IDeviceRepository, FileDeviceRepository>();
+			services.AddSingleton<IDeviceRepository, FileDeviceRepository>();
 
 			services.AddTransient<IWorkDayCalendarService, IsDayOffDotRuCalendarService>();
 

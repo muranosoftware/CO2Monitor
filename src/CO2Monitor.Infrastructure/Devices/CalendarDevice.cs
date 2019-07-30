@@ -11,8 +11,10 @@ using Newtonsoft.Json;
 using Microsoft.Extensions.Logging;
 using CO2Monitor.Core.Entities;
 using CO2Monitor.Core.Shared;
+using MoreLinq;
 using CO2Monitor.Core.Interfaces.Devices;
 using CO2Monitor.Core.Interfaces.Services;
+
 
 namespace CO2Monitor.Infrastructure.Devices {
 	public class CalendarDevice : ICalendarDevice {
@@ -50,9 +52,10 @@ namespace CO2Monitor.Infrastructure.Devices {
 			ImmutableHashSet<DateTime> dates = GetDatesForUpdate();
 
 			try {
-				foreach (DateTime d in dates)
+				foreach (DateTime d in dates) {
 					_dayWorkStatuses[d] = await _calendarService.IsWorkDay(d);
-				_dayWorkStatuses.Keys.Where(x => !dates.Contains(x)).ToList().ForEach(d =>  _dayWorkStatuses.TryRemove(d, out bool _));
+				}
+				_dayWorkStatuses.Keys.Where(x => !dates.Contains(x)).ToArray().ForEach( d => _dayWorkStatuses.TryRemove(d, out _));
 			} catch (OperationCanceledException ex) {
 				_logger.LogError(ex, "Can not update work day stutuses. Only saturday and sunday will be marked as day off.");
 				MarkSundaysAndSaturdaysAsDayOff();
@@ -70,17 +73,14 @@ namespace CO2Monitor.Infrastructure.Devices {
 
 		private void MarkSundaysAndSaturdaysAsDayOff() {
 			ImmutableHashSet<DateTime> dates = GetDatesForUpdate();
-			foreach (DateTime d in GetDatesForUpdate())
-				_dayWorkStatuses[d] = d.DayOfWeek == DayOfWeek.Sunday || d.DayOfWeek == DayOfWeek.Saturday;
+			GetDatesForUpdate().ForEach(d => _dayWorkStatuses[d] = d.DayOfWeek == DayOfWeek.Sunday || d.DayOfWeek == DayOfWeek.Saturday);
 			
-			_dayWorkStatuses.Keys.Where(x => !dates.Contains(x)).ToList().ForEach(d => _dayWorkStatuses.TryRemove(d, out bool _));
+			_dayWorkStatuses.Keys.Where(x => !dates.Contains(x)).ToArray().ForEach( d => _dayWorkStatuses.TryRemove(d, out _));
 		}
 
-		public void Dispose() {
-			_dailyTimer.Dispose();
-		}
+        public void Dispose() => _dailyTimer.Dispose();
 
-		public string Name { get; set; } = "Calendar";
+        public string Name { get; set; } = "Calendar";
 
 		public DeviceInfo BaseInfo => CalendarDeviceInfo;
 
@@ -112,22 +112,23 @@ namespace CO2Monitor.Infrastructure.Devices {
 			{ nameof(IsTomorrowWorkDay), IsTomorrowWorkDay.ToString() }
 		});
 
-		public Task ExecuteAction(DeviceActionDeclaration deviceActionDeclaration, Variant value) {
-			throw new InvalidOperationException("There is not any action in CalendarDevice");
-		}
+        public Task ExecuteAction(DeviceActionDeclaration deviceActionDeclaration, Variant value) => 
+            throw new InvalidOperationException("There is not any action in CalendarDevice");
 
-		public Task<Variant> GetField(DeviceStateFieldDeclaration fieldDeclaration) {
-			if (StateFieldDeclarations.ContainsKey(fieldDeclaration))
-				return Task.FromResult(StateFieldDeclarations[fieldDeclaration](this));
-			else
-				throw new CO2MonitorArgumentException("CalendarDevice does not contains field " + fieldDeclaration);
-		}
+        public Task<Variant> GetField(DeviceStateFieldDeclaration fieldDeclaration) {
+			if (StateFieldDeclarations.ContainsKey(fieldDeclaration)) {
+                return Task.FromResult(StateFieldDeclarations[fieldDeclaration](this));
+            } else {
+                throw new CO2MonitorArgumentException("CalendarDevice does not contains field " + fieldDeclaration);
+            }
+        }
 
 		private bool IsWorkDay(DateTime date) {
-			if (!_dayWorkStatuses.TryGetValue(date, out bool status))
-				throw new InvalidOperationException("Date is too far from today");
-			else
-				return status;
-		}
+			if (!_dayWorkStatuses.TryGetValue(date, out bool status)) {
+                throw new InvalidOperationException("Date is too far from today");
+            } else {
+                return status;
+            }
+        }
 	}
 }

@@ -1,16 +1,16 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Net.Http.Headers;
+using System.Collections.Generic;
 using Newtonsoft.Json;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Bot.Schema;
 using CO2Monitor.Core.Interfaces.Services;
-using System.Net.Http.Headers;
-using System.Collections.Generic;
 
 namespace CO2Monitor.Infrastructure.Services {
 	public class SlackProxyHubTextCommandProvider : ITextCommandProvider, IDisposable {
@@ -53,11 +53,16 @@ namespace CO2Monitor.Infrastructure.Services {
 		}
 
 		private void OnMessageHandler(string user, string message) {
-			if (user == "co2Monitor" && message == "ping")
+			if (user == "co2Monitor" && message == "ping") {
 				return;
+			}
 
-			var msg = JsonConvert.DeserializeObject<Message>(message);
-			NewCommand?.Invoke(msg.UserId.Split(':')[0], msg.UserName, msg.Text, msg.ConversationId.Split(':')[2], msg.IsGroup ?? false);
+			try {
+				var msg = JsonConvert.DeserializeObject<Message>(message);
+				NewCommand?.Invoke(msg.UserId.Split(':').FirstOrDefault(), msg.UserName, msg.Text, msg.ConversationId.Split(':').LastOrDefault(), msg.IsGroup ?? false);
+			} catch (JsonReaderException ex) {
+				_logger.LogError(ex, "Invalid message from Slack Proxy");
+			}
 		}
 
 		public Task StartAsync(CancellationToken cancellationToken) {
@@ -80,8 +85,9 @@ namespace CO2Monitor.Infrastructure.Services {
 						new KeyValuePair<string, string>("text", message),
 					};
 
-					if (attachments != null) 
+					if (attachments != null) {
 						data.Add(new KeyValuePair<string, string>("attachments", JsonConvert.SerializeObject(attachments)));
+					}
 
 					var form = new FormUrlEncodedContent(data);
 
@@ -118,17 +124,16 @@ namespace CO2Monitor.Infrastructure.Services {
 		private async void CheckConnection(object state) {
 
 			try {
-				if (_connection.State == HubConnectionState.Disconnected)
+				if (_connection.State == HubConnectionState.Disconnected) {
 					await _connection.StartAsync();
-				else
+				} else {
 					await _connection.SendCoreAsync("ReceiveMessage", new object[] { "co2Monitor", "ping" });
+				}
 			} catch (Exception ex) {
 				_logger.LogError(ex, "Can not connect to SlackProxy hub");
 			}
 		}
-		
-		public void Dispose() {
-			_checkConnectionTimer.Dispose();
-		}
+
+		public void Dispose() => _checkConnectionTimer.Dispose();
 	} 
 }

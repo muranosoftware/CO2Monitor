@@ -17,10 +17,7 @@ namespace CO2Monitor.Infrastructure.Helpers {
 		public void AndAlso(Expression<Func<T, bool>> predicate) {
 			var lambda = predicate as LambdaExpression;
 
-			if (_body == null)
-				_body = lambda.Body;
-			else
-				_body = Expression.AndAlso(_body, lambda.Body);
+			_body = _body == null ? lambda.Body : Expression.AndAlso(_body, lambda.Body);
 		}
 	}
 }

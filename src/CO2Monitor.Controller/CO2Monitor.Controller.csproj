@@ -17,16 +17,28 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Logs\**" />
+    <Compile Remove="Storage\**" />
+    <Content Remove="Logs\**" />
+    <Content Remove="Storage\**" />
+    <EmbeddedResource Remove="Logs\**" />
+    <EmbeddedResource Remove="Storage\**" />
+    <None Remove="Logs\**" />
+    <None Remove="Storage\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="FluentValidation.AspNetCore" Version="8.4.0" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.7.9" />
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.3" />
     <PackageReference Include="Serilog.Extensions.Logging.File" Version="1.1.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="4.0.1" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\CO2Monitor.Application\CO2Monitor.Application.csproj" />
     <ProjectReference Include="..\CO2Monitor.Core\CO2Monitor.Core.csproj" />
     <ProjectReference Include="..\CO2Monitor.Infrastructure\CO2Monitor.Infrastructure.csproj" />
   </ItemGroup>

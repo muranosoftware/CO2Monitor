@@ -15,6 +15,9 @@ using CO2Monitor.Infrastructure.Logging;
 using CO2Monitor.Core.Interfaces.Services;
 using CO2Monitor.Infrastructure.Notifications;
 using CO2Monitor.Infrastructure.Validation;
+using CO2Monitor.Controller.Configuration;
+using CO2Monitor.Controller.Filters;
+using CO2Monitor.Application.Validation;
 
 namespace CO2Monitor.Controller {
 	public class Startup {
@@ -28,9 +31,12 @@ namespace CO2Monitor.Controller {
 		public IConfiguration Configuration { get; }
 
 		public void ConfigureServices(IServiceCollection services) {
-			services.AddMvc()
-				.SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
-				.AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<DeviceInfoValidator>());
+			services.AddMvc(opt => opt.Filters.Add(new ModelStateFilter()))
+					.SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
+					.AddFluentValidation(fv => {
+						fv.RegisterValidatorsFromAssemblyContaining<DeviceViewModelValidator>();
+						fv.RegisterValidatorsFromAssemblyContaining<DeviceInfoValidator>();
+					});
 
 			services.AddEntityFrameworkSqlite();
 
@@ -40,12 +46,11 @@ namespace CO2Monitor.Controller {
 
 			services.AddNotificationServices();
 
-			services.AddSwaggerGen(c => {
-				c.SwaggerDoc("v1", new Info { Title = "CO2Monitor API", Version = "v1" });
-				//var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-				//var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-				//c.IncludeXmlComments(xmlPath); TODO: make documentation
-			});
+			services.AddAutoMapperSetup();
+
+			services.AddApplicationSetup();
+
+			services.AddSwaggerGen(c => c.SwaggerDoc("v1", new Info { Title = "CO2Monitor API", Version = "v1" }));
 
 			services.AddSignalR();
 		}
@@ -74,20 +79,14 @@ namespace CO2Monitor.Controller {
 			app.UseDefaultFiles();
 			string cachePeriod = env.IsDevelopment() ? "600" : "604800";
 			app.UseStaticFiles(new StaticFileOptions {
-				OnPrepareResponse = ctx => {
-					ctx.Context.Response.Headers.Append(new KeyValuePair<string, StringValues>("Cache-Control", $"public, max-age={cachePeriod}"));
-				}
+				OnPrepareResponse = ctx => ctx.Context.Response.Headers.Append(new KeyValuePair<string, StringValues>("Cache-Control", $"public, max-age={cachePeriod}"))
 			});
 
 			app.UseSwagger();
 
-			app.UseSwaggerUI(c => {
-				c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
-			});
+			app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1"));
 
-			app.UseSignalR(routes => {
-				routes.MapHub<EventHub>("/events");
-			});
+			app.UseSignalR(routes => routes.MapHub<EventHub>("/events"));
 
 			app.UseMvc();
 		}

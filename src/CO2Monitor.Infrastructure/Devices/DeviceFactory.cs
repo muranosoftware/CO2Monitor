@@ -13,18 +13,13 @@ namespace CO2Monitor.Infrastructure.Devices {
 		}
 		
 		public T CreateDevice<T>() where T : IDevice {
-			if (typeof(T).IsInterface)
-				return (T)_builders.First(x => typeof(T).IsAssignableFrom(x.DeviceType)).CreateDevice();
-			else
-				return (T)_builders.First(x => x.DeviceType == typeof(T)).CreateDevice();
+			return typeof(T).IsInterface
+				? (T)_builders.First(x => typeof(T).IsAssignableFrom(x.DeviceType)).CreateDevice()
+				: (T)_builders.First(x => x.DeviceType == typeof(T)).CreateDevice();
 		}
 
-		public IDevice CreateDevice(string name) {
-			return _builders.First(x => x.DeviceType.Name == name).CreateDevice();
-		}
+		public IDevice CreateDevice(string name) => _builders.First(x => x.DeviceType.Name == name).CreateDevice();
 
-		public IEnumerable<Type> GetDeviceTypes() {
-			return _builders.Select(x => x.DeviceType);
-		}
+		public IEnumerable<Type> GetDeviceTypes() => _builders.Select(x => x.DeviceType);
 	}
 }

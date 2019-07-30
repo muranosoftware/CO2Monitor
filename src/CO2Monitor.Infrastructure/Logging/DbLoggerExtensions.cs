@@ -10,9 +10,8 @@ namespace CO2Monitor.Infrastructure.Logging {
 			return factory;
 		}
 
-		public static ILoggerFactory AddDbLogger(this ILoggerFactory factory, LogLevel minLevel, IServiceProvider serviceProvider) {
-			return AddDbLogger(factory, serviceProvider, (_, logLevel) => logLevel >= minLevel);
-		}
+		public static ILoggerFactory AddDbLogger(this ILoggerFactory factory, LogLevel minLevel, IServiceProvider serviceProvider) =>
+			AddDbLogger(factory, serviceProvider, (_, logLevel) => logLevel >= minLevel);
 
 		public static IServiceCollection AddDbLoggerService<TLogRecordsRepository>(this IServiceCollection services) where TLogRecordsRepository : class, ILogRecordsRepository {
 			services.AddSingleton<LogRecordsDbContext>();

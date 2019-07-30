@@ -82,6 +82,8 @@ namespace CO2Monitor.Infrastructure.Devices {
 
 		public List<IDeviceExtension> Extensions { get; set; } = new List<IDeviceExtension>();
 
+		IEnumerable<IDeviceExtension> IExtendableDevice.Extensions => Extensions;
+		
 		public string DeviceState { get; set; }
 
 		public string State {
@@ -132,11 +134,12 @@ namespace CO2Monitor.Infrastructure.Devices {
 		}
 
 		public async Task ExecuteAction(DeviceActionDeclaration deviceActionDeclaration, Variant value) {
-			foreach (IDeviceExtension e in Extensions)
+			foreach (IDeviceExtension e in Extensions) {
 				if (e.BaseInfo.Actions.Contains(deviceActionDeclaration)) {
 					await e.ExecuteAction(deviceActionDeclaration, value);
 					return;
 				}
+			}
 
 			await ExecuteActionRemote(deviceActionDeclaration, value);
 		}
@@ -144,12 +147,13 @@ namespace CO2Monitor.Infrastructure.Devices {
 		private async Task ExecuteActionRemote(DeviceActionDeclaration deviceActionDeclaration, Variant value) {
 			var url = new Uri(Address + deviceActionDeclaration.Path);
 
-			if (value != null && value.Declaration.Type != VariantType.Void)
+			if (value != null && value.Declaration.Type != VariantType.Void) {
 				url = new Uri(url + "/" + value);
+			}
 
 			using (var client = new HttpClient()) {
 				client.Timeout = TimeSpan.FromSeconds(30);
-
+			
 				try {
 					HttpResponseMessage response = await client.PutAsync(url, new StringContent(string.Empty));
 					response.EnsureSuccessStatusCode();
@@ -179,17 +183,21 @@ namespace CO2Monitor.Infrastructure.Devices {
 		public async Task<Variant> GetField(DeviceStateFieldDeclaration fieldDeclaration) {
 			if (Status == RemoteDeviceStatus.NotAccessible) {
 				await MakeStateRequestTask();
-				if (Status == RemoteDeviceStatus.NotAccessible)
+				if (Status == RemoteDeviceStatus.NotAccessible) {
 					throw new CO2MonitorRemoteServiceException("RemoteDevice is not accessible");
+				}
 			}
 
 			foreach (IDeviceExtension extension in Extensions) {
-				if (extension.BaseInfo.Fields.Contains(fieldDeclaration))
+				if (extension.BaseInfo.Fields.Contains(fieldDeclaration)) {
 					return await extension.GetField(fieldDeclaration);
+				}
 			}
 
-			if (!BaseInfo.Fields.Contains(fieldDeclaration))
+			if (!BaseInfo.Fields.Contains(fieldDeclaration)) {
 				throw new CO2MonitorArgumentException("RemoteDevice does not contains field " + fieldDeclaration);
+			}
+
 			Json.JObject json = Json.JObject.Parse(DeviceState ?? "{}");
 			if (!json.TryGetValue(fieldDeclaration.Name, StringComparison.OrdinalIgnoreCase, out Json.JToken jToken)) {
 				throw new CO2MonitorException("Can not find field " + fieldDeclaration + " in remote device state!");
@@ -198,21 +206,16 @@ namespace CO2Monitor.Infrastructure.Devices {
 			}
 		}
 
-		private void OnSettingsChanged(string property) {
+		private void OnSettingsChanged(string property) => 
 			SettingsChanged?.Invoke(this, new PropertyChangedEventArgs(property));
-		}
 
-		private async void MakeStateRequest(object state) {
-			await MakeStateRequestTask();
-		}
+		private async void MakeStateRequest(object state) => await MakeStateRequestTask();
 
 		private async Task MakeStateRequestTask() {
-			if (Address == null)
+			if (Address == null || (LatestSuccessfulAccess.HasValue && (DateTime.Now - LatestSuccessfulAccess.Value).TotalSeconds < 5)) {
 				return;
+			}
 
-			if (LatestSuccessfulAccess.HasValue && (DateTime.Now - LatestSuccessfulAccess.Value).TotalSeconds < 5)
-				return;
-			
 			using (var client = new HttpClient()) {
 				client.Timeout = TimeSpan.FromSeconds(30);
 				try {
@@ -272,12 +275,13 @@ namespace CO2Monitor.Infrastructure.Devices {
 			UpdateInfo();
 		}
 
-		private void ExtensionEventRaised(IBaseDevice sender, DeviceEventDeclaration eventDeclaration, Variant data, int? senderId = null) {
+		private void ExtensionEventRaised(IBaseDevice sender, 
+										  DeviceEventDeclaration eventDeclaration,
+										  Variant data, 
+										  int? senderId = null) => 
 			EventRaised?.Invoke(this, eventDeclaration, data, Id);
-		}
 
-		private void ExtensionSettingsChanged(object sender, PropertyChangedEventArgs e) {
+		private void ExtensionSettingsChanged(object sender, PropertyChangedEventArgs e) => 
 			SettingsChanged?.Invoke(sender, e);
-		}
 	}
 }

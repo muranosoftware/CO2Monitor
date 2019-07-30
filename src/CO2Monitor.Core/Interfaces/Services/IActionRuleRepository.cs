@@ -10,6 +10,6 @@ namespace CO2Monitor.Core.Interfaces.Services {
 
 		bool Delete(Predicate<ActionRule> predicate);
 
-		void Update(ActionRule rule);
+		bool Update(ActionRule rule);
 	}
 }

@@ -10,12 +10,10 @@ namespace CO2Monitor.Infrastructure.Helpers {
 			_backgroundService = backgroundService;
 		}
 
-		public Task StartAsync(CancellationToken cancellationToken) {
-			return _backgroundService.StartAsync(cancellationToken);
-		}
+		public Task StartAsync(CancellationToken cancellationToken) =>
+			_backgroundService.StartAsync(cancellationToken);
 
-		public Task StopAsync(CancellationToken cancellationToken) {
-			return _backgroundService.StopAsync(cancellationToken);
-		}
-	}
+        public Task StopAsync(CancellationToken cancellationToken) =>
+            _backgroundService.StopAsync(cancellationToken);
+    }
 }
