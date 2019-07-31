@@ -3,13 +3,14 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Configuration;
 using MoreLinq;
 using Newtonsoft.Json;
-using CO2Monitor.Core.Entities;
+using CO2Monitor.Domain.Entities;
+using CO2Monitor.Domain.Interfaces.Services;
 using CO2Monitor.Infrastructure.Helpers;
-using CO2Monitor.Core.Interfaces.Services;
 
 namespace CO2Monitor.Infrastructure.Data {
 	public class FileActionRuleRepository : IActionRuleRepository {
@@ -48,8 +49,8 @@ namespace CO2Monitor.Infrastructure.Data {
 			return rule;
 		}
 
-		public bool Delete(Predicate<ActionRule> predicate) {
-			ActionRule [] rules = _data.Rules.Values.Where((x) => predicate(x)).ToArray();
+		public bool Delete(Expression<Func<ActionRule, bool>> predicate) {
+			ActionRule [] rules = _data.Rules.Values.Where(predicate.Compile()).ToArray();
 
 			rules.ForEach( r =>	_data.Rules.Remove(r.Id));
 
@@ -58,8 +59,8 @@ namespace CO2Monitor.Infrastructure.Data {
 			return rules.Length > 0;
 		}
 
-		public IEnumerable<ActionRule> List(Predicate<ActionRule> predicate) =>
-			predicate is null ? _data.Rules.Values : _data.Rules.Values.Where(predicate.Invoke);
+		public IEnumerable<ActionRule> List(Expression<Func<ActionRule, bool>> predicate = null) =>
+			predicate is null ? _data.Rules.Values : _data.Rules.Values.Where(predicate.Compile());
 
 		public bool Update(ActionRule rule) {
 			

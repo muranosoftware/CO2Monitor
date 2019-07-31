@@ -6,11 +6,8 @@ using CO2Monitor.Application.AutoMapper;
 namespace CO2Monitor.Controller.Configuration {
 	public static class AutoMapperSetup {
 		public static IServiceCollection AddAutoMapperSetup(this IServiceCollection services) {
+			services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies()); // scan not working
 
-			services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-
-			// Registering Mappings automatically only works if the 
-			// Automapper Profile classes are in ASP.NET project
 			AutoMapperConfig.RegisterMappings();
 			return services;
 		}

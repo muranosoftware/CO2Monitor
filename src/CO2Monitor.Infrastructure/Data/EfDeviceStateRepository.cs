@@ -3,8 +3,8 @@ using System.Linq.Expressions;
 using System.Linq;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using CO2Monitor.Core.Entities;
-using CO2Monitor.Core.Interfaces.Services;
+using CO2Monitor.Domain.Entities;
+using CO2Monitor.Domain.Interfaces.Services;
 
 namespace CO2Monitor.Infrastructure.Data {
 	public class EfDeviceStateRepository : IDeviceStateRepository {

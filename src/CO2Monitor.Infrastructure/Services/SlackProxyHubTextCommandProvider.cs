@@ -10,7 +10,7 @@ using Newtonsoft.Json;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Configuration;
-using CO2Monitor.Core.Interfaces.Services;
+using CO2Monitor.Infrastructure.Interfaces;
 
 namespace CO2Monitor.Infrastructure.Services {
 	public class SlackProxyHubTextCommandProvider : ITextCommandProvider, IDisposable {

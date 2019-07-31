@@ -1,8 +1,8 @@
 ﻿using System;
-using CO2Monitor.Core.Interfaces.Devices;
-using CO2Monitor.Core.Interfaces.Services;
-using CO2Monitor.Application.ViewModels;
 using AutoMapper;
+using CO2Monitor.Domain.Interfaces.Devices;
+using CO2Monitor.Domain.Interfaces.Services;
+using CO2Monitor.Application.ViewModels;
 
 namespace CO2Monitor.Application.ViewModelMappings {
 	public class DeviceViewModelMapping : DeviceViewModelMappingBase<DeviceViewModel, IDevice> {

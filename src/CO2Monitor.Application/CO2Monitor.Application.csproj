@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CO2Monitor.Core\CO2Monitor.Core.csproj" />
+    <ProjectReference Include="..\CO2Monitor.Domain\CO2Monitor.Domain.csproj" />
     <ProjectReference Include="..\CO2Monitor.Infrastructure\CO2Monitor.Infrastructure.csproj" />
   </ItemGroup>
 

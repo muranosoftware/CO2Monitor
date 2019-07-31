@@ -1,5 +1,5 @@
-﻿using CO2Monitor.Core.Interfaces.Devices;
-using CO2Monitor.Core.Interfaces.Services;
+﻿using CO2Monitor.Domain.Interfaces.Devices;
+using CO2Monitor.Domain.Interfaces.Services;
 using CO2Monitor.Application.ViewModels;
 using AutoMapper;
 

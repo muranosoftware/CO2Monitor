@@ -39,8 +39,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CO2Monitor.Application\CO2Monitor.Application.csproj" />
-    <ProjectReference Include="..\CO2Monitor.Core\CO2Monitor.Core.csproj" />
-    <ProjectReference Include="..\CO2Monitor.Infrastructure\CO2Monitor.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

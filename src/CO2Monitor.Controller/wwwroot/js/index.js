@@ -71,7 +71,7 @@ function showEditRuleModal(event) {
 function deleteRuleClicked(event) {
     var rule = jQuery.data(event.srcElement.closest("tr"), "data");
     if (window.confirm(`Do you really want to delete rule [${rule.name}:${rule.id}]?`)) {
-        deleteRule(rule.id, () => {
+        deleteRule(rule, () => {
             fillRuleTable();
         });
     }
@@ -300,7 +300,10 @@ createRemoteBtn.onclick = function () {
         }
         fillRemoteTable();
 
+
         $('#newRemoteModal').modal('hide');
+
+        setTimeout(fillRemoteTable(), 2000);
     });
 };
 

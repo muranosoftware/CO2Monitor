@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.SQLite;
 using System.Linq.Expressions;
+using System.Data.SQLite;
 using Microsoft.Extensions.Configuration;
 using Dapper;
-using CO2Monitor.Core.Entities;
-using CO2Monitor.Core.Interfaces.Services;
+using CO2Monitor.Domain.Entities;
+using CO2Monitor.Domain.Interfaces.Services;
 using CO2Monitor.Infrastructure.Helpers;
 
 namespace CO2Monitor.Infrastructure.Data {

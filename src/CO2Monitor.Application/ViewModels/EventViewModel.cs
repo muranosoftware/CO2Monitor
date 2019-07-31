@@ -14,5 +14,7 @@ namespace CO2Monitor.Application.ViewModels {
 		public VariantDeclaration DataType { get; private set; }
 
 		public bool IsExtension { get; private set; }
+
+		private EventViewModel() { }
 	}
 }

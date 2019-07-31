@@ -152,11 +152,9 @@ function editRule(rule, thenFunc) {
     });
 }
 
-function deleteRule(id, thenFunc) {
+function deleteRule(rule, thenFunc) {
     axios.delete("/api/rules", {
-        params: {
-            id: id
-        }
+        data: rule
     }).then(function (response) {
         if (thenFunc) {
             thenFunc(response.data);

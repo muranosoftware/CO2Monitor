@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
-using CO2Monitor.Core.Entities;
-using CO2Monitor.Core.Interfaces.Services;
+using CO2Monitor.Domain.Interfaces.Services;
 
 namespace CO2Monitor.Controller.ApiControllers {
 	[Route("api/[controller]")]

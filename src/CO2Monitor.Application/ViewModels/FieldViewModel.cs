@@ -13,5 +13,7 @@ namespace CO2Monitor.Application.ViewModels {
 		public VariantDeclaration Type { get; private set; }
 
 		public bool IsExtension { get; private set; }
+
+		private FieldViewModel() { }
 	}
 }

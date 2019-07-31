@@ -15,6 +15,5 @@ namespace CO2Monitor.Application.ViewModels {
 		public IReadOnlyCollection<ActionViewModel> Actions { get; private set; }
 
 		public IReadOnlyCollection<EventViewModel> Events { get; private set; }
-
 	}
 }

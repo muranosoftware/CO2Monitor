@@ -7,7 +7,7 @@ using MoreLinq;
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using CO2Monitor.Infrastructure.Data;
-using CO2Monitor.Core.Entities;
+using CO2Monitor.Domain.Entities;
 
 namespace CO2Monitor.Infrastructure.Tests.Data {
 	[TestFixture]

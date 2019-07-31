@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.SignalR;
-using System.Threading.Tasks;
-using CO2Monitor.Core.Interfaces.Notifications;
+﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.SignalR;
+using CO2Monitor.Infrastructure.Interfaces;
 
 namespace CO2Monitor.Infrastructure.Notifications {
 	public class SignalREventNotifier : IEventNotifier {

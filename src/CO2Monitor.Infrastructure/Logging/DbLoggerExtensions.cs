@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
-using CO2Monitor.Core.Interfaces.Services;
+using CO2Monitor.Domain.Interfaces.Services;
 
 namespace CO2Monitor.Infrastructure.Logging {
 	public static class DbLoggerExtensions {
@@ -10,8 +10,10 @@ namespace CO2Monitor.Infrastructure.Logging {
 			return factory;
 		}
 
-		public static ILoggerFactory AddDbLogger(this ILoggerFactory factory, LogLevel minLevel, IServiceProvider serviceProvider) =>
-			AddDbLogger(factory, serviceProvider, (_, logLevel) => logLevel >= minLevel);
+		public static ILoggerFactory AddDbLogger(this ILoggerFactory factory, LogLevel minLevel, IServiceProvider serviceProvider) {
+			serviceProvider.GetService<LogRecordsRepositoryAccessor>().LogRepository.EnsureCreated();
+			return AddDbLogger(factory, serviceProvider, (_, logLevel) => logLevel >= minLevel);
+		}
 
 		public static IServiceCollection AddDbLoggerService<TLogRecordsRepository>(this IServiceCollection services) where TLogRecordsRepository : class, ILogRecordsRepository {
 			services.AddSingleton<LogRecordsDbContext>();
@@ -23,7 +25,7 @@ namespace CO2Monitor.Infrastructure.Logging {
 			services.AddTransient<ILogViewer, DbLogViewer>();
 
 			return services;
-		}
+		} 
 	}
 
 	public class LogRecordsRepositoryAccessor {

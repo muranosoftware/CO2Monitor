@@ -90,10 +90,10 @@ namespace CO2Monitor.Infrastructure.Data {
 
 			foreach (PropertyInfo pi in props) {
 				if (pi.Name == "Id") {
-                    continue;
-                }
+					continue;
+				}
 
-                sbCreate.Append("@");
+				sbCreate.Append("@");
 				sbCreate.Append(pi.Name);
 				sbCreate.Append(",");
 			}

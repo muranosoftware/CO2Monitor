@@ -1,35 +1,35 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc;
-using CO2Monitor.Core.Entities;
-using CO2Monitor.Core.Interfaces.Services;
-using CO2Monitor.Core.Interfaces.Notifications;
+using CO2Monitor.Application.Interfaces;
+using CO2Monitor.Application.ViewModels;
+using CO2Monitor.Domain.Interfaces.Services;
 
 namespace CO2Monitor.Controller.ApiControllers {
 	[Route("api/[controller]")]
 	[ApiController]
 	public class RulesController : ControllerBase {
-		private readonly IDeviceManagerService _deviceManager;
+		private readonly IRuleAppSevice _ruleAppSevice;
 		private readonly IEventNotificationService _notificationService;
 		
-		public RulesController(IDeviceManagerService deviceManager, IEventNotificationService notificationService) {
-			_deviceManager = deviceManager;
+		public RulesController(IRuleAppSevice ruleAppSevice, IEventNotificationService notificationService) {
+			_ruleAppSevice = ruleAppSevice;
 			_notificationService = notificationService;
 		}
 
-		[HttpGet()]
-		public IEnumerable<ActionRule> GetActionRules() => _deviceManager.RuleRepository.List();
+		[HttpGet]
+		public IEnumerable<RuleViewModel> GetActionRules() => _ruleAppSevice.List();
 
-		[HttpPost()]
-		public IActionResult CreateActionRule([FromBody, Required] ActionRule rule) {
-			ActionRule result = _deviceManager.RuleRepository.Add(rule);
+		[HttpPost]
+		public IActionResult CreateActionRule([FromBody, Required] RuleViewModel rule) {
+			RuleViewModel result = _ruleAppSevice.Create(rule);
 			_notificationService.Notify($"New rule {{ Name = {result.Name}, Id = {result.Id} }} has been created via web-api");
 			return Ok(result);
 		}
 
-		[HttpPatch()]
-		public IActionResult EditActionRule([FromBody, Required] ActionRule rule) {
-			if (!_deviceManager.RuleRepository.Update(rule)) {
+		[HttpPatch]
+		public IActionResult EditActionRule([FromBody, Required] RuleViewModel rule) {
+			if (!_ruleAppSevice.Update(rule)) {
 				return NotFound();
 			}
 
@@ -37,13 +37,13 @@ namespace CO2Monitor.Controller.ApiControllers {
 			return Ok(rule);
 		}
 
-		[HttpDelete()]
-		public IActionResult DeleteActionRule([FromQuery, Required] int id) {
-			if (!_deviceManager.RuleRepository.Delete(x => x.Id == id)) {
-				return NotFound(id);
+		[HttpDelete]
+		public IActionResult DeleteActionRule([FromBody, Required] RuleViewModel rule) {
+			if (!_ruleAppSevice.Delete(rule)) {
+				return NotFound(rule);
 			}
 
-			_notificationService.Notify($"Rule {{ Id = {id} }} has been deleted via web-api");
+			_notificationService.Notify($"Rule {{ Id = {rule.Id} }} has been deleted via web-api");
 			return Ok();
 		}
 	}

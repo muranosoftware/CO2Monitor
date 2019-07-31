@@ -21,13 +21,13 @@ namespace CO2Monitor.Infrastructure.Helpers {
 
 			for (var i = 1; i < words.Length; i++) {
 				if (words[i].StartsWith("--") && i + 1 < words.Length) {
-                    options.Add(words[i].Substring(2), words[++i]);
-                } else if (words[i].StartsWith("-")) {
-                    flags.Add(words[i].Substring(1));
-                } else {
-                    arguments.Add(words[i]);
-                }
-            }
+					options.Add(words[i].Substring(2), words[++i]);
+				} else if (words[i].StartsWith("-")) {
+					flags.Add(words[i].Substring(1));
+				} else {
+					arguments.Add(words[i]);
+				}
+			}
 
 			Flags = flags;
 			Options = options;

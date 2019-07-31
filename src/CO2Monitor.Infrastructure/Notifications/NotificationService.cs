@@ -1,8 +1,9 @@
 ﻿using System.Linq;
 using System.Collections.Generic;
-using MoreLinq;
 using Microsoft.Extensions.Logging;
-using CO2Monitor.Core.Interfaces.Notifications;
+using MoreLinq;
+using CO2Monitor.Domain.Interfaces.Services;
+using CO2Monitor.Infrastructure.Interfaces;
 
 namespace CO2Monitor.Infrastructure.Notifications {
 	class NotificationService : IEventNotificationService {

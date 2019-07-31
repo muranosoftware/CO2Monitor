@@ -8,6 +8,7 @@ namespace CO2Monitor.Application.AutoMapper {
 				cfg.AddProfile(new ScheduleTimerToScheduleTimerViewModelProfile());
 				cfg.AddProfile(new RemoteDeviceToRemoteDeviceViewModelProfile());
 				cfg.AddProfile(new DeviceInfoToDeviceInfoViewModelProfile());
+				cfg.AddProfile(new ActionRuleToRuleViewModelProfile());
 			});
 		}
 	}

@@ -6,7 +6,7 @@ using OxyPlot;
 using OxyPlot.Axes;
 using OxyPlot.Core.Drawing;
 using OxyPlot.Series;
-using CO2Monitor.Core.Interfaces.Services;
+using CO2Monitor.Infrastructure.Interfaces;
 
 namespace CO2Monitor.Infrastructure.Services {
 	public class OxyPlotService : IPlotService {

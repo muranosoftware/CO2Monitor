@@ -5,7 +5,7 @@ using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
-using CO2Monitor.Infrastructure.Devices;
+using CO2Monitor.Domain.Devices;
 
 namespace CO2Monitor.Infrastructure.Helpers {
 	public class PropRenAndIgnDepInjSerializerContractResolver : DefaultContractResolver {

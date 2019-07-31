@@ -8,16 +8,13 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
-using FluentValidation.AspNetCore;
 using Swashbuckle.AspNetCore.Swagger;
-using CO2Monitor.Infrastructure.Services;
 using CO2Monitor.Infrastructure.Logging;
-using CO2Monitor.Core.Interfaces.Services;
 using CO2Monitor.Infrastructure.Notifications;
-using CO2Monitor.Infrastructure.Validation;
 using CO2Monitor.Controller.Configuration;
 using CO2Monitor.Controller.Filters;
-using CO2Monitor.Application.Validation;
+
+using CO2Monitor.Infrastructure.IoC;
 
 namespace CO2Monitor.Controller {
 	public class Startup {
@@ -33,37 +30,35 @@ namespace CO2Monitor.Controller {
 		public void ConfigureServices(IServiceCollection services) {
 			services.AddMvc(opt => opt.Filters.Add(new ModelStateFilter()))
 					.SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
-					.AddFluentValidation(fv => {
-						fv.RegisterValidatorsFromAssemblyContaining<DeviceViewModelValidator>();
-						fv.RegisterValidatorsFromAssemblyContaining<DeviceInfoValidator>();
-					});
+					.AddFluentValidationSetup();
 
-			services.AddEntityFrameworkSqlite();
-
-			services.AddDbLoggerService<SqLiteLogRecordsRepository>();
-
-			services.AddDeviceServices();
-
-			services.AddNotificationServices();
+			services.AddSignalR();
 
 			services.AddAutoMapperSetup();
 
-			services.AddApplicationSetup();
+			//services.AddEntityFrameworkSqlite();
 
 			services.AddSwaggerGen(c => c.SwaggerDoc("v1", new Info { Title = "CO2Monitor API", Version = "v1" }));
 
-			services.AddSignalR();
+			services.AddDbLoggerService<SqLiteLogRecordsRepository>();
+
+			services.AddDomainSetup();
+
+			services.AddInfrastructureSetup();
+
+			services.AddDataSetup();
+
+			services.AddNotificationServices();
+
+			services.AddApplicationSetup();
 		}
 
 		public void Configure(IApplicationBuilder app, 
 							  IHostingEnvironment env, 
 							  ILoggerFactory loggerFactory, 
 							  IServiceProvider serviceProvider) {
-			serviceProvider.GetService<LogRecordsRepositoryAccessor>().LogRepository.EnsureCreated();
 
-			serviceProvider.GetService<IDeviceStateRepository>().EnsureCreated();
-
-			serviceProvider.GetService<IDeviceTextCommandService>(); // force create singleton
+			serviceProvider.ConfigureApplicationSetup();
 
 			loggerFactory.AddFile("Logs/C02Monitor.Controller.log");
 			loggerFactory.AddDbLogger(LogLevel.Information, serviceProvider);

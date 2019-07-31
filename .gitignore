@@ -276,3 +276,4 @@ CO2ControllerSettings.json
 /src/CO2Monitor.Controller/sectrets.ini
 /src/CO2Monitor.Controller/Storage
 *.bak
+/src/CO2Monitor.Controller/secrets.ini

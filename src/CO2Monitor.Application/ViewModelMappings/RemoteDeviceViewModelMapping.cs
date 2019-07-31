@@ -1,8 +1,8 @@
-﻿using CO2Monitor.Core.Interfaces.Devices;
-using CO2Monitor.Core.Entities;
-using CO2Monitor.Core.Interfaces.Services;
+﻿using AutoMapper;
+using CO2Monitor.Domain.Entities;
+using CO2Monitor.Domain.Interfaces.Devices;
+using CO2Monitor.Domain.Interfaces.Services;
 using CO2Monitor.Application.ViewModels;
-using AutoMapper;
 
 namespace CO2Monitor.Application.ViewModelMappings {
 	public class RemoteDeviceViewModelMapping : DeviceViewModelMappingBase<RemoteDeviceViewModel, IRemoteDevice> {

@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using CO2Monitor.Application.ViewModels;
-using CO2Monitor.Core.Interfaces.Notifications;
+using CO2Monitor.Domain.Interfaces.Services;
 using CO2Monitor.Application.Interfaces;
 using System.ComponentModel.DataAnnotations;
 using CO2Monitor.Core.Shared;
@@ -22,7 +22,7 @@ namespace CO2Monitor.Controller.ApiControllers {
 		[HttpGet]
 		public IEnumerable<DeviceViewModel> GetDevices() => _deviceAppService.List<DeviceViewModel>();
 
-		[HttpDelete()]
+		[HttpDelete]
 		public IActionResult DeleteDevice([FromBody, Required] DeviceViewModel deviceViewModel) {
 			if (_deviceAppService.Delete(deviceViewModel)) {
 				_notificationService.Notify($"Device {{ Id = {deviceViewModel.Id} }} has been deleted via web api");

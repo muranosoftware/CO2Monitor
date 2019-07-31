@@ -1,18 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.IO;
 using System.Collections.Concurrent;
+using System.Collections.Specialized;
+using System.IO;
+using System.Linq;
+using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Configuration;
-using MoreLinq;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using MoreLinq;
 using CO2Monitor.Infrastructure.Helpers;
-using System.Collections.Specialized;
-using CO2Monitor.Core.Interfaces.Services;
-using CO2Monitor.Core.Interfaces.Devices;
-using System.Linq.Expressions;
+using CO2Monitor.Domain.Interfaces.Services;
+using CO2Monitor.Domain.Interfaces.Devices;
 
 namespace CO2Monitor.Infrastructure.Data {
 	public class FileDeviceRepository : IDeviceRepository {

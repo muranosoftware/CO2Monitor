@@ -1,6 +1,6 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
-using CO2Monitor.Core.Entities;
+using CO2Monitor.Domain.Interfaces.Services;
 
 namespace CO2Monitor.Infrastructure.Logging {
 	public class DbLogger : ILogger {

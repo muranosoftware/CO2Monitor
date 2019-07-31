@@ -15,5 +15,7 @@ namespace CO2Monitor.Application.ViewModels {
 		public VariantDeclaration Argument { get; private set; }
 
 		public bool IsExtension { get; private set; }
+
+		private ActionViewModel() { }
 	}
 }

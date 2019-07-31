@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
-using CO2Monitor.Core.Entities;
-using CO2Monitor.Core.Interfaces.Services;
+using CO2Monitor.Domain.Entities;
+using CO2Monitor.Infrastructure.Interfaces;
 
 namespace CO2Monitor.Infrastructure.Helpers {
 	public static class DeviceStateFieldExporter {
@@ -27,9 +27,9 @@ namespace CO2Monitor.Infrastructure.Helpers {
 			foreach (DeviceStateMeasurement m in measurements) {
 				JObject json = JObject.Parse(m.State);
 				if (json.ContainsKey(field)) {
-                    yield return new TimeSeriesPoint(m.Time, indexes[json.Property(field).ToObject<string>()]);
-                }
-            }
+					yield return new TimeSeriesPoint(m.Time, indexes[json.Property(field).ToObject<string>()]);
+				}
+			}
 		}
 	}
 }

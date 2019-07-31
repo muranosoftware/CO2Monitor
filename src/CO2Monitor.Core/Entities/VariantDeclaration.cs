@@ -76,8 +76,8 @@ namespace CO2Monitor.Core.Entities {
 		public override int GetHashCode() {
 			int hash = (int)Type;
 			if (Type == VariantType.Enum) {
-				for (int i = 0; i < EnumValues.Count; i++) {
-					hash = (431 * hash) + EnumValues[i].GetHashCode();
+				foreach (string t in EnumValues) {
+					hash = (431 * hash) + t.GetHashCode();
 				}
 			}
 			return hash;

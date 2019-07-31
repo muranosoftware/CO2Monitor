@@ -2,8 +2,8 @@
 using System.Linq;
 using NUnit.Framework;
 using FluentAssertions;
-using CO2Monitor.Infrastructure.Devices;
 using System.Threading;
+using CO2Monitor.Domain.Devices;
 
 namespace CO2Monitor.Infrastructure.Tests.Devices {
 	[TestFixture]

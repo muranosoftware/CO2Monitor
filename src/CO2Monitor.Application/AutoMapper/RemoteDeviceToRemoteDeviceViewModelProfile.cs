@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using CO2Monitor.Application.ViewModels;
-using CO2Monitor.Core.Interfaces.Devices;
+using CO2Monitor.Domain.Interfaces.Devices;
 
 namespace CO2Monitor.Application.AutoMapper {
 	class RemoteDeviceToRemoteDeviceViewModelProfile : Profile {

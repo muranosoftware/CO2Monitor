@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Net.Http;
 using System.Threading.Tasks;
-using CO2Monitor.Core.Interfaces.Services;
+using CO2Monitor.Domain.Interfaces.Services;
 
 namespace CO2Monitor.Infrastructure.Services {
 	public class IsDayOffDotRuCalendarService : IWorkDayCalendarService {

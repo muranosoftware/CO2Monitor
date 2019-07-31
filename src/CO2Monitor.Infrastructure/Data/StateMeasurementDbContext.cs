@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
-using CO2Monitor.Core.Entities;
+using CO2Monitor.Domain.Entities;
 
 namespace CO2Monitor.Infrastructure.Data {
 	public class StateMeasurementDbContext : DbContext {

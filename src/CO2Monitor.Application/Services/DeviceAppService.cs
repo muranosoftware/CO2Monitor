@@ -3,7 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using CO2Monitor.Core.Interfaces.Services;
+using CO2Monitor.Domain.Interfaces.Services;
 using CO2Monitor.Application.Interfaces;
 using CO2Monitor.Application.ViewModels;
 using CO2Monitor.Application.ViewModelMappings;

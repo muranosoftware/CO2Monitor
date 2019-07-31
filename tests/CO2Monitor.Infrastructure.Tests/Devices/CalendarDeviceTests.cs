@@ -5,9 +5,9 @@ using NUnit.Framework;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;
-using CO2Monitor.Core.Interfaces.Services;
-using CO2Monitor.Infrastructure.Devices;
 using CO2Monitor.Infrastructure.Tests.TestHelpers;
+using CO2Monitor.Domain.Devices;
+using CO2Monitor.Domain.Interfaces.Services;
 
 namespace CO2Monitor.Infrastructure.Tests.Devices {
 	[TestFixture]

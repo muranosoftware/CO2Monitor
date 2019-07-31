@@ -1,6 +1,6 @@
-﻿using CO2Monitor.Core.Entities;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
+using CO2Monitor.Domain.Interfaces.Services;
 
 namespace CO2Monitor.Infrastructure.Logging {
 	public class LogRecordsDbContext : DbContext {

@@ -16,11 +16,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\lib\OxyPlot.Core.Drawing\OxyPlot.Core.Drawing.csproj" />
-    <ProjectReference Include="..\CO2Monitor.Core\CO2Monitor.Core.csproj" />
+    <ProjectReference Include="..\CO2Monitor.Domain\CO2Monitor.Domain.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="FluentValidation" Version="8.4.0" />
     <PackageReference Include="morelinq" Version="3.2.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="1.1.0" />
