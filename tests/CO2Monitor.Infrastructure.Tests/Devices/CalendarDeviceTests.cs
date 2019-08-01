@@ -13,7 +13,7 @@ namespace CO2Monitor.Infrastructure.Tests.Devices {
 	[TestFixture]
 	public class CalendarDeviceTests {
 		[Test]
-		public void TodayHoliday() {
+		public void CheckTodayHoliday() {
 			var logger = new Mock<ILogger<CalendarDevice>>();
 			logger.MockLog(LogLevel.Debug);
 

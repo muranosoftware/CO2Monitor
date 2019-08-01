@@ -14,7 +14,6 @@ using CO2Monitor.Infrastructure.Interfaces;
 
 namespace CO2Monitor.Infrastructure.Services {
 	public class SlackProxyHubTextCommandProvider : ITextCommandProvider, IDisposable {
-		
 		public class Message {
 			public string Text { get; set; }
 			public string UserName { get; set; }
@@ -37,9 +36,7 @@ namespace CO2Monitor.Infrastructure.Services {
 			_logger = logger;
 			string proxyHubUrl = configuration.GetSection("Slack").GetValue<string>("ProxyBotHubUrl");
 			_apiToken = configuration.GetSection("Slack").GetValue<string>("BotToken");
-			_connection = new HubConnectionBuilder()
-						  .WithUrl(proxyHubUrl)
-						  .Build();
+			_connection = new HubConnectionBuilder().WithUrl(proxyHubUrl).Build();
 
 			_connection.Closed += async error => {
 				Console.WriteLine(error.ToString());
@@ -122,7 +119,6 @@ namespace CO2Monitor.Infrastructure.Services {
 		}
 
 		private async void CheckConnection(object state) {
-
 			try {
 				if (_connection.State == HubConnectionState.Disconnected) {
 					await _connection.StartAsync();

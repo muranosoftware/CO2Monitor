@@ -13,7 +13,6 @@ using CO2Monitor.Infrastructure.Logging;
 using CO2Monitor.Infrastructure.Notifications;
 using CO2Monitor.Controller.Configuration;
 using CO2Monitor.Controller.Filters;
-
 using CO2Monitor.Infrastructure.IoC;
 
 namespace CO2Monitor.Controller {
@@ -29,8 +28,8 @@ namespace CO2Monitor.Controller {
 
 		public void ConfigureServices(IServiceCollection services) {
 			services.AddMvc(opt => opt.Filters.Add(new ModelStateFilter()))
-					.SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
-					.AddFluentValidationSetup();
+			        .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
+			        .AddFluentValidationSetup();
 
 			services.AddSignalR();
 
@@ -54,11 +53,12 @@ namespace CO2Monitor.Controller {
 		}
 
 		public void Configure(IApplicationBuilder app, 
-							  IHostingEnvironment env, 
-							  ILoggerFactory loggerFactory, 
-							  IServiceProvider serviceProvider) {
-
+		                      IHostingEnvironment env, 
+		                      ILoggerFactory loggerFactory, 
+		                      IServiceProvider serviceProvider) {
+			serviceProvider.ConfigureDataSetup();
 			serviceProvider.ConfigureApplicationSetup();
+
 
 			loggerFactory.AddFile("Logs/C02Monitor.Controller.log");
 			loggerFactory.AddDbLogger(LogLevel.Information, serviceProvider);

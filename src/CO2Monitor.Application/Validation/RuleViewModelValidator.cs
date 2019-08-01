@@ -2,7 +2,7 @@
 using CO2Monitor.Application.ViewModels;
 
 namespace CO2Monitor.Application.Validation {
-	public class RuleConditionViewModelVaidator: AbstractValidator<RuleConditionViewModel> {
+	public class RuleConditionViewModelVaidator : AbstractValidator<RuleConditionViewModel> {
 		public RuleConditionViewModelVaidator() {
 			RuleFor(x => x.ConditionArgument).Cascade(CascadeMode.StopOnFirstFailure).NotNull().NotEmpty();
 			RuleFor(x => x.Field).SetValidator(new FieldViewModelValidator());

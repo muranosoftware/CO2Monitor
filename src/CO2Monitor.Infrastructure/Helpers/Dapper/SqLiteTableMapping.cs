@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 
-namespace CO2Monitor.Infrastructure.Data {
+namespace CO2Monitor.Infrastructure.Helpers.Dapper {
 	public class SqLiteTableMapping<TEntity> where TEntity : new() {
 		private static readonly Dictionary<Type, string> SqLiteTypeMapping = new Dictionary<Type, string> {
 			{ typeof(int), "INTEGER" },
@@ -48,9 +48,9 @@ namespace CO2Monitor.Infrastructure.Data {
 			sbTableCreate.Append("CREATE TABLE IF NOT EXISTS {0} ( ");
 
 			PropertyInfo[] props = typeof(TEntity).GetProperties(BindingFlags.Instance | 
-																 BindingFlags.Public | 
-																 BindingFlags.SetProperty | 
-																 BindingFlags.GetProperty);
+			                                                     BindingFlags.Public | 
+			                                                     BindingFlags.SetProperty | 
+			                                                     BindingFlags.GetProperty);
 
 			var sbCreate = new StringBuilder();
 			sbCreate.Append("INSERT INTO {0} (");

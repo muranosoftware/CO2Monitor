@@ -14,12 +14,13 @@ namespace CO2Monitor.Application.IoC {
 			services.AddTransient<IDeviceViewModelMappingBase, RemoteDeviceViewModelMapping>();
 
 			services.AddSingleton<IRuleAppSevice, RuleAppService>();
+			services.AddSingleton<IDeviceTextCommandService, DeviceTextCommandService>();
 
 			return services;
 		}
 
 		public static IServiceProvider ConfigureApplicationServices(this IServiceProvider serviceProvider) {
-			serviceProvider.GetService<IDeviceTextCommandService>(); // force create singleton
+			serviceProvider.GetService<IDeviceTextCommandService>();
 			return serviceProvider;
 		} 
 	}

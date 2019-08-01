@@ -7,13 +7,9 @@ using CO2Monitor.Domain.Helpers;
 namespace CO2Monitor.Infrastructure.IoC {
 	public static class InfrastructureIoC {
 		public static IServiceCollection AddInfrastructureServices(this IServiceCollection services) {
-#if !DISABLE_BOT
 			services.AddSingleton<ITextCommandProvider, SlackProxyHubTextCommandProvider>();
 
 			services.AddHostedService<BackgroundServiceStarter<ITextCommandProvider>>();
-
-			services.AddSingleton<IDeviceTextCommandService, DeviceTextCommandService>();
-#endif // !DISABLE_BOT
 		
 			services.AddTransient<IWorkDayCalendarService, IsDayOffDotRuCalendarService>();
 

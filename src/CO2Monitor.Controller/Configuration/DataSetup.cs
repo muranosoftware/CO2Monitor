@@ -6,6 +6,6 @@ namespace CO2Monitor.Controller.Configuration {
 	public static class DataSetup {
 		public static IServiceCollection AddDataSetup(this IServiceCollection services) => services.AddDataServices();
 
-		public static IServiceProvider ConfigureDataSetup(this IServiceProvider serviceProvider) => serviceProvider.ConfigureDataSetup();
+		public static IServiceProvider ConfigureDataSetup(this IServiceProvider serviceProvider) => serviceProvider.ConfigureDataServices();
 	}
 }

@@ -12,22 +12,32 @@ using CO2Monitor.Domain.Entities;
 namespace CO2Monitor.Infrastructure.Tests.Data {
 	[TestFixture]
 	public class SqLiteDeviceStateRepositoryTests {
-		SqLiteDeviceStateRepository CreateNewRepo() {
+
+
+		private string _dBFile;
+		private SqLiteDeviceStateRepository _repo;
+
+		[SetUp]
+		public void CreateNewRepo() {
 			IConfiguration config = new ConfigurationBuilder()
 				.AddInMemoryCollection(new Dictionary<string,string> {
 					{ SqLiteDeviceStateRepository.DataSourceConfigurationKey, $"SQLiteDeviceStateRepositoryTests{Guid.NewGuid()}.sqlite"
 					}
 				})
 				.Build();
-			var repo = new SqLiteDeviceStateRepository(config);
-			repo.EnsureCreated();
-			return repo;
+			_repo = new SqLiteDeviceStateRepository(config);
+			_repo.EnsureCreated();
+		}
+
+		[TearDown]
+		public void DeleteDbFile() {
+			if (File.Exists(_repo.DataSource)) {
+				File.Delete(_repo.DataSource);
+			}
 		}
 		
 		[Test]
-		public void Add() {
-			SqLiteDeviceStateRepository repo = CreateNewRepo();
-
+		public void AddFiveMeasurements() {
 			DateTime now = DateTime.Now;
 
 			DeviceStateMeasurement[] measurments = Enumerable.Range(0, 5).Select(
@@ -36,34 +46,29 @@ namespace CO2Monitor.Infrastructure.Tests.Data {
 					State = x.ToString()
 				}).ToArray();
 
-			measurments.ForEach(m => repo.Add(m));
+			measurments.ForEach(m => _repo.Add(m));
 
-			List<DeviceStateMeasurement> repoList = repo.List().ToList();
+			List<DeviceStateMeasurement> repoList = _repo.List().ToList();
 
 			repoList.Count.Should().Be(5);
 
 			repoList.ForEach(x => measurments.Count(y => y.Time == x.Time).Should().Be(1));
-
-			if (File.Exists(repo.DataSource)) {
-				File.Delete(repo.DataSource);
-			}
 		}
 
 		[Test]
-		public void Where() {
-			SqLiteDeviceStateRepository repo = CreateNewRepo();
-
+		public void CheckWherePredicate() {
+			
 			DateTime now = DateTime.Now;
 
 			Enumerable.Range(0, 5).Select(
 				x => new DeviceStateMeasurement {
 					Time = now.AddSeconds(x),
 					State = x.ToString()
-				}).ToList().ForEach(x => repo.Add(x));
+				}).ToList().ForEach(x => _repo.Add(x));
 
 			DateTime to = now.AddSeconds(4);
 
-			repo.List(x => x.Time > now && x.Time < to).ToArray().Length.Should().Be(3);
+			_repo.List(x => x.Time > now && x.Time < to).ToArray().Length.Should().Be(3);
 		}
 	}
 }

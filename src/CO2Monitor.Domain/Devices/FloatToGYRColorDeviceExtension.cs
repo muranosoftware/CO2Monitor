@@ -176,7 +176,8 @@ namespace CO2Monitor.Domain.Devices {
 					new DeviceActionDeclaration(field + "SetRedLevel", VariantDeclaration.Float),
 					val => {
 						if (val.Declaration != VariantDeclaration.Float) {
-							throw new CO2MonitorArgumentException(); }
+							throw new CO2MonitorArgumentException();
+						}
 						RedLevel = val.Float;
 					}
 				},
@@ -184,7 +185,8 @@ namespace CO2Monitor.Domain.Devices {
 					new DeviceActionDeclaration(field + "SetYellowLevel", VariantDeclaration.Float),
 					val => {
 						if (val.Declaration != VariantDeclaration.Float) {
-							throw new CO2MonitorArgumentException(); }
+							throw new CO2MonitorArgumentException();
+						}
 						YellowLevel = val.Float;
 					}
 				},

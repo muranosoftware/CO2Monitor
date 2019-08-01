@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using CO2Monitor.Domain.Interfaces.Services;
 using CO2Monitor.Infrastructure.Helpers;
+using CO2Monitor.Infrastructure.Interfaces;
 
 namespace CO2Monitor.Infrastructure.Logging {
 	public class DbLogViewer : ILogViewer {

@@ -25,6 +25,5 @@ namespace CO2Monitor.Application.ViewModels {
 		public RemoteDeviceStatus Status { get; private set; }
 
 		private RemoteDeviceViewModel() { } // for AutoMapper
-
 	}
 }

@@ -10,9 +10,9 @@ using CO2Monitor.Application.ViewModels;
 using CO2Monitor.Application.Interfaces;
 
 namespace CO2Monitor.Application.Services {
-	public class RuleAppService: IRuleAppSevice {
-		IActionRuleRepository _repo;
-		IMapper _mapper;
+	public class RuleAppService : IRuleAppSevice {
+		private readonly IActionRuleRepository _repo;
+		private readonly IMapper _mapper;
 
 		public RuleAppService(IActionRuleRepository repo, IMapper mapper) {
 			_repo = repo;
@@ -28,8 +28,8 @@ namespace CO2Monitor.Application.Services {
 
 		public IEnumerable<RuleViewModel> List(Expression<Func<RuleViewModel, bool>> predicate = null) {
 			return _repo.List(predicate != null ? _mapper.MapExpression<Expression<Func<RuleViewModel, bool>>,
-		                                                                Expression<Func<ActionRule, bool>>>(predicate) : null)
-			            .Select(x => _mapper.Map<ActionRule, RuleViewModel>(x));
+				                                                        Expression<Func<ActionRule, bool>>>(predicate) : null)
+				        .Select(x => _mapper.Map<ActionRule, RuleViewModel>(x));
 		}
 
 		public bool Update(RuleViewModel ruleViewModel) => _repo.Update(_mapper.Map<RuleViewModel, ActionRule>(ruleViewModel));

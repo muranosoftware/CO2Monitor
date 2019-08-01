@@ -268,7 +268,7 @@ namespace CO2Monitor.Domain.Devices {
 		}
 
 		[OnDeserialized]
-		private void OnDeserialized (StreamingContext context){
+		private void OnDeserialized(StreamingContext context) {
 			foreach (IDeviceExtension ext in Extensions) {
 				ext.EventRaised += ExtensionEventRaised;
 				ext.SettingsChanged += ExtensionSettingsChanged;
@@ -277,9 +277,9 @@ namespace CO2Monitor.Domain.Devices {
 		}
 
 		private void ExtensionEventRaised(IBaseDevice sender, 
-										  DeviceEventDeclaration eventDeclaration,
-										  Variant data, 
-										  int? senderId = null) => 
+		                                  DeviceEventDeclaration eventDeclaration,
+		                                  Variant data, 
+		                                  int? senderId = null) => 
 			EventRaised?.Invoke(this, eventDeclaration, data, Id);
 
 		private void ExtensionSettingsChanged(object sender, PropertyChangedEventArgs e) => 

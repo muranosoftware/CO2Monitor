@@ -17,7 +17,7 @@ namespace CO2Monitor.Infrastructure.Notifications {
 
 		public void Notify(string message) {
 			_logger.LogInformation("Sending notifacation: " + message);
-			_notifiers.ForEach( n => n.Notify(message));
+			_notifiers.ForEach(n => n.Notify(message));
 		}
 	}
 }

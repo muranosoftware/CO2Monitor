@@ -22,8 +22,8 @@ namespace CO2Monitor.Core.Entities {
 					case VariantType.Enum:
 						val = val.ToLower();
 						if (!Declaration.EnumValues.Contains(val)) {
-						throw new CO2MonitorArgumentException(nameof(val), $"Enum [{Declaration}] does not contain value [{val}]");
-					}
+							throw new CO2MonitorArgumentException(nameof(val), $"Enum [{Declaration}] does not contain value [{val}]");
+						}
 
 					_string = val;
 						break;

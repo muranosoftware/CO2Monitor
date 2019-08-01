@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Dapper;
 using CO2Monitor.Domain.Entities;
 using CO2Monitor.Domain.Interfaces.Services;
-using CO2Monitor.Infrastructure.Helpers;
+using CO2Monitor.Infrastructure.Helpers.Dapper;
 
 namespace CO2Monitor.Infrastructure.Data {
 	public class SqLiteDeviceStateRepository : IDeviceStateRepository {

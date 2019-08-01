@@ -44,28 +44,26 @@ namespace CO2Monitor.Infrastructure.Data {
 				jsonResolver.IgnoreProperty(typeof(IDevice), nameof(IDevice.Info));
 
 				if (t.GetInterfaces().Contains(typeof(IDevice))) {
-					jsonResolver.IgnoreProperty(t, 
-												nameof(IDevice.Info));
+					jsonResolver.IgnoreProperty(t,
+					                            nameof(IDevice.Info));
 				}
-
 				
 				if (t.GetInterfaces().Contains(typeof(ICalendarDevice))) {
-					jsonResolver.IgnoreProperty(t, 
-												nameof(ICalendarDevice.IsTodayWorkDay), 
-												nameof(ICalendarDevice.IsTomorrowWorkDay), 
-												nameof(ICalendarDevice.BaseInfo), 
-												nameof(ICalendarDevice.IsYesterdayWorkDay));
+					jsonResolver.IgnoreProperty(t,
+					                            nameof(ICalendarDevice.IsTodayWorkDay), 
+					                            nameof(ICalendarDevice.IsTomorrowWorkDay), 
+					                            nameof(ICalendarDevice.BaseInfo), 
+					                            nameof(ICalendarDevice.IsYesterdayWorkDay));
 				}
 
 				if (t.GetInterfaces().Contains(typeof(IScheduleTimer))) {
-					jsonResolver.IgnoreProperty(t,
-												nameof(IScheduleTimer.BaseInfo));
+					jsonResolver.IgnoreProperty(t,nameof(IScheduleTimer.BaseInfo));
 				}
 
 				if (t.GetInterfaces().Contains(typeof(IRemoteDevice))) {
-					jsonResolver.IgnoreProperty(t, 
-												nameof(IRemoteDevice.LatestSuccessfulAccess), 
-												nameof(IRemoteDevice.Status));
+					jsonResolver.IgnoreProperty(t,
+					                            nameof(IRemoteDevice.LatestSuccessfulAccess), 
+					                            nameof(IRemoteDevice.Status));
 				}
 			}
 
@@ -118,7 +116,7 @@ namespace CO2Monitor.Infrastructure.Data {
 
 			CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, devices));
 
-			return devices.Length > 0;
+			return devices.Any();
 		}
 
 		public IEnumerable<T> List<T>(Expression<Func<T, bool>> predicate = null) where T : class, IDevice {

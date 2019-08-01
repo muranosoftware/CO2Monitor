@@ -36,7 +36,7 @@ namespace CO2Monitor.Domain.Devices {
 		private static readonly DeviceInfo TimerDeviceInfo = new DeviceInfo(StateFieldDeclarations.Keys, Actions.Keys, EventDeclarations);
 
 		TimeSpan _alarmTime;
-		Timer _timer;
+		readonly Timer _timer;
 		private string _name = nameof(ScheduleTimer);
 		
 		public ScheduleTimer() {
@@ -114,10 +114,9 @@ namespace CO2Monitor.Domain.Devices {
 			EventRaised?.Invoke(this, AlarmEventDeclaration, new Variant(AlarmTime), Id);
 
 		private void UpdateInternalTimer() {
-			
 			TimeSpan dt = DateTime.Today - DateTime.Now + AlarmTime;
 
-			if (dt.TotalHours < 0) {
+			if (dt.TotalMilliseconds <= 1) {
 				dt = dt.Add(TimeSpan.FromDays(1));
 			}
 

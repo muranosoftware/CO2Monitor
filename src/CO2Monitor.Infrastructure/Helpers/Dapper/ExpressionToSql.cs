@@ -5,7 +5,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace CO2Monitor.Infrastructure.Helpers {
+namespace CO2Monitor.Infrastructure.Helpers.Dapper {
 	internal class ExpressionToSql {
 		private int _parametersCount;
 		private readonly Dictionary<ParameterExpression, string> _relations = new Dictionary<ParameterExpression, string>();
@@ -48,8 +48,8 @@ namespace CO2Monitor.Infrastructure.Helpers {
 				case ExpressionType.GreaterThan:
 				case ExpressionType.LessThanOrEqual:
 				case ExpressionType.GreaterThanOrEqual: {
-					var left = GetSqlFromMemberAcessOrConstant(binExp.Left);
-					var right = GetSqlFromMemberAcessOrConstant(binExp.Right);
+					string left = GetSqlFromMemberAcessOrConstant(binExp.Left);
+					string right = GetSqlFromMemberAcessOrConstant(binExp.Right);
 					if (left == null) {
 						throw new ArgumentException("Expression can not contains compration with left side null object:" + binExp);
 					}
@@ -185,11 +185,11 @@ namespace CO2Monitor.Infrastructure.Helpers {
 		}
 
 		public static string Select<T, TOrderBy>(Expression<Func<T, bool>> where,
-												 DynamicParameters parameters,
-												 string relation,
-												 Expression<Func<T, TOrderBy>> orderBySelector = null,
-												 bool orderByDesc = false,
-												 uint? limit = null) {
+			                                     DynamicParameters parameters,
+			                                     string relation,
+			                                     Expression<Func<T, TOrderBy>> orderBySelector = null,
+			                                     bool orderByDesc = false,
+			                                     uint? limit = null) {
 			var sql = $"SELECT * FROM {relation} ";
 			if (where != null) {
 				var ptsc = new ExpressionToSql(where, parameters, new[] { relation });

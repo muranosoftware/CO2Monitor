@@ -2,7 +2,7 @@
 
 namespace CO2Monitor.Application.ViewModels {
 	public class ScheduleTimerViewModel : DeviceViewModel {
-		public ScheduleTimerViewModel (int id, string name, TimeSpan? alarmTime)  : 
+		public ScheduleTimerViewModel(int id, string name, TimeSpan? alarmTime) :
 			base(id, name, "ScheduleTimer", null, false, false, null) {
 			AlarmTime = alarmTime;
 		}

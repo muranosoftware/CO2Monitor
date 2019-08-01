@@ -6,6 +6,7 @@ using AutoMapper;
 namespace CO2Monitor.Application.ViewModelMappings {
 	public class ScheduleTimerViewModelMapping : DeviceViewModelMappingBase<ScheduleTimerViewModel, IScheduleTimer> {
 		private readonly IDeviceManagerService _deviceManager;
+
 		public ScheduleTimerViewModelMapping(IMapper mapper, IDeviceRepository repo, IDeviceManagerService deviceManager) : base(mapper, repo) {
 			_deviceManager = deviceManager;
 		}

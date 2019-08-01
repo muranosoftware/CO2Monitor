@@ -1,10 +1,9 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
-using CO2Monitor.Domain.Interfaces.Services;
+using CO2Monitor.Infrastructure.Interfaces;
 
 namespace CO2Monitor.Infrastructure.Logging {
 	public class LogRecordsDbContext : DbContext {
-
 		private readonly string _connectionString;
 
 		public LogRecordsDbContext(IConfiguration configuration) {

@@ -12,8 +12,9 @@ namespace CO2Monitor.Infrastructure.IoC {
 			return services;
 		}
 
-		public static void ConfigureDataServices(this IServiceProvider serviceProvider) {
+		public static IServiceProvider ConfigureDataServices(this IServiceProvider serviceProvider) {
 			serviceProvider.GetService<IDeviceStateRepository>().EnsureCreated();
+			return serviceProvider;
 		}
 	}
 }

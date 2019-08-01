@@ -3,7 +3,6 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
 namespace CO2Monitor.Application.ViewModels {
-	
 	[JsonConverter(typeof(StringEnumConverter))]
 	public enum ConditionType {
 		Equal,

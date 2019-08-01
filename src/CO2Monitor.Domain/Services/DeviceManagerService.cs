@@ -12,18 +12,18 @@ using CO2Monitor.Domain.Interfaces.Services;
 using CO2Monitor.Domain.Interfaces.Devices;
 
 namespace CO2Monitor.Domain.Services {
-	public class DeviceManagerService: IDeviceManagerService {
+	public class DeviceManagerService : IDeviceManagerService {
 		private readonly ILogger _logger;
 		private readonly IDeviceFactory _deviceFactory;
 		private readonly IDeviceExtensionFactory _extensionFactory;
 		private readonly IEventNotificationService _notificationService;
 
 		public DeviceManagerService(ILogger<DeviceManagerService> logger,
-									IActionRuleRepository ruleRepository,
-									IDeviceRepository deviceRepository,
-									IDeviceFactory deviceFactory,
-									IDeviceExtensionFactory extensionFactory,
-									IEventNotificationService notificationService) {
+		                            IActionRuleRepository ruleRepository,
+		                            IDeviceRepository deviceRepository,
+		                            IDeviceFactory deviceFactory,
+		                            IDeviceExtensionFactory extensionFactory,
+		                            IEventNotificationService notificationService) {
 			RuleRepository = ruleRepository;
 			DeviceRepository = deviceRepository;
 			_deviceFactory = deviceFactory;
@@ -50,7 +50,7 @@ namespace CO2Monitor.Domain.Services {
 			var device = DeviceRepository.GetById<IDevice>(deviceId);
 
 			if (device == null) {
-				throw new CO2MonitorArgumentException(nameof(deviceId), $"There is not device with id = {0}");
+				throw new CO2MonitorArgumentException(nameof(deviceId), $"There is not device with id = {deviceId}");
 			}
 
 			DeviceActionDeclaration act = device.Info.Actions.FirstOrDefault(x => x.Path == action);
@@ -97,7 +97,7 @@ namespace CO2Monitor.Domain.Services {
 					continue;
 				}
 
-				if( !(await CheckConditions(r))) {
+				if (!(await CheckConditions(r))) {
 					continue;
 				}
 
@@ -191,15 +191,14 @@ namespace CO2Monitor.Domain.Services {
 			}
 		}
 
-		public IDeviceExtension CreateDeviceExtension(Type type, int deviceId, string parameter){
+		public IDeviceExtension CreateDeviceExtension(Type type, int deviceId, string parameter) {
 			var device = DeviceRepository.GetById<IExtendableDevice>(deviceId);
 			if (device == null) {
 				throw new CO2MonitorArgumentException($"Can not find extendable device with id {deviceId}");
 			}
 
-			var extDevice = device as IExtendableDevice;
 			IDeviceExtension ext = (_extensionFactory.CreateExtension(type, parameter, device));
-			extDevice.AddExtension(ext);
+			device.AddExtension(ext);
 			return ext;
 		}
 
@@ -215,7 +214,6 @@ namespace CO2Monitor.Domain.Services {
 
 			DeviceRepository.List<IDevice>().ForEach(d => d.Dispose());
 			
-
 			return Task.CompletedTask;
 		}
 	}

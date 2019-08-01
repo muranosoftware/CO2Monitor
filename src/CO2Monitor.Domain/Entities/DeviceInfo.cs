@@ -14,7 +14,7 @@ namespace CO2Monitor.Domain.Entities {
 		public IReadOnlyCollection<DeviceEventDeclaration> Events { get; private set; }
 
 		public DeviceInfo() {
-			Fields =  new DeviceStateFieldDeclaration[0];
+			Fields = new DeviceStateFieldDeclaration[0];
 			Actions = new DeviceActionDeclaration [0];
 			Events = new DeviceEventDeclaration[0];
 		}

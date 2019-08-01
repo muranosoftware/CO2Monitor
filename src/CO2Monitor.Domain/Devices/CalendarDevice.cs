@@ -16,7 +16,6 @@ using CO2Monitor.Domain.Entities;
 using CO2Monitor.Domain.Interfaces.Devices;
 using CO2Monitor.Domain.Interfaces.Services;
 
-
 namespace CO2Monitor.Domain.Devices {
 	public class CalendarDevice : ICalendarDevice {
 		private static readonly Dictionary<DeviceStateFieldDeclaration, Func<CalendarDevice, Variant>> StateFieldDeclarations =
@@ -56,7 +55,7 @@ namespace CO2Monitor.Domain.Devices {
 				foreach (DateTime d in dates) {
 					_dayWorkStatuses[d] = await _calendarService.IsWorkDay(d);
 				}
-				_dayWorkStatuses.Keys.Where(x => !dates.Contains(x)).ToArray().ForEach( d => _dayWorkStatuses.TryRemove(d, out _));
+				_dayWorkStatuses.Keys.Where(x => !dates.Contains(x)).ToArray().ForEach(d => _dayWorkStatuses.TryRemove(d, out _));
 			} catch (OperationCanceledException ex) {
 				_logger.LogError(ex, "Can not update work day stutuses. Only saturday and sunday will be marked as day off.");
 				MarkSundaysAndSaturdaysAsDayOff();
@@ -76,7 +75,7 @@ namespace CO2Monitor.Domain.Devices {
 			ImmutableHashSet<DateTime> dates = GetDatesForUpdate();
 			GetDatesForUpdate().ForEach(d => _dayWorkStatuses[d] = d.DayOfWeek == DayOfWeek.Sunday || d.DayOfWeek == DayOfWeek.Saturday);
 			
-			_dayWorkStatuses.Keys.Where(x => !dates.Contains(x)).ToArray().ForEach( d => _dayWorkStatuses.TryRemove(d, out _));
+			_dayWorkStatuses.Keys.Where(x => !dates.Contains(x)).ToArray().ForEach(d => _dayWorkStatuses.TryRemove(d, out _));
 		}
 
 		public void Dispose() => _dailyTimer.Dispose();
@@ -98,9 +97,7 @@ namespace CO2Monitor.Domain.Devices {
 		}
 		
 		public int Id { get; set; }
-
-		public IReadOnlyCollection<IDeviceExtension> DeviceExtensions => Array.Empty<IDeviceExtension>();
-
+		
 		public bool IsTodayWorkDay => IsWorkDay(DateTime.Today);
 
 		public bool IsYesterdayWorkDay => IsWorkDay(DateTime.Today.AddDays(-1));

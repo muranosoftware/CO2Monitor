@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using CO2Monitor.Domain.Interfaces.Devices;
-using CO2Monitor.Domain.Devices;
 
 namespace CO2Monitor.Domain.Devices {
 	public class DeviceFactory : IDeviceFactory {

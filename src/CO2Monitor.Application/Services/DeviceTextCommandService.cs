@@ -11,12 +11,13 @@ using Newtonsoft.Json;
 using MoreLinq;
 using CO2Monitor.Core.Shared;
 using CO2Monitor.Core.Entities;
-using CO2Monitor.Domain.Interfaces.Devices;
+using CO2Monitor.Domain.Entities;
+//using CO2Monitor.Domain.Interfaces.Devices;
 using CO2Monitor.Domain.Interfaces.Services;
 using CO2Monitor.Infrastructure.Interfaces;
 using CO2Monitor.Infrastructure.Helpers;
 using CO2Monitor.Application.Interfaces;
-using CO2Monitor.Domain.Entities;
+using CO2Monitor.Application.ViewModels;
 
 namespace CO2Monitor.Application.Services {
 	public class DeviceTextCommandService : IDeviceTextCommandService {
@@ -29,20 +30,20 @@ namespace CO2Monitor.Application.Services {
 		private readonly Dictionary<string, string> _commandButtons;
 
 		private readonly ILogger<DeviceTextCommandService> _logger;
-		private readonly IDeviceManagerService _deviceManagerService;
+		private readonly IDeviceAppService _deviceAppService;
 		private readonly ITextCommandProvider _commandProvider;
 		private readonly IPlotService _plotService;
 		private readonly IDeviceStateRepository _stateRepository;
 		private readonly IEventNotificationService _notificationService;
 
-		public DeviceTextCommandService(ILogger<DeviceTextCommandService> logger, 
-										IDeviceManagerService deviceManagerService, 
-										ITextCommandProvider commandProvider, 
-										IPlotService plotService, 
-										IDeviceStateRepository stateRepository, 
-										IEventNotificationService notificationService) {
+		public DeviceTextCommandService(ILogger<DeviceTextCommandService> logger,
+			                            IDeviceAppService deviceAppService, 
+			                            ITextCommandProvider commandProvider, 
+			                            IPlotService plotService, 
+			                            IDeviceStateRepository stateRepository, 
+			                            IEventNotificationService notificationService) {
 			_logger = logger;
-			_deviceManagerService = deviceManagerService;
+			_deviceAppService = deviceAppService;
 			_plotService = plotService;
 			_commandProvider = commandProvider;
 			_stateRepository = stateRepository;
@@ -117,8 +118,8 @@ namespace CO2Monitor.Application.Services {
 			};
 
 			buttons = File.Exists(CommandButtonsFile)
-						  ? JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(CommandButtonsFile))
-						  : new Dictionary<string, string>();
+				          ? JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(CommandButtonsFile))
+				          : new Dictionary<string, string>();
 		}
 
 		private string GetHelp() {
@@ -134,7 +135,7 @@ namespace CO2Monitor.Application.Services {
 		private string GetButtonsList() {
 			var sb = new StringBuilder();
 			sb.Append("List of buttons:" + Environment.NewLine);
-			_commandButtons.ForEach( butt => sb.AppendFormat("{0} - {1}\r\n", butt.Key, butt.Value));
+			_commandButtons.ForEach(butt => sb.AppendFormat("{0} - {1}\r\n", butt.Key, butt.Value));
 
 			return sb.ToString();
 		}
@@ -143,8 +144,7 @@ namespace CO2Monitor.Application.Services {
 			var sb = new StringBuilder();
 			sb.Append("Id   Name" + Environment.NewLine);
 
-			_deviceManagerService.DeviceRepository.List<IDevice>()
-												  .ForEach(d =>	sb.AppendFormat("{0,-4} {1}\r\n", d.Id, d.Name));
+			_deviceAppService.List<DeviceViewModel>().ForEach(d => sb.AppendFormat("{0,-4} {1}\r\n", d.Id, d.Name));
 
 			return sb.ToString(); 
 		}
@@ -158,23 +158,23 @@ namespace CO2Monitor.Application.Services {
 
 			string deviceName = parser.Arguments[1];
 
-			IDevice device = _deviceManagerService.DeviceRepository.List<IDevice>(x => string.Compare(x.Name, deviceName, true, CultureInfo.InvariantCulture) == 0).FirstOrDefault();
+			DeviceViewModel device = _deviceAppService.List<DeviceViewModel>(x => string.Compare(x.Name, deviceName, true, CultureInfo.InvariantCulture) == 0).FirstOrDefault();
 
 			if (device == null) {
 				return $"Can not find device with name [{deviceName}]";
 			}
 
 			var sb = new StringBuilder();
-			sb.AppendFormat("Id = {0} , Name = {1}, Type = {2},\r\nState = {3} \r\n",
-							device.Id, device.Name, device is IRemoteDevice ? "Remote" : "Internal", device.State);
+			sb.AppendFormat("Id = {0} , Name = {1}, Type = {2},\r\nState = {3} \r\n", 
+				            device.Id, device.Name, device.IsRemote ? "Remote" : "Internal", device.State);
 			sb.Append("Fields:" + Environment.NewLine);
-			device.Info.Fields.ForEach( f => sb.Append(f + Environment.NewLine));
+			device.Info.Fields.ForEach(f => sb.Append(f + Environment.NewLine));
 
 			sb.Append("Actions:" + Environment.NewLine);
 			device.Info.Actions.ForEach(a => sb.Append(a + Environment.NewLine));
 
 			sb.Append("Events:" + Environment.NewLine);
-			device.Info.Events.ForEach(e=> sb.Append(e + Environment.NewLine));
+			device.Info.Events.ForEach(e => sb.Append(e + Environment.NewLine));
 
 			return sb.ToString();
 		}
@@ -192,7 +192,7 @@ namespace CO2Monitor.Application.Services {
 
 			string deviceName = cmdLine.Arguments[0];
 
-			IDevice device = _deviceManagerService.DeviceRepository.List<IDevice>(x => string.Compare(x.Name, deviceName, true, CultureInfo.InvariantCulture) == 0).FirstOrDefault();
+			DeviceViewModel device = _deviceAppService.List<DeviceViewModel>(x => string.Compare(x.Name, deviceName, true, CultureInfo.InvariantCulture) == 0).FirstOrDefault();
 
 			if (device == null) {
 				return $"Can not found device with name [{deviceName}].";
@@ -201,7 +201,7 @@ namespace CO2Monitor.Application.Services {
 			var plotData = new List<TimeSeries>();
 
 			for (int i = 1; i < cmdLine.Arguments.Count; i++) {
-				DeviceStateFieldDeclaration field = device.Info.Fields.FirstOrDefault(x => string.Compare(x.Name, cmdLine.Arguments[i], true, CultureInfo.InvariantCulture) == 0);
+				FieldViewModel field = device.Info.Fields.FirstOrDefault(x => string.Compare(x.Name, cmdLine.Arguments[i], true, CultureInfo.InvariantCulture) == 0);
 				if (field == null) {
 					return $"Device{{ Name = {deviceName} }} has't got field [{cmdLine.Arguments[i]}].";
 				}
@@ -232,14 +232,14 @@ namespace CO2Monitor.Application.Services {
 				return $"No data from {from:yyyy.MM.dd-HH:mm} to {to:yyyy.MM.dd-HH:mm}";
 			}
 
-			TimeSpan pollingRate = TimeSpan.FromSeconds(60);
-			if (device is IRemoteDevice remoteDevice) {
-				pollingRate = TimeSpan.FromSeconds(remoteDevice.PollingRate);
-			}
+			DateTime fromTittle = plotData.Where(x => x.Data.Count > 0).Min(m => m.Data.Min(x => x.Time));
+			DateTime toTittle = plotData.Where(x => x.Data.Count > 0).Max(m => m.Data.Max(x => x.Time));
 
+			TimeSpan pollingRate = TimeSpan.FromSeconds(60);
+			
 			using (var stream = new MemoryStream()) {
 				_plotService.Plot(device.Name, plotData, stream, pollingRate);
-				var filename = $"{plotData.Aggregate(device.Name, (acc, x) => acc + "_" + x.Name)}_{from:yyyy.MM.dd-HH:mm}_{to:yyyy.MM.dd-HH:mm}.png";
+				var filename = $"{plotData.Aggregate(device.Name, (acc, x) => acc + "_" + x.Name)}_{fromTittle:yyyy.MM.dd-HH:mm}_{toTittle:yyyy.MM.dd-HH:mm}.png";
 				await _commandProvider.SendFileMessage(cmd.ChannelId, stream, filename);
 			}
 
@@ -308,9 +308,7 @@ namespace CO2Monitor.Application.Services {
 
 			return true;
 		}
-
-
-
+		
 		private async Task<string> ExecuteAction(TextCommand cmd) {
 			if (!Regex.IsMatch(cmd.Command, ActionPattern)) {
 				return "Invalid syntax. Try 'help' for help.";
@@ -321,20 +319,20 @@ namespace CO2Monitor.Application.Services {
 			string action = splits[2];
 			string argument = splits[3];
 
-			IDevice device = _deviceManagerService.DeviceRepository.List<IDevice>(x => string.Compare(x.Name, deviceName, true, CultureInfo.InvariantCulture) == 0).FirstOrDefault();
+			DeviceViewModel device = _deviceAppService.List<DeviceViewModel>(x => string.Compare(x.Name, deviceName, true, CultureInfo.InvariantCulture) == 0).FirstOrDefault();
 
 			if (device == null) {
 				return $"Can not found device with name [{deviceName}]";
 			}
 
-			DeviceActionDeclaration deviceAction = device.Info.Actions.FirstOrDefault(x => string.Compare(x.Path, action, true, CultureInfo.InvariantCulture) == 0);
+			ActionViewModel deviceAction = device.Info.Actions.FirstOrDefault(x => string.Compare(x.Path, action, true, CultureInfo.InvariantCulture) == 0);
 
 			if (deviceAction == null) {
 				return $"Device {{ Name = {deviceName} }} does not contain action [{action}].";
 			}
 
 			try {
-				await _deviceManagerService.ExecuteAction(device.Id, action, argument);
+				await _deviceAppService.ExecuteAction(device.Id, deviceAction, argument);
 				_notificationService.Notify($"Device {{ Name = {deviceName}, Id = {device.Id} }} action {action}({argument}) has been executed by {cmd.UserName} via bot.");
 				return "Ok.";
 			} catch (CO2MonitorException ex) {

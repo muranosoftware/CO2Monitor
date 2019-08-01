@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-using CO2Monitor.Domain.Interfaces.Services;
+using CO2Monitor.Infrastructure.Interfaces;
 
 namespace CO2Monitor.Infrastructure.Logging {
 	public class EfLogRecordsRepository : ILogRecordsRepository {
@@ -30,8 +30,8 @@ namespace CO2Monitor.Infrastructure.Logging {
 		public IEnumerable<LogRecord> List(Expression<Func<LogRecord, bool>> predicate = null, uint? limit = 0) {
 			lock (_lock) {
 				return predicate != null
-					? _dbContext.Records.Where(predicate).OrderByDescending(x => x.Time).ToList()
-					: _dbContext.Records.OrderByDescending(x => x.Time).ToList();
+				      ? _dbContext.Records.Where(predicate).OrderByDescending(x => x.Time).ToList()
+				      : _dbContext.Records.OrderByDescending(x => x.Time).ToList();
 			}
 		}
 	}

@@ -50,9 +50,9 @@ namespace CO2Monitor.Infrastructure.Data {
 		}
 
 		public bool Delete(Expression<Func<ActionRule, bool>> predicate) {
-			ActionRule [] rules = _data.Rules.Values.Where(predicate.Compile()).ToArray();
+			ActionRule[] rules = _data.Rules.Values.Where(predicate.Compile()).ToArray();
 
-			rules.ForEach( r =>	_data.Rules.Remove(r.Id));
+			rules.ForEach(r => _data.Rules.Remove(r.Id));
 
 			Save();
 
@@ -63,8 +63,7 @@ namespace CO2Monitor.Infrastructure.Data {
 			predicate is null ? _data.Rules.Values : _data.Rules.Values.Where(predicate.Compile());
 
 		public bool Update(ActionRule rule) {
-			
-			if(List(x => x.Id == rule.Id).FirstOrDefault() == null) {
+			if (List(x => x.Id == rule.Id).FirstOrDefault() == null) {
 				return false;
 			}
 

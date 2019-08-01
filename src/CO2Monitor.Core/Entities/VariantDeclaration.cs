@@ -26,7 +26,6 @@ namespace CO2Monitor.Core.Entities {
 
 		public static VariantDeclaration Time => new VariantDeclaration(VariantType.Time);
 
-		
 		[JsonConstructor]
 		public VariantDeclaration(VariantType type, IReadOnlyList<string> enumValues = null) {
 			Type = type;
@@ -38,15 +37,15 @@ namespace CO2Monitor.Core.Entities {
 
 				EnumValues = enumValues.Select(x => x.ToLower()).ToArray();
 			} else if (enumValues != null) {
-				throw new ArgumentException(nameof(enumValues),"Can not set EnumValues for non enum ValueDescription");
+				throw new ArgumentException(nameof(enumValues), "Can not set EnumValues for non enum ValueDescription");
 			}
 		}
 
-		public VariantType Type { get;}
+		public VariantType Type { get; }
 
 		public IReadOnlyList<string> EnumValues { get; }
 
-			public bool Equals(VariantDeclaration other) {
+		public bool Equals(VariantDeclaration other) {
 			if (other is null) {
 				return false;
 			}
@@ -91,6 +90,7 @@ namespace CO2Monitor.Core.Entities {
 					return Type.ToString().ToLower();
 			}
 		}
+
 		public static VariantDeclaration Parse(string valueDeclaration) {
 			if (string.IsNullOrEmpty(valueDeclaration)) {
 				throw new CO2MonitorArgumentException(nameof(valueDeclaration), "Declaration can not be null or whitespace");

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace CO2Monitor.Domain.Interfaces.Services {
+namespace CO2Monitor.Infrastructure.Interfaces {
 	public class LogRecord {
 		public int Id { get; set; }
 		public int? EventId { get; set; }
