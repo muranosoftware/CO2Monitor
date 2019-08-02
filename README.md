@@ -1,4 +1,6 @@
 # CO2Monitor
+![alt text](https://raw.githubusercontent.com/muranosoftware/CO2Monitor/fix/implement-configurable-monitor-service-356312055/images/system.png)
+
 ## Overview
 CO2Monitor is a ASP.NET Core Application for IOT automatization. Smart device in network must return json with information about it state. Device actions (like turn on/off something) is called via rest-api. Devices make no differencies between HTTP methods and accept data only from url.
 
@@ -11,6 +13,8 @@ Device response example:
 Calling device action example: http://192.168.xxx.xxx:xxx/turn/off
 
 ## WebClient 
+![alt text](https://raw.githubusercontent.com/muranosoftware/CO2Monitor/fix/implement-configurable-monitor-service-356312055/images/webclient.png)
+
 WebClient is a dashboard with information about all devices in network and system log. Also you can see list rules, which binding events with action.
 
 ### Adding new device 
