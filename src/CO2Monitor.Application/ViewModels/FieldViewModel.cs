@@ -14,6 +14,9 @@ namespace CO2Monitor.Application.ViewModels {
 
 		public bool IsExtension { get; private set; }
 
+		public override string ToString() => $"[{Type}] {Name}" + (IsExtension ? " [extension]"  : string.Empty);
+
 		private FieldViewModel() { }
+		
 	}
 }

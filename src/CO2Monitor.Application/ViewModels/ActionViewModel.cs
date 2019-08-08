@@ -15,6 +15,8 @@ namespace CO2Monitor.Application.ViewModels {
 		public VariantDeclaration Argument { get; private set; }
 
 		public bool IsExtension { get; private set; }
+				
+		public override string ToString() => $"{Path}({Argument})" + (IsExtension ? " [extension]"  : string.Empty);
 
 		private ActionViewModel() { }
 	}

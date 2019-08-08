@@ -156,7 +156,7 @@ namespace CO2Monitor.Application.Services {
 				return "Invalid usage. Try 'help' for help.";
 			}
 
-			string deviceName = parser.Arguments[1];
+			string deviceName = parser.Arguments[0];
 
 			DeviceViewModel device = _deviceAppService.List<DeviceViewModel>(x => string.Compare(x.Name, deviceName, true, CultureInfo.InvariantCulture) == 0).FirstOrDefault();
 

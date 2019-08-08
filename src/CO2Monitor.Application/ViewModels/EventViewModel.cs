@@ -11,9 +11,12 @@ namespace CO2Monitor.Application.ViewModels {
 		}
 
 		public string Name { get; private set; }
+		
 		public VariantDeclaration DataType { get; private set; }
 
 		public bool IsExtension { get; private set; }
+				
+		public override string ToString() => $"{Name}({DataType})"  + (IsExtension ? " [extension]"  : string.Empty);
 
 		private EventViewModel() { }
 	}
