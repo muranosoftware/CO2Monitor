@@ -223,7 +223,7 @@ namespace CO2Monitor.Domain.Devices {
 					// asp.net core remode device error investigation   
 					if (response.StatusCode == System.Net.HttpStatusCode.InternalServerError) {
 						try {
-							_logger.LogError("Reomte device internal error: " + await response.Content.ReadAsStringAsync());
+							_logger.LogError($"Reomte device internal error [{await response.Content.ReadAsStringAsync()}]. Headers: {response.Headers.Aggregate(string.Empty, (acc, x) => acc + Environment.NewLine + x.Key + ": " + x.Value)}" );
 						} catch (Exception) {
 						}
 					}
