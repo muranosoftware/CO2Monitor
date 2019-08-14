@@ -4,6 +4,10 @@ using NUnit.Framework;
 using FluentAssertions;
 using System.Threading;
 using CO2Monitor.Domain.Devices;
+using CO2Monitor.Infrastructure.Tests;
+using Moq;
+using Microsoft.Extensions.Logging;
+using CO2Monitor.Infrastructure.Tests.TestHelpers;
 
 namespace CO2Monitor.Infrastructure.Tests.Devices {
 	[TestFixture]
@@ -13,7 +17,10 @@ namespace CO2Monitor.Infrastructure.Tests.Devices {
 
 		[SetUp]
 		public void SetUp() {
-			_timer = new ScheduleTimer();
+			var logger = new Mock<ILogger<ScheduleTimer>>();
+			logger.MockLog(LogLevel.Debug);
+
+			_timer = new ScheduleTimer(logger.Object);
 		}
 
 		[TearDown]

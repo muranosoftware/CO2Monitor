@@ -216,11 +216,18 @@ namespace CO2Monitor.Domain.Devices {
 			if (Address == null || (LatestSuccessfulAccess.HasValue && (DateTime.Now - LatestSuccessfulAccess.Value).TotalSeconds < 5)) {
 				return;
 			}
-
 			using (var client = new HttpClient()) {
 				client.Timeout = TimeSpan.FromSeconds(30);
 				try {
 					HttpResponseMessage response = await client.GetAsync(Address);
+					// asp.net core remode device error investigation   
+					if (response.StatusCode == System.Net.HttpStatusCode.InternalServerError) {
+						try {
+							_logger.LogError("Reomte device internal error: " + await response.Content.ReadAsStringAsync());
+						} catch (Exception) {
+						}
+					}
+					// end of investigation
 					response.EnsureSuccessStatusCode();
 					DeviceState = await response.Content.ReadAsStringAsync();
 					LatestSuccessfulAccess = DateTime.Now;

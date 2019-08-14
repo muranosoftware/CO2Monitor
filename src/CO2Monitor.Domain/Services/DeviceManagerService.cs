@@ -101,19 +101,17 @@ namespace CO2Monitor.Domain.Services {
 					continue;
 				}
 
-				_logger.LogInformation($"Try execute rule's [{r.Name}:{r.Id}] action on [{r.TargetDeviceId}]");
-
 				if (!TryGetRuleActionArgument(r, eventDeclaration, data, out Variant argument)) {
 					continue;
 				}
 
 				try {
 					await device.ExecuteAction(r.Action, argument);
+					var message = $"{device.Name}{{ Id = {device.Id}}}.{r.Action.Path}({argument.String}) executed using rule [{r.Name}.{r.Id}]";
+					_notificationService.Notify(message);
 				} catch (CO2MonitorException ex) {
 					_logger.LogError(ex, $"Can not execute rule [{r.Name}.{r.Id}] action  {device.Name}{{ Id = {device.Id}}}{r.Action}.");
 				}
-				var message = $"{device.Name}{{ Id = {device.Id}}}.{r.Action.Path}({argument.String}) executed using rule [{r.Name}.{r.Id}]";
-				_notificationService.Notify(message);
 			}
 		}
 
@@ -153,7 +151,6 @@ namespace CO2Monitor.Domain.Services {
 					return false;
 				}
 			}
-
 			return true;
 		}
 

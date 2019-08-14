@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using CO2Monitor.Core.Entities;
 using CO2Monitor.Core.Shared;
 using CO2Monitor.Domain.Interfaces.Devices;
 using CO2Monitor.Domain.Entities;
+
 
 namespace CO2Monitor.Domain.Devices {
 	public class ScheduleTimer : IScheduleTimer {
@@ -35,14 +37,15 @@ namespace CO2Monitor.Domain.Devices {
 
 		private static readonly DeviceInfo TimerDeviceInfo = new DeviceInfo(StateFieldDeclarations.Keys, Actions.Keys, EventDeclarations);
 
-		TimeSpan _alarmTime;
-		readonly Timer _timer;
+		private ILogger<ScheduleTimer> _logger;
+		private TimeSpan _alarmTime;
+		private readonly Timer _timer;
 		private string _name = nameof(ScheduleTimer);
-		
-		public ScheduleTimer() {
+
+		public ScheduleTimer(ILogger<ScheduleTimer> logger) {
+			_logger = logger;
 			_timer = new Timer(Alarm);
 			AlarmTime = TimeSpan.FromHours(0);
-			UpdateInternalTimer();
 		}
 
 		public string Name {
@@ -104,19 +107,17 @@ namespace CO2Monitor.Domain.Devices {
 
 		private void OnSettingsChanged(string property) =>
 			SettingsChanged?.Invoke(this, new PropertyChangedEventArgs(property));
+		
 
 		private void Alarm(object state) {
-			OnAlarmEventRaised();
 			UpdateInternalTimer();
-		}
-
-		private void OnAlarmEventRaised() => 
 			EventRaised?.Invoke(this, AlarmEventDeclaration, new Variant(AlarmTime), Id);
+		}
 
 		private void UpdateInternalTimer() {
 			TimeSpan dt = DateTime.Today - DateTime.Now + AlarmTime;
 
-			if (dt.TotalMilliseconds <= 1) {
+			if (dt.TotalSeconds <= 3) {
 				dt = dt.Add(TimeSpan.FromDays(1));
 			}
 
